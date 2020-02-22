@@ -25,9 +25,8 @@ class APIService {
     func constructUrl(for searchString: String) -> URL? {
         if let escapedString = searchString.encodeURIComponent() {
             return URL(string: "\(AppConstants.API.baseUrl)?method=flickr.photos.search&api_key=\(AppConstants.API.apiKey)&text=\(escapedString)&per_page=\(AppConstants.API.photosPerRequest)&format=json&nojsoncallback=1")
-        } else {
-            return nil
         }
+        return nil
     }
     
     func get(url: URL, completion: @escaping (Data?, Error?) -> Void) {
