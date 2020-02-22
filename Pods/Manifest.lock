@@ -1,0 +1,24 @@
+PODS:
+  - SwiftEvents (1.1.1)
+  - Toast-Swift (5.0.1)
+  - UAObfuscatedString (0.5.1)
+
+DEPENDENCIES:
+  - SwiftEvents (~> 1.1.1)
+  - Toast-Swift (~> 5.0.1)
+  - UAObfuscatedString (= 0.5.1)
+
+SPEC REPOS:
+  trunk:
+    - SwiftEvents
+    - Toast-Swift
+    - UAObfuscatedString
+
+SPEC CHECKSUMS:
+  SwiftEvents: 8cefdbeb4e59647e4bca42d6fdd188609ff82684
+  Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
+  UAObfuscatedString: 34850d89100c7aff99129ee56acd433fa5ed3aef
+
+PODFILE CHECKSUM: a6880f1e23bc1b4976ee861a88788d0912fded6b
+
+COCOAPODS: 1.8.4
