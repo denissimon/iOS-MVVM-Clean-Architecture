@@ -13,8 +13,7 @@ class Helpers {
     static func getImage(data: Data) -> UIImage? {
         if let image = UIImage(data: data) {
             return image
-        } else {
-            return nil
         }
+        return nil
     }
 }
