@@ -23,7 +23,7 @@ class ImageDetailsViewController: UIViewController {
         self.prepareUI()
     }
     
-    // Setup "delegations through closures" and bindings for MVVM architecture
+    // Setup closure-based delegates and bindings for the MVVM architecture
     private func setup() {
         viewModel.updatesInData = { [weak self] largeImage in
             self?.imageView.image = largeImage
@@ -46,7 +46,6 @@ class ImageDetailsViewController: UIViewController {
     private func prepareUI() {
         self.title = viewModel.getTitle()
     }
-    
     
     // MARK: Actions
     

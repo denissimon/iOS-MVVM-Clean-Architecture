@@ -22,7 +22,6 @@ class ImagesDataSource: NSObject {
     }
 }
 
-
 // MARK: UICollectionViewDataSource
 
 extension ImagesDataSource: UICollectionViewDataSource {

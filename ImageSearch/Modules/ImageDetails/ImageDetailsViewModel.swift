@@ -15,7 +15,7 @@ class ImageDetailsViewModel {
     var tappedImage: Image
     var headerTitle: String
     
-    // Delegations through closures
+    // Closure-based delegates
     var updatesInData: ((UIImage) -> ())? = nil
     var shareImage: (([UIImage]) -> ())? = nil
     

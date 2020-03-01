@@ -9,18 +9,12 @@
 import Foundation
 
 class APIService {
-   
-    // MARK: Properties
-    
+       
     var urlSession: URLSession
-
-    // MARK: Initialization
     
     init(urlSession: URLSession = URLSession.shared) {
         self.urlSession = urlSession
     }
-    
-    // MARK: Methods
     
     func constructUrl(for searchString: String) -> URL? {
         if let escapedString = searchString.encodeURIComponent() {

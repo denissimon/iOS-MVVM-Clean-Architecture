@@ -19,7 +19,7 @@ class ImageSearchViewModel {
         }
     }
     
-    // Delegations through closures
+    // Closure-based delegates
     var updatesInData: (() -> ())? = nil
     var resetSearchBar: (() -> ())? = nil
     

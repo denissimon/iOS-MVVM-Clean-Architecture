@@ -32,7 +32,7 @@ class ImageSearchViewController: UIViewController {
         prepareUI()
     }
     
-    // Setup "delegations through closures" and bindings for MVVM architecture
+    // Setup closure-based delegates and bindings for the MVVM architecture
     private func setup() {
         viewModel.updatesInData = { [weak self] in
             guard let self = self else { return }
@@ -74,7 +74,6 @@ class ImageSearchViewController: UIViewController {
     }
 }
 
-
 // MARK: - UIScrollViewDelegate
 
 extension ImageSearchViewController {
@@ -87,7 +86,6 @@ extension ImageSearchViewController {
         }
     }
 }
-
 
 // MARK: - UISearchBarDelegate
 
@@ -113,7 +111,6 @@ extension ImageSearchViewController: UISearchBarDelegate {
     }
 }
 
-
 // MARK: - UICollectionViewDelegate
 
 extension ImageSearchViewController: UICollectionViewDelegate {
@@ -124,7 +121,6 @@ extension ImageSearchViewController: UICollectionViewDelegate {
         self.coordinatorDelegate.showDetails(of: selectedImage, header: header, from: self)
     }
 }
-
 
 // MARK: - Collection View Flow Layout Delegate
 
