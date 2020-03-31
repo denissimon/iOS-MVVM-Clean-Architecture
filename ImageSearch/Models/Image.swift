@@ -25,7 +25,7 @@ class Image {
     }
     
     func getImageURL(_ size: String = "m") -> URL? {
-        if let url =  URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size).jpg") {
+        if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size).jpg") {
           return url
         }
         return nil
