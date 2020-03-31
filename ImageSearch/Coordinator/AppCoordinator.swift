@@ -16,12 +16,12 @@ protocol ShowDetailsCoordinatorDelegate: class {
 class AppCoordinator: AppCoordinatorProtocol {
     
     var rootNavigationController: UINavigationController!
-    let apiService: APIService!
+    let networkService: NetworkService!
     let window: UIWindow?
 
     init(window: UIWindow?) {
         self.window = window
-        apiService = APIService()
+        networkService = NetworkService()
     }
     
     func start() {
@@ -33,8 +33,8 @@ class AppCoordinator: AppCoordinatorProtocol {
     }
     
     func getImageSearchController() -> ImageSearchViewController {
-        let imageSearchVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.MainStoryboard.imageSearchVCIdentifier) as! ImageSearchViewController
-        let viewModel = ImageSearchViewModel(apiService: apiService)
+        let imageSearchVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageSearchVCIdentifier) as! ImageSearchViewController
+        let viewModel = ImageSearchViewModel(networkService: networkService)
         imageSearchVC.viewModel = viewModel
         imageSearchVC.coordinatorDelegate = self
         return imageSearchVC
@@ -44,8 +44,8 @@ class AppCoordinator: AppCoordinatorProtocol {
 extension AppCoordinator: ShowDetailsCoordinatorDelegate {
     
     func showDetails(of image: Image, header: String, from viewController: UIViewController) {
-        let imageDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.MainStoryboard.imageDetailsVCIdentifier) as! ImageDetailsViewController
-        let viewModel = ImageDetailsViewModel(apiService: apiService, tappedImage: image, headerTitle: header)
+        let imageDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageDetailsVCIdentifier) as! ImageDetailsViewController
+        let viewModel = ImageDetailsViewModel(networkService: networkService, tappedImage: image, headerTitle: header)
         imageDetailsVC.viewModel = viewModel
         imageDetailsVC.coordinatorDelegate = self
         

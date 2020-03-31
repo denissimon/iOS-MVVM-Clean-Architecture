@@ -11,11 +11,13 @@ import SwiftEvents
 
 class ImageSearchViewModel {
     
-    var apiService: APIService
+    var networkService: NetworkService
     
     private(set) var data = [ImageSearchResults]() {
         didSet {
-            updatesInData?()
+            DispatchQueue.main.async {
+                self.updatesInData?()
+            }
         }
     }
     
@@ -28,8 +30,8 @@ class ImageSearchViewModel {
     let showToast = Observable<String>("")
     let collectionViewTopConstraint = Observable<Float>(0)
     
-    init(apiService: APIService) {
-        self.apiService = apiService
+    init(networkService: NetworkService) {
+        self.networkService = networkService
         
         // Get some random images at the app's start
         DispatchQueue.main.async {
@@ -41,24 +43,24 @@ class ImageSearchViewModel {
         
         showActivityIndicator.value = true
         
-        searchFlickr(for: searchString) { [weak self] result in
-            guard let self = self else { return }
-            
-            self.showActivityIndicator.value = false
-            
-            switch result {
-            case .error(let error) :
-                if error != nil {
-                    self.showToast.value = "Error searching: \(error.debugDescription)"
-                } else {
-                    self.showToast.value = "Error searching"
-                }
-            case .done(let results):
-                let count = results.searchResults.count
-                if count > 1 {
-                    self.showToast.value = "Found \(results.searchResults.count) images"
-                } else {
-                    self.showToast.value = "Found 1 image"
+        searchFlickr(for: searchString) { result in
+            DispatchQueue.main.async {
+                self.showActivityIndicator.value = false
+                
+                switch result {
+                case .error(let error) :
+                    if error != nil {
+                        self.showToast.value = "Error searching: \(error.debugDescription)"
+                    } else {
+                        self.showToast.value = "Error searching"
+                    }
+                case .done(let results):
+                    let count = results.searchResults.count
+                    if count > 1 {
+                        self.showToast.value = "Found \(results.searchResults.count) images"
+                    } else {
+                        self.showToast.value = "Found 1 image"
+                    }
                 }
             }
         }
@@ -66,20 +68,18 @@ class ImageSearchViewModel {
     
     private func searchFlickr(for searchString: String, completion: @escaping (Result<ImageSearchResults>) -> ()) {
         
-        var apiURL: URL!
-        if let url = apiService.constructUrl(for: searchString) {
-            apiURL = url
-        } else {
+        guard let escapedString = searchString.encodeURIComponent() else {
+            completion(Result.error(nil))
             return
         }
         
-        apiService.get(url: apiURL) { [weak self] (data, error) in
+        let endpoint = FlickrAPI.search(string: escapedString)
+        
+        networkService.requestEndpoint(endpoint) { [weak self] (data, error) in
             guard let self = self else { return }
             
             guard error == nil && data != nil else {
-                DispatchQueue.main.async {
-                    completion(Result.error(error))
-                }
+                completion(Result.error(error))
                 return
             }
 
@@ -88,26 +88,20 @@ class ImageSearchViewModel {
                     let resultsDictionary = try JSONSerialization.jsonObject(with: data!) as? [String: AnyObject],
                     let stat = resultsDictionary["stat"] as? String
                     else {
-                        DispatchQueue.main.async {
-                            completion(Result.error(nil))
-                        }
+                        completion(Result.error(nil))
                         return
                 }
 
                 if stat != "ok" {
-                    DispatchQueue.main.async {
-                        completion(Result.error(nil))
-                    }
+                    completion(Result.error(nil))
                     return
                 }
-
+                
                 guard
                     let container = resultsDictionary["photos"] as? [String: AnyObject],
                     let photos = container["photo"] as? [[String: AnyObject]]
                     else {
-                        DispatchQueue.main.async {
-                            completion(Result.error(nil))
-                        }
+                        completion(Result.error(nil))
                         return
                 }
 
@@ -139,14 +133,11 @@ class ImageSearchViewModel {
                 }
 
                 let searchResults = ImageSearchResults(searchString: searchString, searchResults: photosFound)
-                DispatchQueue.main.async {
-                    self.data.insert(searchResults, at: 0)
-                    completion(Result.done(searchResults))
-                }
+                self.data.insert(searchResults, at: 0)
+                completion(Result.done(searchResults))
+            
             } catch {
-                DispatchQueue.main.async {
-                    completion(Result.error(error))
-                }
+                completion(Result.error(error))
             }
         }
     }
@@ -188,7 +179,7 @@ class ImageSearchViewModel {
     }
     
     func getHeightOfCell(width: Float) -> Float {
-        let baseWidth = AppConstants.ImageCollection.baseImageWidth
+        let baseWidth = AppConstants.ImageCollection.BaseImageWidth
         if width > baseWidth {
             return baseWidth
         } else {

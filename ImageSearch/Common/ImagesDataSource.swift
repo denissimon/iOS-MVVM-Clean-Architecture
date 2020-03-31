@@ -36,7 +36,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AppConstants.ImageCollection.reuseCellIdentifier, for: indexPath) as! CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AppConstants.ImageCollection.ReuseCellIdentifier, for: indexPath) as! CollectionViewCell
         let image = data[indexPath.section].searchResults[indexPath.row]
         cell.imageView.image = image.thumbnail
         return cell
@@ -46,7 +46,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: AppConstants.ImageCollection.reuseHeaderIdentifier, for: indexPath) as? CollectionViewHeader {
+            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: AppConstants.ImageCollection.ReuseHeaderIdentifier, for: indexPath) as? CollectionViewHeader {
                 let searchString = data[indexPath.section].searchString
                 headerView.label.text = searchString
                 return headerView

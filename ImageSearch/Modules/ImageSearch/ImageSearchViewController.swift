@@ -74,19 +74,6 @@ class ImageSearchViewController: UIViewController {
     }
 }
 
-// MARK: - UIScrollViewDelegate
-
-extension ImageSearchViewController {
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
-            viewModel.scrollUp()
-        } else {
-            viewModel.scrollDown(Float(searchBar.frame.height))
-        }
-    }
-}
-
 // MARK: - UISearchBarDelegate
 
 extension ImageSearchViewController: UISearchBarDelegate {
@@ -115,6 +102,14 @@ extension ImageSearchViewController: UISearchBarDelegate {
 
 extension ImageSearchViewController: UICollectionViewDelegate {
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.panGestureRecognizer.translation(in: scrollView.superview).y > 0 {
+            viewModel.scrollUp()
+        } else {
+            viewModel.scrollDown(Float(searchBar.frame.height))
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedImage = viewModel.getImage(for: (indexPath.section, indexPath.row))
         let header = viewModel.getSearchString(for: indexPath.section)
@@ -129,8 +124,8 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                           layout collectionViewLayout: UICollectionViewLayout,
                           sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemsPerRow = CGFloat(AppConstants.ImageCollection.itemsPerRow)
-        let padding: CGFloat = CGFloat(AppConstants.ImageCollection.horizontalSpace)
+        let itemsPerRow = CGFloat(AppConstants.ImageCollection.ItemsPerRow)
+        let padding: CGFloat = CGFloat(AppConstants.ImageCollection.HorizontalSpace)
         let collectionCellSize = collectionView.frame.size.width - (padding*(itemsPerRow+1))
         
         let width = collectionCellSize/itemsPerRow
@@ -143,16 +138,16 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                       layout collectionViewLayout: UICollectionViewLayout,
                       insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(
-            top: CGFloat(AppConstants.ImageCollection.verticleSpace),
-            left: CGFloat(AppConstants.ImageCollection.horizontalSpace),
-            bottom: CGFloat(AppConstants.ImageCollection.verticleSpace),
-            right: CGFloat(AppConstants.ImageCollection.horizontalSpace)
+            top: CGFloat(AppConstants.ImageCollection.VerticleSpace),
+            left: CGFloat(AppConstants.ImageCollection.HorizontalSpace),
+            bottom: CGFloat(AppConstants.ImageCollection.VerticleSpace),
+            right: CGFloat(AppConstants.ImageCollection.HorizontalSpace)
         )
     }
     
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return CGFloat(AppConstants.ImageCollection.horizontalSpace)
+        return CGFloat(AppConstants.ImageCollection.HorizontalSpace)
     }
 }
