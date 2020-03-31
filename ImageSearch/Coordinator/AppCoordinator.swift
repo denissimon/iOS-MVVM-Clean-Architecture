@@ -10,6 +10,7 @@ import UIKit
 
 protocol ShowDetailsCoordinatorDelegate: class {
     func showDetails(of image: Image, header: String, from viewController: UIViewController)
+    func hideDetails(from viewController: UIViewController)
 }
 
 class AppCoordinator: AppCoordinatorProtocol {
@@ -50,6 +51,10 @@ extension AppCoordinator: ShowDetailsCoordinatorDelegate {
         
         let imageDetailsNC = UINavigationController(rootViewController: imageDetailsVC)
         viewController.show(imageDetailsNC, sender: nil)
+    }
+    
+    func hideDetails(from viewController: UIViewController) {
+        viewController.dismiss(animated: true, completion: nil)
     }
 }
 

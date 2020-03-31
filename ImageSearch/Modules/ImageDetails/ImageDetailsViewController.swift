@@ -50,7 +50,7 @@ class ImageDetailsViewController: UIViewController {
     // MARK: Actions
     
     @IBAction func onDoneButton(_ sender: UIBarButtonItem) {
-        dismiss(animated: true, completion: nil)
+        self.coordinatorDelegate.hideDetails(from: self)
     }
     
     @IBAction func onShareButton(_ sender: UIBarButtonItem) {
