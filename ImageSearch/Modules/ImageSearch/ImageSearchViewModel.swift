@@ -16,16 +16,16 @@ class ImageSearchViewModel {
     private(set) var data = [ImageSearchResults]() {
         didSet {
             DispatchQueue.main.async {
-                self.updatesInData?()
+                self.updatesInData.trigger(nil)
             }
         }
     }
     
-    // Closure-based delegates
-    var updatesInData: (() -> ())? = nil
-    var resetSearchBar: (() -> ())? = nil
+    // Event-based delegates
+    let updatesInData = Event<Bool?>()
+    var resetSearchBar = Event<Bool?>()
     
-    // Observable properties
+    // Event-based observable properties
     let showActivityIndicator = Observable<Bool>(false)
     let showToast = Observable<String>("")
     let collectionViewTopConstraint = Observable<Float>(0)
@@ -146,7 +146,7 @@ class ImageSearchViewModel {
         guard let searchBarText = searchBarText else { return }
         if !searchBarText.isEmpty {
             searchFlickr(for: searchBarText)
-            resetSearchBar?()
+            resetSearchBar.trigger(nil)
         }
     }
     

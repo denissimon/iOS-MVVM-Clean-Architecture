@@ -23,19 +23,19 @@ class ImageDetailsViewController: UIViewController {
         self.prepareUI()
     }
     
-    // Setup closure-based delegates and bindings for the MVVM architecture
+    // Setup Event-based delegates and bindings for the MVVM architecture
     private func setup() {
-        viewModel.updatesInData = { [weak self] largeImage in
-            self?.imageView.image = largeImage
-        }
-        
-        viewModel.shareImage = { [weak self] imageToShare in
+        viewModel.updatesInData.addSubscriber(target: self, handler: { (self, largeImage) in
+            self.imageView.image = largeImage
+        })
+            
+        viewModel.shareImage.addSubscriber(target: self, handler: { (self, imageToShare) in
             let activityVC = UIActivityViewController(activityItems: imageToShare, applicationActivities: nil)
-            activityVC.popoverPresentationController?.barButtonItem = self?.navigationItem.leftBarButtonItem
+            activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
             activityVC.popoverPresentationController?.permittedArrowDirections = .up
-            self?.present(activityVC, animated: true, completion: nil)
-        }
-
+            self.present(activityVC, animated: true, completion: nil)
+        })
+        
         viewModel.showToast.didChanged.addSubscriber(target: self, handler: { (self, value) in
             if !value.new.isEmpty {
                 self.view.makeToast(value.new, duration: 5.0, position: .bottom)

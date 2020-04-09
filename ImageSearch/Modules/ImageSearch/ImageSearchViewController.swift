@@ -32,18 +32,17 @@ class ImageSearchViewController: UIViewController {
         prepareUI()
     }
     
-    // Setup closure-based delegates and bindings for the MVVM architecture
+    // Setup event-based delegates and bindings for the MVVM architecture
     private func setup() {
-        viewModel.updatesInData = { [weak self] in
-            guard let self = self else { return }
+        viewModel.updatesInData.addSubscriber(target: self, handler: { (self, _) in
             self.dataSource?.updateData(self.viewModel.getData())
             self.collectionView.reloadData()
-        }
-        
-        viewModel.resetSearchBar = { [weak self] in
-            self?.searchBar.text = nil
-            self?.searchBar.resignFirstResponder()
-        }
+        })
+          
+        viewModel.resetSearchBar.addSubscriber(target: self, handler: { (self, _) in
+            self.searchBar.text = nil
+            self.searchBar.resignFirstResponder()
+        })
         
         viewModel.showActivityIndicator.didChanged.addSubscriber(target: self, handler: { (self, value) in
             if value.new {

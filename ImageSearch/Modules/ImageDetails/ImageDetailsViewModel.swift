@@ -15,11 +15,11 @@ class ImageDetailsViewModel {
     var tappedImage: Image
     var headerTitle: String
     
-    // Closure-based delegates
-    var updatesInData: ((UIImage) -> ())? = nil
-    var shareImage: (([UIImage]) -> ())? = nil
+    // Event-based delegates
+    var updatesInData = Event<UIImage>()
+    var shareImage = Event<[UIImage]>()
     
-    // Observable properties
+    // Event-based observable properties
     let showToast = Observable<String>("")
     
     init(networkService: NetworkService, tappedImage: Image, headerTitle: String) {
@@ -48,7 +48,7 @@ class ImageDetailsViewModel {
                     }
                 case .done(let results):
                     if let largeImage = results.largeImage {
-                        self.updatesInData?(largeImage)
+                        self.updatesInData.trigger(largeImage)
                     }
                 }
             }
@@ -85,7 +85,7 @@ class ImageDetailsViewModel {
     
     func onShareButton() {
         if let largeImage = tappedImage.largeImage {
-            shareImage?([largeImage])
+            shareImage.trigger([largeImage])
         } else {
             self.showToast.value = "No image to share"
         }
