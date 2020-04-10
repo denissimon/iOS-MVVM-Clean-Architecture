@@ -23,7 +23,7 @@ class ImageDetailsViewController: UIViewController {
         self.prepareUI()
     }
     
-    // Setup Event-based delegates and bindings for the MVVM architecture
+    // Setup event-based delegates and bindings for the MVVM architecture
     private func setup() {
         viewModel.updatesInData.addSubscriber(target: self, handler: { (self, largeImage) in
             self.imageView.image = largeImage
