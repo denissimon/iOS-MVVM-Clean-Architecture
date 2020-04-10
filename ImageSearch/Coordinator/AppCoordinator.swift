@@ -33,7 +33,7 @@ class AppCoordinator: AppCoordinatorProtocol {
     }
     
     func getImageSearchController() -> ImageSearchViewController {
-        let imageSearchVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageSearchVCIdentifier) as! ImageSearchViewController
+        let imageSearchVC = UIStoryboard(name: "ImageSearch", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageSearchVCIdentifier) as! ImageSearchViewController
         let viewModel = ImageSearchViewModel(networkService: networkService)
         imageSearchVC.viewModel = viewModel
         imageSearchVC.coordinatorDelegate = self
@@ -44,7 +44,7 @@ class AppCoordinator: AppCoordinatorProtocol {
 extension AppCoordinator: ShowDetailsCoordinatorDelegate {
     
     func showDetails(of image: Image, header: String, from viewController: UIViewController) {
-        let imageDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageDetailsVCIdentifier) as! ImageDetailsViewController
+        let imageDetailsVC = UIStoryboard(name: "ImageDetails", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboard.ImageDetailsVCIdentifier) as! ImageDetailsViewController
         let viewModel = ImageDetailsViewModel(networkService: networkService, tappedImage: image, headerTitle: header)
         imageDetailsVC.viewModel = viewModel
         imageDetailsVC.coordinatorDelegate = self

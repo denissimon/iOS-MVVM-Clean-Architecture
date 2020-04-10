@@ -101,50 +101,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Axf-8J-y3u" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1974" y="-704"/>
-        </scene>
-        <!--Image Details View Controller-->
-        <scene sceneID="lEg-Wb-whH">
-            <objects>
-                <viewController storyboardIdentifier="imageDetailsViewController" modalPresentationStyle="formSheet" id="fLv-Nu-sMm" customClass="ImageDetailsViewController" customModule="ImageSearch" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ypi-Ab-YyP">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="918-Tt-xIY">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="FQe-K2-fLT" firstAttribute="bottom" secondItem="918-Tt-xIY" secondAttribute="bottom" id="9GK-W7-f0p"/>
-                            <constraint firstItem="FQe-K2-fLT" firstAttribute="trailing" secondItem="918-Tt-xIY" secondAttribute="trailing" id="Rhw-Rh-F21"/>
-                            <constraint firstItem="918-Tt-xIY" firstAttribute="leading" secondItem="FQe-K2-fLT" secondAttribute="leading" id="aX7-Wb-Nfu"/>
-                            <constraint firstItem="918-Tt-xIY" firstAttribute="top" secondItem="FQe-K2-fLT" secondAttribute="top" id="hah-0d-iMM"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="FQe-K2-fLT"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="17p-Uw-WGP">
-                        <barButtonItem key="leftBarButtonItem" systemItem="action" id="YZp-Jb-4Lw">
-                            <connections>
-                                <action selector="onShareButton:" destination="fLv-Nu-sMm" id="1If-f5-Ur9"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="oKk-Ic-1La">
-                            <connections>
-                                <action selector="onDoneButton:" destination="fLv-Nu-sMm" id="42O-Q7-J7T"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
-                    <connections>
-                        <outlet property="imageView" destination="918-Tt-xIY" id="lTx-aR-Cc4"/>
-                        <outlet property="shareBarButtonItem" destination="YZp-Jb-4Lw" id="sgq-N7-dw3"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7Ej-wU-TeS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2770" y="-704"/>
+            <point key="canvasLocation" x="1286" y="-703"/>
         </scene>
     </scenes>
 </document>
