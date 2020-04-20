@@ -17,29 +17,29 @@ class NetworkService {
         self.urlSession = urlSession
     }
     
-    func get(url: URL, completion: @escaping (Data?, Error?) -> Void) {
-        let request = URLRequest(url: url)
-        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
-            completion(data, error)
-        }
-        dataTask.resume()
-        task = dataTask
-    }
-    
-    func requestEndpoint(_ endpoint: EndpointType, completion: @escaping (Data?, Error?) -> Void) {
+    func requestEndpoint(_ endpoint: EndpointType, params: HTTPParams? = nil, completion: @escaping (Data?, Error?) -> Void) {
         
         let method = endpoint.method
         guard let url = endpoint.constructedURL else {
             completion(nil, nil)
             return
         }
-        let request = RequestFactory.request(method: method, url: url)
+        let request = RequestFactory.request(method: method, params: params, url: url)
         
         let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
             completion(data, error)
         }
         dataTask.resume()
         
+        task = dataTask
+    }
+    
+    func get(url: URL, params: HTTPParams? = nil, completion: @escaping (Data?, Error?) -> Void) {
+        let request = RequestFactory.request(method: Method.GET, params: params, url: url)
+        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
+            completion(data, error)
+        }
+        dataTask.resume()
         task = dataTask
     }
     

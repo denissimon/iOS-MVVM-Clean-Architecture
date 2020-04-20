@@ -18,9 +18,20 @@ enum Method: String {
 
 class RequestFactory {
     
-    static func request(method: Method, url: URL) -> URLRequest {
+    static func request(method: Method, params: HTTPParams? = nil, url: URL) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
+        
+        if let params = params {
+            if params.cachePolicy != nil { request.cachePolicy = params.cachePolicy! }
+            if params.httpBody != nil { request.httpBody = params.httpBody! }
+            if params.headerValues != nil {
+                for header in params.headerValues! {
+                    request.addValue(header.value, forHTTPHeaderField: header.forHTTPHeaderField)
+                }
+            }
+        }
+        
         return request
     }
 }
