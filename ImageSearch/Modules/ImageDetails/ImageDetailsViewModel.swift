@@ -15,21 +15,18 @@ class ImageDetailsViewModel {
     var tappedImage: Image
     var headerTitle: String
     
-    // Event-based delegates
-    var updatesInData = Event<UIImage>()
-    var shareImage = Event<[UIImage]>()
+    // Event-based delegation
+    let updateData = Event<UIImage>()
+    let shareImage = Event<[UIImage]>()
+    let showToast = Event<String>()
     
     // Event-based observable properties
-    let showToast = Observable<String>("")
+    let activityIndicatorVisibility = Observable<Bool>(false)
     
     init(networkService: NetworkService, tappedImage: Image, headerTitle: String) {
         self.networkService = networkService
         self.tappedImage = tappedImage
         self.headerTitle = headerTitle
-        
-        DispatchQueue.main.async {
-            self.loadLargeImage()
-        }
     }
     
     deinit {
@@ -37,45 +34,49 @@ class ImageDetailsViewModel {
     }
     
     func loadLargeImage() {
-        loadLargeImage() { result in
+        
+        func showErrorToast(_ msg: String = "") {
             DispatchQueue.main.async {
-                switch result {
-                case .error(let error) :
-                    if error != nil {
-                        self.showToast.value = "Display error: \(error.debugDescription)"
-                    } else {
-                        self.showToast.value = "Display error"
-                    }
-                case .done(let results):
-                    if let largeImage = results.largeImage {
-                        self.updatesInData.trigger(largeImage)
-                    }
+                if msg.isEmpty {
+                    self.showToast.trigger("Network error")
+                } else {
+                    self.showToast.trigger(msg)
                 }
             }
         }
-    }
-    
-    private func loadLargeImage(_ completion: @escaping (Result<Image>) -> ()) {
+        
+        if let largeImage = tappedImage.largeImage {
+            updateData.trigger(largeImage)
+            return
+        }
+        
         if let url = tappedImage.getImageURL("b") {
-            networkService.get(url: url) { [weak self] (data, error) in
+            
+            self.activityIndicatorVisibility.value = true
+            
+            networkService.get(url: url) { [weak self] (result) in
                 guard let self = self else { return }
                     
-                if let error = error {
-                    completion(Result.error(error))
-                    return
-                }
-
-                guard let data = data else {
-                    completion(Result.error(nil))
-                    return
-                }
-
-                let returnedImage = UIImage(data: data)
+                switch result {
+                case .done(let data):
+                    let returnedImage = UIImage(data: data)
                     self.tappedImage.largeImage = returnedImage
-                    completion(Result.done(self.tappedImage))
+                    if let largeImage = returnedImage {
+                        DispatchQueue.main.async {
+                            self.updateData.trigger(largeImage)
+                            self.activityIndicatorVisibility.value = false
+                        }
+                    }
+                case .error(let error):
+                    if error != nil {
+                        showErrorToast(error!.localizedDescription)
+                    } else {
+                        showErrorToast()
+                    }
+                }
             }
         } else {
-            completion(Result.error(nil))
+            showErrorToast()
         }
     }
     
@@ -87,7 +88,7 @@ class ImageDetailsViewModel {
         if let largeImage = tappedImage.largeImage {
             shareImage.trigger([largeImage])
         } else {
-            self.showToast.value = "No image to share"
+            self.showToast.trigger("No image to share")
         }
     }
 }

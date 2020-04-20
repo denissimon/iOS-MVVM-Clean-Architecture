@@ -16,7 +16,8 @@ class ImageSearchViewController: UIViewController {
     @IBOutlet weak var collectionViewTopConstraint: NSLayoutConstraint!
     
     var viewModel: ImageSearchViewModel!
-    weak var coordinatorDelegate: ShowDetailsCoordinatorDelegate!
+    weak var showDetailsCoordinatorDelegate: ShowDetailsCoordinatorDelegate!
+    weak var hotTagsListCoordinatorDelegate: HotTagsListCoordinatorDelegate!
     
     private var dataSource: ImagesDataSource?
     
@@ -30,11 +31,21 @@ class ImageSearchViewController: UIViewController {
         
         setup()
         prepareUI()
+        
+        // Get some random images at the app's start
+        viewModel.searchFlickr(for: "Random")
     }
     
-    // Setup event-based delegates and bindings for the MVVM architecture
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animate(alongsideTransition: { context in
+            self.collectionView.reloadData()
+        })
+    }
+    
+    // Setup event-based delegation and bindings for the MVVM architecture
     private func setup() {
-        viewModel.updatesInData.addSubscriber(target: self, handler: { (self, _) in
+        // Delegation
+        viewModel.updateData.addSubscriber(target: self, handler: { (self, _) in
             self.dataSource?.updateData(self.viewModel.getData())
             self.collectionView.reloadData()
         })
@@ -44,19 +55,22 @@ class ImageSearchViewController: UIViewController {
             self.searchBar.resignFirstResponder()
         })
         
-        viewModel.showActivityIndicator.didChanged.addSubscriber(target: self, handler: { (self, value) in
-            if value.new {
-                self.view.makeToastActivity(.center)
-                self.searchBar.searchTextField.isEnabled = false
-            } else {
-                self.view.hideToastActivity()
-                self.searchBar.searchTextField.isEnabled = true
+        viewModel.showToast.addSubscriber(target: self, handler: { (self, text) in
+            if !text.isEmpty {
+                self.view.makeToast(text, duration: AppConstants.Other.ToastDuration, position: .bottom)
             }
         })
         
-        viewModel.showToast.didChanged.addSubscriber(target: self, handler: { (self, value) in
-            if !value.new.isEmpty {
-                self.view.makeToast(value.new, duration: 5.0, position: .bottom)
+        // Bindings
+        viewModel.activityIndicatorVisibility.didChanged.addSubscriber(target: self, handler: { (self, value) in
+            if value.new {
+                self.view.makeToastActivity(.center)
+                self.searchBar.isUserInteractionEnabled = false
+                self.searchBar.placeholder = "Searching..."
+            } else {
+                self.view.hideToastActivity()
+                self.searchBar.isUserInteractionEnabled = true
+                self.searchBar.placeholder = "Search"
             }
         })
         
@@ -69,7 +83,18 @@ class ImageSearchViewController: UIViewController {
     }
     
     private func prepareUI() {
-        searchBar.searchTextField.isEnabled = false
+        searchBar.isUserInteractionEnabled = false
+        self.searchBar.placeholder = "Searching..."
+        self.searchBar.layer.borderColor = UIColor.lightGray.cgColor
+        self.searchBar.layer.borderWidth = 0.5
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            self.hotTagsListCoordinatorDelegate.showListScreen(from: self)
+        }
     }
 }
 
@@ -112,7 +137,7 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedImage = viewModel.getImage(for: (indexPath.section, indexPath.row))
         let header = viewModel.getSearchString(for: indexPath.section)
-        self.coordinatorDelegate.showDetails(of: selectedImage, header: header, from: self)
+        self.showDetailsCoordinatorDelegate.showDetailsScreen(of: selectedImage, header: header, from: self)
     }
 }
 
@@ -123,8 +148,14 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                           layout collectionViewLayout: UICollectionViewLayout,
                           sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let itemsPerRow = CGFloat(AppConstants.ImageCollection.ItemsPerRow)
-        let padding: CGFloat = CGFloat(AppConstants.ImageCollection.HorizontalSpace)
+        var itemsPerRow = CGFloat()
+        if UIApplication.shared.statusBarOrientation.isLandscape {
+            itemsPerRow = AppConstants.ImageCollection.ItemsPerRowInHorizOrient
+        } else {
+            itemsPerRow = AppConstants.ImageCollection.ItemsPerRowInVertOrient
+        }
+        
+        let padding = AppConstants.ImageCollection.HorizontalSpace
         let collectionCellSize = collectionView.frame.size.width - (padding*(itemsPerRow+1))
         
         let width = collectionCellSize/itemsPerRow
@@ -137,16 +168,16 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                       layout collectionViewLayout: UICollectionViewLayout,
                       insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(
-            top: CGFloat(AppConstants.ImageCollection.VerticleSpace),
-            left: CGFloat(AppConstants.ImageCollection.HorizontalSpace),
-            bottom: CGFloat(AppConstants.ImageCollection.VerticleSpace),
-            right: CGFloat(AppConstants.ImageCollection.HorizontalSpace)
+            top: AppConstants.ImageCollection.VerticleSpace,
+            left: AppConstants.ImageCollection.HorizontalSpace,
+            bottom: AppConstants.ImageCollection.VerticleSpace,
+            right: AppConstants.ImageCollection.HorizontalSpace
         )
     }
     
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return CGFloat(AppConstants.ImageCollection.HorizontalSpace)
+        return AppConstants.ImageCollection.HorizontalSpace
     }
 }

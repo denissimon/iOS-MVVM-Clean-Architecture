@@ -17,28 +17,84 @@ class NetworkService {
         self.urlSession = urlSession
     }
     
-    func requestEndpoint(_ endpoint: EndpointType, params: HTTPParams? = nil, completion: @escaping (Data?, Error?) -> Void) {
+    // Request API endpoint
+    func requestEndpoint(_ endpoint: EndpointType, params: HTTPParams? = nil, completion: @escaping (Result<Data>) -> Void) {
         
         let method = endpoint.method
+        
         guard let url = endpoint.constructedURL else {
-            completion(nil, nil)
+            completion(Result.error(nil))
             return
         }
+        
         let request = RequestFactory.request(method: method, params: params, url: url)
         
-        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
-            completion(data, error)
+        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+            if data != nil && error == nil {
+                completion(Result.done(data!))
+                return
+            }
+            if error != nil {
+                completion(Result.error(error!))
+            } else {
+                completion(Result.error(nil))
+            }
         }
-        dataTask.resume()
         
+        dataTask.resume()
         task = dataTask
     }
     
-    func get(url: URL, params: HTTPParams? = nil, completion: @escaping (Data?, Error?) -> Void) {
-        let request = RequestFactory.request(method: Method.GET, params: params, url: url)
-        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
-            completion(data, error)
+    // Request API endpoint with automatic decoding of results in Codable
+    func requestEndpoint<T: Codable>(_ endpoint: EndpointType, params: HTTPParams? = nil, type: T.Type, completion: @escaping (Result<T>) -> Void) {
+        
+        let method = endpoint.method
+        
+        guard let url = endpoint.constructedURL else {
+            completion(Result.error(nil))
+            return
         }
+        
+        let request = RequestFactory.request(method: method, params: params, url: url)
+        
+        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+            if data != nil && error == nil {
+                let response = ResponseDecodable(data: data!)
+                guard let decoded = response.decode(type) else {
+                    completion(Result.error(nil))
+                    return
+                }
+                completion(Result.done(decoded))
+                return
+            }
+            if error != nil {
+                completion(Result.error(error!))
+            } else {
+                completion(Result.error(nil))
+            }
+        }
+
+        dataTask.resume()
+        task = dataTask
+    }
+    
+    // Perform any GET network task
+    func get(url: URL, params: HTTPParams? = nil, completion: @escaping (Result<Data>) -> Void) {
+
+        let request = RequestFactory.request(method: Method.GET, params: params, url: url)
+        
+        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
+            if data != nil && error == nil {
+                completion(Result.done(data!))
+                return
+            }
+            if error != nil {
+                completion(Result.error(error!))
+            } else {
+                completion(Result.error(nil))
+            }
+        }
+        
         dataTask.resume()
         task = dataTask
     }

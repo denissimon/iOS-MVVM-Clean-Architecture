@@ -16,128 +16,122 @@ class ImageSearchViewModel {
     private(set) var data = [ImageSearchResults]() {
         didSet {
             DispatchQueue.main.async {
-                self.updatesInData.trigger(nil)
+                self.updateData.trigger(nil)
             }
         }
     }
     
-    // Event-based delegates
-    let updatesInData = Event<Bool?>()
-    var resetSearchBar = Event<Bool?>()
+    // Event-based delegation
+    let updateData = Event<Bool?>()
+    let resetSearchBar = Event<Bool?>()
+    let showToast = Event<String>()
     
     // Event-based observable properties
-    let showActivityIndicator = Observable<Bool>(false)
-    let showToast = Observable<String>("")
+    let activityIndicatorVisibility = Observable<Bool>(false)
     let collectionViewTopConstraint = Observable<Float>(0)
     
     init(networkService: NetworkService) {
         self.networkService = networkService
-        
-        // Get some random images at the app's start
-        DispatchQueue.main.async {
-            self.searchFlickr(for: "Random")
-        }
     }
     
     func searchFlickr(for searchString: String) {
         
-        showActivityIndicator.value = true
+        activityIndicatorVisibility.value = true
         
-        searchFlickr(for: searchString) { result in
+        func showErrorToast(_ msg: String = "") {
             DispatchQueue.main.async {
-                self.showActivityIndicator.value = false
-                
-                switch result {
-                case .error(let error) :
-                    if error != nil {
-                        self.showToast.value = "Error searching: \(error.debugDescription)"
-                    } else {
-                        self.showToast.value = "Error searching"
-                    }
-                case .done(let results):
-                    let count = results.searchResults.count
-                    if count > 1 {
-                        self.showToast.value = "Found \(results.searchResults.count) images"
-                    } else {
-                        self.showToast.value = "Found 1 image"
-                    }
+                if msg.isEmpty {
+                    self.showToast.trigger("Network error")
+                } else {
+                    self.showToast.trigger(msg)
                 }
+                self.activityIndicatorVisibility.value = false
             }
         }
-    }
-    
-    private func searchFlickr(for searchString: String, completion: @escaping (Result<ImageSearchResults>) -> ()) {
         
         guard let escapedString = searchString.encodeURIComponent() else {
-            completion(Result.error(nil))
+            showErrorToast()
             return
         }
         
         let endpoint = FlickrAPI.search(string: escapedString)
         
-        networkService.requestEndpoint(endpoint) { [weak self] (data, error) in
+        networkService.requestEndpoint(endpoint) { [weak self] (result) in
             guard let self = self else { return }
-            
-            guard error == nil && data != nil else {
-                completion(Result.error(error))
-                return
-            }
-
-            do {
-                guard
-                    let resultsDictionary = try JSONSerialization.jsonObject(with: data!) as? [String: AnyObject],
-                    let stat = resultsDictionary["stat"] as? String
-                    else {
-                        completion(Result.error(nil))
-                        return
-                }
-
-                if stat != "ok" {
-                    completion(Result.error(nil))
-                    return
-                }
                 
-                guard
-                    let container = resultsDictionary["photos"] as? [String: AnyObject],
-                    let photos = container["photo"] as? [[String: AnyObject]]
-                    else {
-                        completion(Result.error(nil))
+            switch result {
+            case .done(let data):
+                do {
+                    guard
+                        let resultsDictionary = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
+                        let stat = resultsDictionary["stat"] as? String
+                        else {
+                            showErrorToast()
+                            return
+                    }
+
+                    if stat != "ok" {
+                        showErrorToast()
                         return
-                }
-
-                let photosFound: [Image] = photos.compactMap { photoObject in
+                    }
+                    
                     guard
-                        let imageID = photoObject["id"] as? String,
-                        let farm = photoObject["farm"] as? Int,
-                        let server = photoObject["server"] as? String,
-                        let secret = photoObject["secret"] as? String
+                        let container = resultsDictionary["photos"] as? [String: AnyObject],
+                        let photos = container["photo"] as? [[String: AnyObject]]
                         else {
+                            showErrorToast()
+                            return
+                    }
+
+                    let photosFound: [Image] = photos.compactMap { photoObject in
+                        guard
+                            let imageID = photoObject["id"] as? String,
+                            let farm = photoObject["farm"] as? Int,
+                            let server = photoObject["server"] as? String,
+                            let secret = photoObject["secret"] as? String
+                            else {
+                                return nil
+                        }
+
+                        let image = Image(imageID: imageID, farm: farm, server: server, secret: secret)
+
+                        guard
+                            let url = image.getImageURL(),
+                            let imageData = try? Data(contentsOf: url as URL)
+                            else {
+                                return nil
+                        }
+
+                        if let thumbnailImage = Helpers.getImage(data: imageData) {
+                            image.thumbnail = thumbnailImage
+                            return image
+                        } else {
                             return nil
+                        }
                     }
 
-                    let image = Image(imageID: imageID, farm: farm, server: server, secret: secret)
-
-                    guard
-                        let url = image.getImageURL(),
-                        let data = try? Data(contentsOf: url as URL)
-                        else {
-                            return nil
+                    let resultsWrapper = ImageSearchResults(searchString: searchString, searchResults: photosFound)
+                    self.data.insert(resultsWrapper, at: 0)
+                    
+                    DispatchQueue.main.async {
+                        self.activityIndicatorVisibility.value = false
+                        
+                        let imageCount = resultsWrapper.searchResults.count
+                        if imageCount > 1 {
+                            self.showToast.trigger("Found \(imageCount) images")
+                        } else {
+                            self.showToast.trigger("Found 1 image")
+                        }
                     }
-
-                    if let thumbnailImage = Helpers.getImage(data: data) {
-                        image.thumbnail = thumbnailImage
-                        return image
-                    } else {
-                        return nil
-                    }
+                } catch {
+                    showErrorToast(error.localizedDescription)
                 }
-
-                let searchResults = ImageSearchResults(searchString: searchString, searchResults: photosFound)
-                self.data.insert(searchResults, at: 0)
-                completion(Result.done(searchResults))
-            
-            } catch {
-                completion(Result.error(error))
+            case .error(let error) :
+                if error != nil {
+                    showErrorToast(error!.localizedDescription)
+                } else {
+                    showErrorToast()
+                }
             }
         }
     }

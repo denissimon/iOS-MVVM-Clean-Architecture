@@ -13,19 +13,23 @@ class ImageDetailsViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var viewModel: ImageDetailsViewModel!
     weak var coordinatorDelegate: ShowDetailsCoordinatorDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setup()
-        self.prepareUI()
+        setup()
+        prepareUI()
+        
+        viewModel.loadLargeImage()
     }
     
-    // Setup event-based delegates and bindings for the MVVM architecture
+    // Setup event-based delegation and bindings for the MVVM architecture
     private func setup() {
-        viewModel.updatesInData.addSubscriber(target: self, handler: { (self, largeImage) in
+        // Delegation
+        viewModel.updateData.addSubscriber(target: self, handler: { (self, largeImage) in
             self.imageView.image = largeImage
         })
             
@@ -36,9 +40,18 @@ class ImageDetailsViewController: UIViewController {
             self.present(activityVC, animated: true, completion: nil)
         })
         
-        viewModel.showToast.didChanged.addSubscriber(target: self, handler: { (self, value) in
-            if !value.new.isEmpty {
-                self.view.makeToast(value.new, duration: 5.0, position: .bottom)
+        viewModel.showToast.addSubscriber(target: self, handler: { (self, text) in
+            if !text.isEmpty {
+                self.view.makeToast(text, duration: AppConstants.Other.ToastDuration, position: .bottom)
+            }
+        })
+        
+        // Bindings
+        viewModel.activityIndicatorVisibility.didChanged.addSubscriber(target: self, handler: { (self, value) in
+            if value.new {
+                self.activityIndicator.startAnimating()
+            } else {
+                self.activityIndicator.stopAnimating()
             }
         })
     }
@@ -50,7 +63,7 @@ class ImageDetailsViewController: UIViewController {
     // MARK: Actions
     
     @IBAction func onDoneButton(_ sender: UIBarButtonItem) {
-        self.coordinatorDelegate.hideDetails(from: self)
+        self.coordinatorDelegate.hideDetailsScreen(from: self)
     }
     
     @IBAction func onShareButton(_ sender: UIBarButtonItem) {
