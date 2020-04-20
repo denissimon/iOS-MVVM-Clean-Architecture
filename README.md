@@ -5,7 +5,7 @@
 
 A demo app built using the MVVM-C + Storyboards architecture with Swift 5.
 
-This app gets images using Flickr Search API. It has two modules: ImageSearch, ImageDetails.
+This app gets images using Flickr API. It has three modules: ImageSearch, ImageDetails, HotTagsList.
 
 #### Architecture concepts:
 - MVVM
@@ -14,8 +14,9 @@ This app gets images using Flickr Search API. It has two modules: ImageSearch, I
 - Dependency Injection
 - Data Binding
 - Event-based communication between classes
-- Reusable data source for UICollectionView
+- Reusable data sources for UITableView and UICollectionView
 - Reusable and universal networking
+- Codable
 
 #### Built with:
 - [SwiftEvents](https://github.com/denissimon/SwiftEvents) - A lightweight library for creating and observing events.
