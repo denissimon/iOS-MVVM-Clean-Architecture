@@ -27,7 +27,7 @@ class NetworkService {
             return
         }
         
-        let request = RequestFactory.request(method: method, params: params, url: url)
+        let request = RequestFactory.request(url: url, method: method, params: params)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             if data != nil && error == nil {
@@ -55,7 +55,7 @@ class NetworkService {
             return
         }
         
-        let request = RequestFactory.request(method: method, params: params, url: url)
+        let request = RequestFactory.request(url: url, method: method, params: params)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             if data != nil && error == nil {
@@ -81,7 +81,7 @@ class NetworkService {
     // Perform any GET network task
     func get(url: URL, params: HTTPParams? = nil, completion: @escaping (Result<Data>) -> Void) {
 
-        let request = RequestFactory.request(method: Method.GET, params: params, url: url)
+        let request = RequestFactory.request(url: url, method: Method.GET, params: params)
         
         let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
             if data != nil && error == nil {
