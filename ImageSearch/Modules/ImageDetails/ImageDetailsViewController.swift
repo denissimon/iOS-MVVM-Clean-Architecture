@@ -26,7 +26,6 @@ class ImageDetailsViewController: UIViewController {
         viewModel.loadLargeImage()
     }
     
-    // Setup event-based delegation and bindings for the MVVM architecture
     private func setup() {
         // Delegation
         viewModel.updateData.addSubscriber(target: self, handler: { (self, largeImage) in

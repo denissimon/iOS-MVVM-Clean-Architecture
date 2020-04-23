@@ -36,13 +36,6 @@ class ImageSearchViewController: UIViewController {
         viewModel.searchFlickr(for: "Random")
     }
     
-    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-        coordinator.animate(alongsideTransition: { context in
-            self.collectionView.reloadData()
-        })
-    }
-    
-    // Setup event-based delegation and bindings for the MVVM architecture
     private func setup() {
         // Delegation
         viewModel.updateData.addSubscriber(target: self, handler: { (self, _) in
@@ -80,6 +73,10 @@ class ImageSearchViewController: UIViewController {
                 self.view.layoutIfNeeded()
             }
         })
+        
+        // Notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+
     }
     
     private func prepareUI() {
@@ -95,6 +92,12 @@ class ImageSearchViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.hotTagsListCoordinatorDelegate.showListScreen(from: self)
         }
+    }
+    
+    // MARK: - Other methods
+    
+    @objc func deviceOrientationDidChange(_ notification: Notification) {
+        collectionView.reloadData()
     }
 }
 

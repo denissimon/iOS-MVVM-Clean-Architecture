@@ -31,7 +31,6 @@ class HotTagsListViewController: UIViewController {
         viewModel.getFlickrHotTags(of: AppConstants.FlickrAPI.HotTagsListCount)
     }
     
-    // Setup event-based delegation and bindings for the MVVM architecture
     private func setup() {
         // Delegation
         viewModel.updateData.addSubscriber(target: self, handler: { (self, _) in
