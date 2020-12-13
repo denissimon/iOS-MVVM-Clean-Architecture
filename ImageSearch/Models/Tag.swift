@@ -10,11 +10,9 @@ import Foundation
 
 struct Tag: Codable {
     
-    let score: String
     let name: String
     
     enum CodingKeys: String, CodingKey {
-        case score = "score"
         case name = "_content"
     }
 }

@@ -11,11 +11,11 @@ import Foundation
 struct Tags: Codable {
     
     struct HotTags: Codable {
-        let period: String
-        let count: String
         let tag: [Tag]
     }
     
-    let stat: String
+    let period: String
+    let count: Int
     let hottags: HotTags
+    let stat: String
 }

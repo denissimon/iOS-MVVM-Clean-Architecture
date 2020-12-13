@@ -36,7 +36,12 @@ extension FlickrAPI: EndpointType {
     }
     
     var constructedURL: URL? {
-        return URL(string: self.baseURL + self.path)
+        switch self {
+        case .search(_), .getHotTagsList(_):
+            return URL(string: self.baseURL + self.path)
+        default:
+            return nil
+        }
     }
 }
 
