@@ -6,6 +6,6 @@ target 'ImageSearch' do
   use_frameworks!
 
   pod 'SwiftEvents', '~> 1.1.1'
-  pod 'Toast-Swift', '~> 5.0.1'
-  pod 'UAObfuscatedString', '0.5.1'
+  pod 'Toast-Swift'
+  pod 'UAObfuscatedString'
 end

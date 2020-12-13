@@ -5,8 +5,8 @@ PODS:
 
 DEPENDENCIES:
   - SwiftEvents (~> 1.1.1)
-  - Toast-Swift (~> 5.0.1)
-  - UAObfuscatedString (= 0.5.1)
+  - Toast-Swift
+  - UAObfuscatedString
 
 SPEC REPOS:
   trunk:
@@ -19,6 +19,6 @@ SPEC CHECKSUMS:
   Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
   UAObfuscatedString: 34850d89100c7aff99129ee56acd433fa5ed3aef
 
-PODFILE CHECKSUM: a6880f1e23bc1b4976ee861a88788d0912fded6b
+PODFILE CHECKSUM: b620ab405f2adcafbee0a91a419cf0193938b0b8
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.0
