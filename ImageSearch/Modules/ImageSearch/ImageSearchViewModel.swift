@@ -21,6 +21,8 @@ class ImageSearchViewModel {
         }
     }
     
+    var lastTag = String()
+    
     // Event-based delegation
     let updateData = Event<Bool?>()
     let resetSearchBar = Event<Bool?>()
@@ -112,6 +114,7 @@ class ImageSearchViewModel {
 
                     let resultsWrapper = ImageSearchResults(searchString: searchString, searchResults: photosFound)
                     self.data.insert(resultsWrapper, at: 0)
+                    self.lastTag = searchString
                     
                     DispatchQueue.main.async {
                         self.activityIndicatorVisibility.value = false

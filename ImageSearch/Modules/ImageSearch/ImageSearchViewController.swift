@@ -21,6 +21,8 @@ class ImageSearchViewController: UIViewController {
     
     private var dataSource: ImagesDataSource?
     
+    private let refreshControl = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,6 +78,10 @@ class ImageSearchViewController: UIViewController {
         
         // Notifications
         NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+        
+        // Other
+        // Configure Refresh Control
+        refreshControl.addTarget(self, action: #selector(refreshImageData(_:)), for: .valueChanged)
 
     }
     
@@ -84,6 +90,12 @@ class ImageSearchViewController: UIViewController {
         self.searchBar.placeholder = "Searching..."
         self.searchBar.layer.borderColor = UIColor.lightGray.cgColor
         self.searchBar.layer.borderWidth = 0.5
+        
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
     }
     
     // MARK: - Actions
@@ -98,6 +110,15 @@ class ImageSearchViewController: UIViewController {
     
     @objc func deviceOrientationDidChange(_ notification: Notification) {
         collectionView.reloadData()
+    }
+    
+    @objc private func refreshImageData(_ sender: Any) {
+        if !viewModel.lastTag.isEmpty {
+            viewModel.searchBarSearchButtonClicked(with: viewModel.lastTag)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.refreshControl.endRefreshing()
+            }
+        }
     }
 }
 
