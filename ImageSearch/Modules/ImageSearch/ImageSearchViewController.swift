@@ -56,6 +56,12 @@ class ImageSearchViewController: UIViewController {
             }
         })
         
+        viewModel.scrollTop.addSubscriber(target: self, handler: { (self, _) in
+            if let attributes = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
+                self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
+            }
+        })
+        
         // Bindings
         viewModel.activityIndicatorVisibility.didChanged.addSubscriber(target: self, handler: { (self, value) in
             if value.new {

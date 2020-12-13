@@ -27,6 +27,7 @@ class ImageSearchViewModel {
     let updateData = Event<Bool?>()
     let resetSearchBar = Event<Bool?>()
     let showToast = Event<String>()
+    let scrollTop = Event<Bool?>()
     
     // Event-based observable properties
     let activityIndicatorVisibility = Observable<Bool>(false)
@@ -124,6 +125,10 @@ class ImageSearchViewModel {
                             self.showToast.trigger("Found \(imageCount) images")
                         } else {
                             self.showToast.trigger("Found 1 image")
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                            self.scrollTop.trigger(nil)
                         }
                     }
                 } catch {
