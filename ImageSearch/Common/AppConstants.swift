@@ -12,9 +12,9 @@ import UAObfuscatedString
 struct AppConstants {
     
     struct Storyboards {
-        static let ImageSearchVCIdentifier = "imageSearchViewController"
-        static let ImageDetailsVCIdentifier = "imageDetailsViewController"
-        static let HotTagsListVCIdentifier = "hotTagsListViewController"
+        static let ImageSearchVCIdentifier = "ImageSearchViewController"
+        static let ImageDetailsVCIdentifier = "ImageDetailsViewController"
+        static let HotTagsListVCIdentifier = "HotTagsListViewController"
     }
     
     struct FlickrAPI {

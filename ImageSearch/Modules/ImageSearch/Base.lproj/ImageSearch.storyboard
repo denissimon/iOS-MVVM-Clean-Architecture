@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="YAp-Kn-ov4">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="YAp-Kn-ov4">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--ImageSearch-->
         <scene sceneID="0bp-Gg-pAJ">
             <objects>
-                <viewController storyboardIdentifier="imageSearchViewController" id="YAp-Kn-ov4" customClass="ImageSearchViewController" customModule="ImageSearch" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImageSearchViewController" id="YAp-Kn-ov4" customClass="ImageSearchViewController" customModule="ImageSearch" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PDC-F4-u3b">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -26,7 +27,7 @@
                             </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" keyboardDismissMode="onDrag" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="IeU-nU-qnu">
                                 <rect key="frame" x="0.0" y="144" width="414" height="718"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="m8t-el-BVe">
                                     <size key="itemSize" width="240" height="240"/>
                                     <size key="headerReferenceSize" width="42" height="42"/>
@@ -48,7 +49,7 @@
                                                             <rect key="frame" x="1.5" y="1.5" width="211" height="211"/>
                                                         </imageView>
                                                     </subviews>
-                                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
                                                         <constraint firstItem="OWM-Gt-Lgc" firstAttribute="centerY" secondItem="NiW-jW-skF" secondAttribute="centerY" id="Gr3-jc-aMa"/>
                                                         <constraint firstItem="OWM-Gt-Lgc" firstAttribute="height" secondItem="NiW-jW-skF" secondAttribute="height" multiplier="0.987654" id="cNP-hv-CGH"/>
@@ -83,7 +84,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                    <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                                     <constraints>
                                         <constraint firstItem="bj8-cd-inL" firstAttribute="centerX" secondItem="K5v-lr-yMH" secondAttribute="centerX" id="3gf-M3-EaS"/>
                                         <constraint firstItem="bj8-cd-inL" firstAttribute="centerY" secondItem="K5v-lr-yMH" secondAttribute="centerY" id="HRL-Ml-DkH"/>
@@ -94,7 +95,8 @@
                                 </collectionReusableView>
                             </collectionView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="iGe-ne-HfU"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="IeU-nU-qnu" firstAttribute="top" secondItem="dPW-xC-Edn" secondAttribute="bottom" id="ENq-8K-iH8"/>
                             <constraint firstItem="iGe-ne-HfU" firstAttribute="trailing" secondItem="IeU-nU-qnu" secondAttribute="trailing" id="GBD-g6-8Pb"/>
@@ -105,7 +107,6 @@
                             <constraint firstItem="iGe-ne-HfU" firstAttribute="bottom" secondItem="IeU-nU-qnu" secondAttribute="bottom" id="udI-gh-h4L"/>
                             <constraint firstItem="IeU-nU-qnu" firstAttribute="leading" secondItem="iGe-ne-HfU" secondAttribute="leading" id="wBj-VU-Nxl"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="iGe-ne-HfU"/>
                     </view>
                     <navigationItem key="navigationItem" title="ImageSearch" id="qye-7D-P6K">
                         <barButtonItem key="backBarButtonItem" title=" " id="dBC-iG-9Py"/>
@@ -127,4 +128,12 @@
             <point key="canvasLocation" x="38" y="283"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="groupTableViewBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
