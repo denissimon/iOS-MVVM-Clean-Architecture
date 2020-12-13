@@ -30,13 +30,13 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="m8t-el-BVe">
                                     <size key="itemSize" width="240" height="240"/>
-                                    <size key="headerReferenceSize" width="42" height="42"/>
+                                    <size key="headerReferenceSize" width="44" height="44"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CollectionViewCell" id="zuf-fF-WLC" customClass="CollectionViewCell" customModule="ImageSearch" customModuleProvider="target">
-                                        <rect key="frame" x="100" y="42" width="214" height="214"/>
+                                        <rect key="frame" x="100" y="44" width="214" height="214"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
                                             <rect key="frame" x="0.0" y="0.0" width="214" height="214"/>
@@ -74,17 +74,16 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="CollectionViewHeader" id="K5v-lr-yMH" customClass="CollectionViewHeader" customModule="ImageSearch" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="42"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bj8-cd-inL">
-                                            <rect key="frame" x="185.5" y="11" width="43" height="20.5"/>
-                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                            <nil key="textColor"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tag" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bj8-cd-inL">
+                                            <rect key="frame" x="190" y="9.5" width="34" height="25.5"/>
+                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="21"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstItem="bj8-cd-inL" firstAttribute="centerX" secondItem="K5v-lr-yMH" secondAttribute="centerX" id="3gf-M3-EaS"/>
                                         <constraint firstItem="bj8-cd-inL" firstAttribute="centerY" secondItem="K5v-lr-yMH" secondAttribute="centerY" id="HRL-Ml-DkH"/>
@@ -129,9 +128,6 @@
         </scene>
     </scenes>
     <resources>
-        <systemColor name="groupTableViewBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
