@@ -35,7 +35,7 @@ class ImageSearchViewController: UIViewController {
         prepareUI()
         
         // Get some random images at the app's start
-        viewModel.searchFlickr(for: "Random")
+        viewModel.searchFlickr(for: "random")
     }
     
     private func setup() {
