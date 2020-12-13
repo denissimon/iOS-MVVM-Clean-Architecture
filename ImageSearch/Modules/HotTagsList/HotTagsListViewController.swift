@@ -53,6 +53,12 @@ class HotTagsListViewController: UIViewController {
             }
         })
     }
+    
+    // MARK: - Actions
+    
+    @IBAction func onTagsTypeChange(_ sender: UISegmentedControl) {
+        viewModel.onTagsTypeChange(sender.selectedSegmentIndex)
+    }
 }
 
 // MARK: - UITableViewDelegate

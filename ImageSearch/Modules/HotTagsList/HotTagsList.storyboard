@@ -20,9 +20,30 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="54" estimatedRowHeight="54" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gi0-WT-noH">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <view key="tableHeaderView" contentMode="scaleToFill" id="UIk-fs-XpB">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3Z2-9I-WBj">
+                                            <rect key="frame" x="131.5" y="9.5" width="151" height="32"/>
+                                            <segments>
+                                                <segment title="Week"/>
+                                                <segment title="All Times"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="onTagsTypeChange:" destination="hSa-jf-dVK" eventType="valueChanged" id="hv0-kT-hYw"/>
+                                            </connections>
+                                        </segmentedControl>
+                                    </subviews>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    <constraints>
+                                        <constraint firstItem="3Z2-9I-WBj" firstAttribute="centerY" secondItem="UIk-fs-XpB" secondAttribute="centerY" id="AqI-P5-4hZ"/>
+                                        <constraint firstItem="3Z2-9I-WBj" firstAttribute="centerX" secondItem="UIk-fs-XpB" secondAttribute="centerX" id="FD9-8e-z6d"/>
+                                    </constraints>
+                                </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TagCell" textLabel="ax9-G2-cJb" style="IBUITableViewCellStyleDefault" id="ldp-PX-GWz">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="54"/>
+                                        <rect key="frame" x="0.0" y="78" width="414" height="54"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ldp-PX-GWz" id="ia2-kU-kYG">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="54"/>

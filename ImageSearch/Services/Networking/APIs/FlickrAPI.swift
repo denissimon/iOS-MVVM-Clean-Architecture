@@ -39,8 +39,6 @@ extension FlickrAPI: EndpointType {
         switch self {
         case .search(_), .getHotTagsList(_):
             return URL(string: self.baseURL + self.path)
-        default:
-            return nil
         }
     }
 }

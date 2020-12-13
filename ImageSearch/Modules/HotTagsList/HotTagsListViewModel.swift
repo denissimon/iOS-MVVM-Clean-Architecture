@@ -9,9 +9,17 @@
 import Foundation
 import SwiftEvents
 
+enum HotTagsType {
+    case week
+    case allTimes
+    case all
+}
+
 class HotTagsListViewModel {
     
     var networkService: NetworkService
+    
+    var dataForWeekTags = [Tag]()
     
     private(set) var data = [Tag]() {
         didSet {
@@ -62,19 +70,21 @@ class HotTagsListViewModel {
             
             switch result {
             case .done(let tags):
-                /*if tags.stat != "ok" {
-                    showErrorToast()
-                    return
-                }*/
-                let allHotTags = self.composeHotTags(weekHotTags: tags.hottags.tag)
+                var allHotTags = [Tag]()
+                if tags.stat != "ok" {
+                    allHotTags = self.composeHotTags(type: .week, weekHotTags: nil)
+                } else {
+                    allHotTags = self.composeHotTags(type: .week, weekHotTags: tags.hottags.tag)
+                }
+                self.dataForWeekTags = allHotTags
                 self.data = allHotTags
             case .error(let error):
-                /*if error != nil {
+                if error != nil {
                     showErrorToast(error!.localizedDescription)
                 } else {
                     showErrorToast()
-                }*/
-                let allHotTags = self.composeHotTags(weekHotTags: [Tag]())
+                }
+                let allHotTags = self.composeHotTags(type: .week, weekHotTags: nil)
                 self.data = allHotTags
             }
             
@@ -84,17 +94,40 @@ class HotTagsListViewModel {
         }
     }
     
-    private func composeHotTags(weekHotTags: [Tag]) -> [Tag] {
+    private func composeHotTags(type: HotTagsType, weekHotTags: [Tag]?) -> [Tag] {
         let allTimesHotTagsStr = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","bw","old","macro","music","new","moon","orange","garden","blackandwhite","home"]
         var allTimesHotTags = [Tag]()
         for tag in allTimesHotTagsStr {
             allTimesHotTags.append(Tag(name: tag))
         }
         
-        return allTimesHotTags + weekHotTags
+        switch type {
+        case .week:
+            if weekHotTags != nil {
+                return weekHotTags!
+            } else {
+                return [Tag]()
+            }
+        case .allTimes:
+            return allTimesHotTags
+        default:
+            if weekHotTags != nil {
+                return allTimesHotTags + weekHotTags!
+            } else {
+                return allTimesHotTags
+            }
+        }
     }
     
     func getTagName(for indexPath: IndexPath) -> String {
         return data[indexPath.row].name
+    }
+    
+    func onTagsTypeChange(_ index: Int) {
+        if index == 0 {
+            data = dataForWeekTags
+        } else if index == 1 {
+            data = composeHotTags(type: .allTimes, weekHotTags: nil)
+        }
     }
 }
