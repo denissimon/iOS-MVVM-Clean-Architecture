@@ -24,16 +24,16 @@ class HotTagsListViewModel {
     private(set) var data = [Tag]() {
         didSet {
             DispatchQueue.main.async {
-                self.updateData.trigger(nil)
+                self.updateData.trigger(self.data)
             }
         }
     }
     
-    // Event-based delegation
-    let updateData = Event<Bool?>()
+    // Delegates
+    let updateData = Event<[Tag]>()
     let showToast = Event<String>()
     
-    // Event-based observable properties
+    // Bindings
     let activityIndicatorVisibility = Observable<Bool>(false)
     
     init(networkService: NetworkService) {
@@ -44,8 +44,15 @@ class HotTagsListViewModel {
         return TagsDataSource(with: data)
     }
     
-    func getData() -> [Tag] {
-        return data
+    func showErrorToast(_ msg: String = "") {
+        DispatchQueue.main.async {
+            if msg.isEmpty {
+                self.showToast.trigger("Network error")
+            } else {
+                self.showToast.trigger(msg)
+            }
+            self.activityIndicatorVisibility.value = false
+        }
     }
     
     func getFlickrHotTags(of count: Int) {
@@ -56,17 +63,6 @@ class HotTagsListViewModel {
         
         networkService.requestEndpoint(endpoint, type: Tags.self) { [weak self] (result) in
             guard let self = self else { return }
-            
-            func showErrorToast(_ msg: String = "") {
-                DispatchQueue.main.async {
-                    if msg.isEmpty {
-                        self.showToast.trigger("Network error")
-                    } else {
-                        self.showToast.trigger(msg)
-                    }
-                    self.activityIndicatorVisibility.value = false
-                }
-            }
             
             switch result {
             case .done(let tags):
@@ -80,9 +76,9 @@ class HotTagsListViewModel {
                 self.data = allHotTags
             case .error(let error):
                 if error != nil {
-                    showErrorToast(error!.localizedDescription)
+                    self.showErrorToast(error!.localizedDescription)
                 } else {
-                    showErrorToast()
+                    self.showErrorToast()
                 }
                 let allHotTags = self.composeHotTags(type: .week, weekHotTags: nil)
                 self.data = allHotTags

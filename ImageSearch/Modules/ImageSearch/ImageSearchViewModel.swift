@@ -16,20 +16,20 @@ class ImageSearchViewModel {
     private(set) var data = [ImageSearchResults]() {
         didSet {
             DispatchQueue.main.async {
-                self.updateData.trigger(nil)
+                self.updateData.trigger(self.data)
             }
         }
     }
     
     var lastTag = String()
     
-    // Event-based delegation
-    let updateData = Event<Bool?>()
+    // Delegates
+    let updateData = Event<[ImageSearchResults]>()
     let resetSearchBar = Event<Bool?>()
     let showToast = Event<String>()
     let scrollTop = Event<Bool?>()
     
-    // Event-based observable properties
+    // Bindings
     let activityIndicatorVisibility = Observable<Bool>(false)
     let collectionViewTopConstraint = Observable<Float>(0)
     
@@ -37,20 +37,20 @@ class ImageSearchViewModel {
         self.networkService = networkService
     }
     
+    func showErrorToast(_ msg: String = "") {
+        DispatchQueue.main.async {
+            if msg.isEmpty {
+                self.showToast.trigger("Network error")
+            } else {
+                self.showToast.trigger(msg)
+            }
+            self.activityIndicatorVisibility.value = false
+        }
+    }
+    
     func searchFlickr(for searchString: String) {
         
         activityIndicatorVisibility.value = true
-        
-        func showErrorToast(_ msg: String = "") {
-            DispatchQueue.main.async {
-                if msg.isEmpty {
-                    self.showToast.trigger("Network error")
-                } else {
-                    self.showToast.trigger(msg)
-                }
-                self.activityIndicatorVisibility.value = false
-            }
-        }
         
         guard let escapedString = searchString.encodeURIComponent() else {
             showErrorToast()
@@ -69,12 +69,12 @@ class ImageSearchViewModel {
                         let resultsDictionary = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
                         let stat = resultsDictionary["stat"] as? String
                         else {
-                            showErrorToast()
+                        self.showErrorToast()
                             return
                     }
 
                     if stat != "ok" {
-                        showErrorToast()
+                        self.showErrorToast()
                         return
                     }
                     
@@ -82,7 +82,7 @@ class ImageSearchViewModel {
                         let container = resultsDictionary["photos"] as? [String: AnyObject],
                         let photos = container["photo"] as? [[String: AnyObject]]
                         else {
-                            showErrorToast()
+                        self.showErrorToast()
                             return
                     }
 
@@ -132,13 +132,13 @@ class ImageSearchViewModel {
                         }
                     }
                 } catch {
-                    showErrorToast(error.localizedDescription)
+                    self.showErrorToast(error.localizedDescription)
                 }
             case .error(let error) :
                 if error != nil {
-                    showErrorToast(error!.localizedDescription)
+                    self.showErrorToast(error!.localizedDescription)
                 } else {
-                    showErrorToast()
+                    self.showErrorToast()
                 }
             }
         }
@@ -166,10 +166,6 @@ class ImageSearchViewModel {
     
     func getDataSource() -> ImagesDataSource {
         return ImagesDataSource(with: data)
-    }
-    
-    func getData() -> [ImageSearchResults] {
-        return data
     }
     
     func getImage(for indexPath: (section: Int, row: Int)) -> Image {

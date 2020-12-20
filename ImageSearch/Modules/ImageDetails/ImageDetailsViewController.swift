@@ -20,6 +20,7 @@ class ImageDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setup()
         prepareUI()
         
@@ -27,7 +28,7 @@ class ImageDetailsViewController: UIViewController {
     }
     
     private func setup() {
-        // Delegation
+        // Delegates
         viewModel.updateData.addSubscriber(target: self, handler: { (self, largeImage) in
             self.imageView.image = largeImage
         })

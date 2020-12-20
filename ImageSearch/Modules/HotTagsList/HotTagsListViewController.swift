@@ -21,10 +21,6 @@ class HotTagsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataSource = viewModel.getDataSource()
-        tableView.dataSource = dataSource
-        tableView.delegate = self
-        
         setup()
         
         // Get a list of hot tags
@@ -32,9 +28,13 @@ class HotTagsListViewController: UIViewController {
     }
     
     private func setup() {
-        // Delegation
-        viewModel.updateData.addSubscriber(target: self, handler: { (self, _) in
-            self.dataSource?.updateData(self.viewModel.getData())
+        dataSource = viewModel.getDataSource()
+        tableView.dataSource = dataSource
+        tableView.delegate = self
+        
+        // Delegates
+        viewModel.updateData.addSubscriber(target: self, handler: { (self, data) in
+            self.dataSource?.updateData(data)
             self.tableView.reloadData()
         })
         

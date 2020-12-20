@@ -26,11 +26,6 @@ class ImageSearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataSource = viewModel.getDataSource()
-        collectionView.dataSource = dataSource
-        collectionView.delegate = self
-        searchBar.delegate = self
-        
         setup()
         prepareUI()
         
@@ -39,9 +34,14 @@ class ImageSearchViewController: UIViewController {
     }
     
     private func setup() {
-        // Delegation
-        viewModel.updateData.addSubscriber(target: self, handler: { (self, _) in
-            self.dataSource?.updateData(self.viewModel.getData())
+        dataSource = viewModel.getDataSource()
+        collectionView.dataSource = dataSource
+        collectionView.delegate = self
+        searchBar.delegate = self
+        
+        // Delegates
+        viewModel.updateData.addSubscriber(target: self, handler: { (self, data) in
+            self.dataSource?.updateData(data)
             self.collectionView.reloadData()
         })
           

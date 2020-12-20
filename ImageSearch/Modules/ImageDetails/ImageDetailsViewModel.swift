@@ -15,12 +15,12 @@ class ImageDetailsViewModel {
     var tappedImage: Image
     var headerTitle: String
     
-    // Event-based delegation
+    // Delegates
     let updateData = Event<UIImage>()
     let shareImage = Event<[UIImage]>()
     let showToast = Event<String>()
     
-    // Event-based observable properties
+    // Bindings
     let activityIndicatorVisibility = Observable<Bool>(false)
     
     init(networkService: NetworkService, tappedImage: Image, headerTitle: String) {
@@ -33,18 +33,17 @@ class ImageDetailsViewModel {
         networkService.cancelTask()
     }
     
-    func loadLargeImage() {
-        
-        func showErrorToast(_ msg: String = "") {
-            DispatchQueue.main.async {
-                if msg.isEmpty {
-                    self.showToast.trigger("Network error")
-                } else {
-                    self.showToast.trigger(msg)
-                }
+    func showErrorToast(_ msg: String = "") {
+        DispatchQueue.main.async {
+            if msg.isEmpty {
+                self.showToast.trigger("Network error")
+            } else {
+                self.showToast.trigger(msg)
             }
         }
-        
+    }
+    
+    func loadLargeImage() {
         if let largeImage = tappedImage.largeImage {
             updateData.trigger(largeImage)
             return
@@ -69,9 +68,9 @@ class ImageDetailsViewModel {
                     }
                 case .error(let error):
                     if error != nil {
-                        showErrorToast(error!.localizedDescription)
+                        self.showErrorToast(error!.localizedDescription)
                     } else {
-                        showErrorToast()
+                        self.showErrorToast()
                     }
                 }
             }
