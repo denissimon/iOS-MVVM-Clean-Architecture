@@ -3,9 +3,9 @@
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/ImageSearch/blob/master/LICENSE)
 
-A demo iOS app built using the MVVM-C + Storyboards architecture with Swift 5.
+A demo iOS app built using the MVVM-C architecture and Flickr API to get images by any keyword.
 
-This app gets images using Flickr API. It has three modules: ImageSearch, ImageDetails, HotTagsList.
+It has three modules: ImageSearch, ImageDetails, HotTagsList.
 
 #### Architecture concepts:
 - MVVM
@@ -13,7 +13,7 @@ This app gets images using Flickr API. It has three modules: ImageSearch, ImageD
 - Multiple Storyboards
 - Dependency Injection
 - Data Binding
-- Event-based communication between classes
+- Event-based (pub-sub) communication between instances
 - Reusable data sources for UITableView and UICollectionView
 - Reusable and universal networking
 - Codable
