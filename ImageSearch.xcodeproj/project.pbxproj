@@ -255,11 +255,11 @@
 		41F1F1552414A81C00FC8066 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				4111D58823FDC27300B74B83 /* NetworkService.swift */,
 				41CC247D24148B620053F23E /* RequestFactory.swift */,
 				41FBC3042443CD6600DD1480 /* HTTPParams.swift */,
 				41CC248224149EA30053F23E /* EndpointType.swift */,
 				41FBC30124439F1300DD1480 /* ResponseDecodable.swift */,
-				4111D58823FDC27300B74B83 /* NetworkService.swift */,
 				41FBC3032443A8A800DD1480 /* APIs */,
 			);
 			path = Networking;

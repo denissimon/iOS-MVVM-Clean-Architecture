@@ -23,21 +23,24 @@ class NetworkService {
         let method = endpoint.method
         
         guard let url = endpoint.constructedURL else {
-            completion(Result.error(nil))
+            completion(Result.error((nil, nil)))
             return
         }
         
         let request = RequestFactory.request(url: url, method: method, params: params)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+            let response = response as? HTTPURLResponse
+            let status = response?.statusCode
+            
             if data != nil && error == nil {
                 completion(Result.done(data!))
                 return
             }
             if error != nil {
-                completion(Result.error(error!))
+                completion(Result.error((error!, status)))
             } else {
-                completion(Result.error(nil))
+                completion(Result.error((nil, status)))
             }
         }
         
@@ -51,26 +54,30 @@ class NetworkService {
         let method = endpoint.method
         
         guard let url = endpoint.constructedURL else {
-            completion(Result.error(nil))
+            completion(Result.error((nil, nil)))
             return
         }
         
         let request = RequestFactory.request(url: url, method: method, params: params)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+            let response = response as? HTTPURLResponse
+            let status = response?.statusCode
+            
             if data != nil && error == nil {
                 let response = ResponseDecodable(data: data!)
                 guard let decoded = response.decode(type) else {
-                    completion(Result.error(nil))
+                    completion(Result.error((nil, status)))
                     return
                 }
                 completion(Result.done(decoded))
                 return
             }
+            
             if error != nil {
-                completion(Result.error(error!))
+                completion(Result.error((error!, status)))
             } else {
-                completion(Result.error(nil))
+                completion(Result.error((nil, status)))
             }
         }
 
@@ -84,14 +91,17 @@ class NetworkService {
         let request = RequestFactory.request(url: url, method: Method.GET, params: params)
         
         let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
+            let response = response as? HTTPURLResponse
+            let status = response?.statusCode
+            
             if data != nil && error == nil {
                 completion(Result.done(data!))
                 return
             }
             if error != nil {
-                completion(Result.error(error!))
+                completion(Result.error((error!, status)))
             } else {
-                completion(Result.error(nil))
+                completion(Result.error((nil, status)))
             }
         }
         

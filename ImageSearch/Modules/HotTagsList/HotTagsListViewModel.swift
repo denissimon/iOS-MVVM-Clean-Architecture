@@ -76,7 +76,7 @@ class HotTagsListViewModel {
                 self.data = allHotTags
             case .error(let error):
                 if error != nil {
-                    self.showErrorToast(error!.localizedDescription)
+                    self.showErrorToast(error.0!.localizedDescription)
                 } else {
                     self.showErrorToast()
                 }

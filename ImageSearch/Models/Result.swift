@@ -10,5 +10,5 @@ import Foundation
 
 enum Result<T> {
     case done(T)
-    case error(Swift.Error?)
+    case error((Swift.Error?, Int?)) // (error description, status code)
 }
