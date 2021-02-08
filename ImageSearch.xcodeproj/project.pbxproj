@@ -171,8 +171,8 @@
 		418F33B82441324B00193C74 /* HotTagsList */ = {
 			isa = PBXGroup;
 			children = (
-				419B5B4425D13E5000443960 /* ViewModel */,
 				419B5B4325D13E3B00443960 /* View */,
+				419B5B4425D13E5000443960 /* ViewModel */,
 			);
 			path = HotTagsList;
 			sourceTree = "<group>";
