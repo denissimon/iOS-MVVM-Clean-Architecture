@@ -52,7 +52,7 @@ class ImageSearchViewController: UIViewController {
         
         viewModel.showToast.addSubscriber(target: self, handler: { (self, text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: AppConstants.Other.ToastDuration, position: .bottom)
+                self.view.makeToast(text, duration: Constants.Other.ToastDuration, position: .bottom)
             }
         })
         
@@ -180,12 +180,12 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                           sizeForItemAt indexPath: IndexPath) -> CGSize {
         var itemsPerRow = CGFloat()
         if UIApplication.shared.statusBarOrientation.isLandscape {
-            itemsPerRow = AppConstants.ImageCollection.ItemsPerRowInHorizOrient
+            itemsPerRow = Constants.ImageCollection.ItemsPerRowInHorizOrient
         } else {
-            itemsPerRow = AppConstants.ImageCollection.ItemsPerRowInVertOrient
+            itemsPerRow = Constants.ImageCollection.ItemsPerRowInVertOrient
         }
         
-        let padding = AppConstants.ImageCollection.HorizontalSpace
+        let padding = Constants.ImageCollection.HorizontalSpace
         let collectionCellSize = collectionView.frame.size.width - (padding*(itemsPerRow+1))
         
         let width = collectionCellSize/itemsPerRow
@@ -198,16 +198,16 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                       layout collectionViewLayout: UICollectionViewLayout,
                       insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(
-            top: AppConstants.ImageCollection.VerticleSpace,
-            left: AppConstants.ImageCollection.HorizontalSpace,
-            bottom: AppConstants.ImageCollection.VerticleSpace,
-            right: AppConstants.ImageCollection.HorizontalSpace
+            top: Constants.ImageCollection.VerticleSpace,
+            left: Constants.ImageCollection.HorizontalSpace,
+            bottom: Constants.ImageCollection.VerticleSpace,
+            right: Constants.ImageCollection.HorizontalSpace
         )
     }
     
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return AppConstants.ImageCollection.HorizontalSpace
+        return Constants.ImageCollection.HorizontalSpace
     }
 }

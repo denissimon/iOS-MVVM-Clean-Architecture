@@ -177,7 +177,7 @@ class ImageSearchViewModel {
     }
     
     func getHeightOfCell(width: Float) -> Float {
-        let baseWidth = AppConstants.ImageCollection.BaseImageWidth
+        let baseWidth = Constants.ImageCollection.BaseImageWidth
         if width > baseWidth {
             return baseWidth
         } else {

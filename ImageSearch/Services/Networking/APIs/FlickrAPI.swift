@@ -23,15 +23,15 @@ extension FlickrAPI: EndpointType {
     }
     
     var baseURL: String {
-        return AppConstants.FlickrAPI.BaseURL
+        return Constants.FlickrAPI.BaseURL
     }
     
     var path: String {
         switch self {
         case .search(let string):
-            return "rest/?method=flickr.photos.search&api_key=\(AppConstants.FlickrAPI.ApiKey)&text=\(string)&per_page=\(AppConstants.FlickrAPI.PhotosPerRequest)&format=json&nojsoncallback=1"
+            return "rest/?method=flickr.photos.search&api_key=\(Constants.FlickrAPI.ApiKey)&text=\(string)&per_page=\(Constants.FlickrAPI.PhotosPerRequest)&format=json&nojsoncallback=1"
         case .getHotTagsList(let count):
-            return "rest/?method=flickr.tags.getHotList&api_key=\(AppConstants.FlickrAPI.ApiKey)&period=week&count=\(count)&format=json&nojsoncallback=1"
+            return "rest/?method=flickr.tags.getHotList&api_key=\(Constants.FlickrAPI.ApiKey)&period=week&count=\(count)&format=json&nojsoncallback=1"
         }
     }
     

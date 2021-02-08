@@ -24,7 +24,7 @@ class HotTagsListViewController: UIViewController {
         setup()
         
         // Get a list of hot tags
-        viewModel.getFlickrHotTags(of: AppConstants.FlickrAPI.HotTagsListCount)
+        viewModel.getFlickrHotTags(of: Constants.FlickrAPI.HotTagsListCount)
     }
     
     private func setup() {
@@ -40,7 +40,7 @@ class HotTagsListViewController: UIViewController {
         
         viewModel.showToast.addSubscriber(target: self, handler: { (self, text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: AppConstants.Other.ToastDuration, position: .bottom)
+                self.view.makeToast(text, duration: Constants.Other.ToastDuration, position: .bottom)
             }
         })
         

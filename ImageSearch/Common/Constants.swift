@@ -1,5 +1,5 @@
 //
-//  AppConstants.swift
+//  Constants.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 02/20/2020.
@@ -9,7 +9,7 @@
 import Foundation
 import UAObfuscatedString
 
-struct AppConstants {
+struct Constants {
     
     struct Storyboards {
         static let ImageSearchVCIdentifier = "ImageSearchViewController"

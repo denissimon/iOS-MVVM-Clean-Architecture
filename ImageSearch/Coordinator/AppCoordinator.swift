@@ -38,7 +38,7 @@ class AppCoordinator: AppCoordinatorProtocol {
     }
     
     private func getImageSearchController() -> ImageSearchViewController {
-        let imageSearchVC = UIStoryboard(name: "ImageSearch", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboards.ImageSearchVCIdentifier) as! ImageSearchViewController
+        let imageSearchVC = UIStoryboard(name: "ImageSearch", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.ImageSearchVCIdentifier) as! ImageSearchViewController
         let viewModel = ImageSearchViewModel(networkService: networkService)
         imageSearchVC.viewModel = viewModel
         imageSearchVC.showDetailsCoordinatorDelegate = self
@@ -50,7 +50,7 @@ class AppCoordinator: AppCoordinatorProtocol {
 extension AppCoordinator: ShowDetailsCoordinatorDelegate {
     
     func showDetailsScreen(of image: Image, header: String, from viewController: UIViewController) {
-        let imageDetailsVC = UIStoryboard(name: "ImageDetails", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboards.ImageDetailsVCIdentifier) as! ImageDetailsViewController
+        let imageDetailsVC = UIStoryboard(name: "ImageDetails", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.ImageDetailsVCIdentifier) as! ImageDetailsViewController
         let viewModel = ImageDetailsViewModel(networkService: networkService, tappedImage: image, headerTitle: header)
         imageDetailsVC.viewModel = viewModel
         imageDetailsVC.coordinatorDelegate = self
@@ -66,7 +66,7 @@ extension AppCoordinator: ShowDetailsCoordinatorDelegate {
 
 extension AppCoordinator: HotTagsListCoordinatorDelegate {
     func showListScreen(from viewController: UIViewController) {
-        let hotTagsListVC = UIStoryboard(name: "HotTagsList", bundle: nil).instantiateViewController(withIdentifier: AppConstants.Storyboards.HotTagsListVCIdentifier) as! HotTagsListViewController
+        let hotTagsListVC = UIStoryboard(name: "HotTagsList", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.HotTagsListVCIdentifier) as! HotTagsListViewController
         let viewModel = HotTagsListViewModel(networkService: networkService)
         hotTagsListVC.viewModel = viewModel
         hotTagsListVC.coordinatorDelegate = self
