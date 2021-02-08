@@ -18,7 +18,7 @@ protocol HotTagsListCoordinatorDelegate: class {
     func hideListScreen(tappedTag: String?, from viewController: UIViewController)
 }
 
-class AppCoordinator: AppCoordinatorProtocol {
+class AppCoordinator: Coordinator {
     
     var rootNavigationController: UINavigationController!
     let networkService: NetworkService!

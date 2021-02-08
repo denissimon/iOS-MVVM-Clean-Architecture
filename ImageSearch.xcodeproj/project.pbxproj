@@ -30,7 +30,7 @@
 		41AD9B8723FF512C001383AD /* ImageDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */; };
 		41AD9B8923FF51C3001383AD /* ImageDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */; };
 		41AD9B9723FFBD57001383AD /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9523FFBD57001383AD /* AppCoordinator.swift */; };
-		41AD9B9823FFBD57001383AD /* AppCoordinatorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9623FFBD57001383AD /* AppCoordinatorProtocol.swift */; };
+		41AD9B9823FFBD57001383AD /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9623FFBD57001383AD /* Coordinator.swift */; };
 		41AD9B9A23FFCFEC001383AD /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9923FFCFEC001383AD /* Constants.swift */; };
 		41CC247E24148B620053F23E /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CC247D24148B620053F23E /* RequestFactory.swift */; };
 		41CC2480241490570053F23E /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CC247F241490570053F23E /* FlickrAPI.swift */; };
@@ -81,7 +81,7 @@
 		41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewController.swift; sourceTree = "<group>"; };
 		41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewModel.swift; sourceTree = "<group>"; };
 		41AD9B9523FFBD57001383AD /* AppCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
-		41AD9B9623FFBD57001383AD /* AppCoordinatorProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinatorProtocol.swift; sourceTree = "<group>"; };
+		41AD9B9623FFBD57001383AD /* Coordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		41AD9B9923FFCFEC001383AD /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		41CC247D24148B620053F23E /* RequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestFactory.swift; sourceTree = "<group>"; };
 		41CC247F241490570053F23E /* FlickrAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrAPI.swift; sourceTree = "<group>"; };
@@ -308,8 +308,8 @@
 		41AD9B9423FFBD57001383AD /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
+				41AD9B9623FFBD57001383AD /* Coordinator.swift */,
 				41AD9B9523FFBD57001383AD /* AppCoordinator.swift */,
-				41AD9B9623FFBD57001383AD /* AppCoordinatorProtocol.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -504,7 +504,7 @@
 				41CC248324149EA30053F23E /* EndpointType.swift in Sources */,
 				4111D56223FDAEFF00B74B83 /* AppDelegate.swift in Sources */,
 				41FBC30024439D3000DD1480 /* Tags.swift in Sources */,
-				41AD9B9823FFBD57001383AD /* AppCoordinatorProtocol.swift in Sources */,
+				41AD9B9823FFBD57001383AD /* Coordinator.swift in Sources */,
 				41AD9B9723FFBD57001383AD /* AppCoordinator.swift in Sources */,
 				41FBC3052443CD6600DD1480 /* HTTPParams.swift in Sources */,
 				41AD9B9A23FFCFEC001383AD /* Constants.swift in Sources */,
