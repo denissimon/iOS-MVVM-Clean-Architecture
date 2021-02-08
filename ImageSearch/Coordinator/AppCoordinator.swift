@@ -24,9 +24,9 @@ class AppCoordinator: AppCoordinatorProtocol {
     let networkService: NetworkService!
     let window: UIWindow?
 
-    init(window: UIWindow?) {
+    init(window: UIWindow?, networkService: NetworkService) {
         self.window = window
-        networkService = NetworkService()
+        self.networkService = networkService
     }
     
     func start() {
