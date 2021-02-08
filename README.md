@@ -3,7 +3,7 @@
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/ImageSearch/blob/master/LICENSE)
 
-A demo app built using the MVVM-C + Storyboards architecture with Swift 5.
+A demo iOS app built using the MVVM-C + Storyboards architecture with Swift 5.
 
 This app gets images using Flickr API. It has three modules: ImageSearch, ImageDetails, HotTagsList.
 
