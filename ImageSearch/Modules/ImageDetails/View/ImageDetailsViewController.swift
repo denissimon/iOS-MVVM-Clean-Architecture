@@ -42,7 +42,7 @@ class ImageDetailsViewController: UIViewController {
         
         viewModel.showToast.addSubscriber(target: self, handler: { (self, text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: Constants.Other.ToastDuration, position: .bottom)
+                self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         })
         
