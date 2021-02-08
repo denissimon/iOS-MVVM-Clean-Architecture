@@ -150,7 +150,6 @@
 				41AD9B9423FFBD57001383AD /* Coordinator */,
 				41AD9B8423FF342B001383AD /* Common */,
 				41AD9B8323FF3353001383AD /* Services */,
-				41AD9B8223FF317D001383AD /* Models */,
 				41AD9B8123FF315F001383AD /* Modules */,
 				4111D56123FDAEFF00B74B83 /* AppDelegate.swift */,
 				4111D56A23FDAF0200B74B83 /* Assets.xcassets */,
@@ -172,11 +171,99 @@
 		418F33B82441324B00193C74 /* HotTagsList */ = {
 			isa = PBXGroup;
 			children = (
-				418F33B9244132A500193C74 /* HotTagsList.storyboard */,
-				418F33BB244132E800193C74 /* HotTagsListViewController.swift */,
-				418F33BD244133E600193C74 /* HotTagsListViewModel.swift */,
+				419B5B4425D13E5000443960 /* ViewModel */,
+				419B5B4325D13E3B00443960 /* View */,
 			);
 			path = HotTagsList;
+			sourceTree = "<group>";
+		};
+		419B5B3B25D13BE500443960 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4111D56723FDAEFF00B74B83 /* ImageSearch.storyboard */,
+				4111D56523FDAEFF00B74B83 /* ImageSearchViewController.swift */,
+				41F1E63124009BA60014672C /* ImagesDataSource.swift */,
+				419B5B3C25D13BF600443960 /* Cells */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		419B5B3C25D13BF600443960 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				4111D58423FDB46D00B74B83 /* CollectionViewHeader.swift */,
+				4111D58A23FDCD6B00B74B83 /* CollectionViewCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		419B5B3D25D13D5200443960 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				4111D58623FDC1D700B74B83 /* ImageSearchViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		419B5B3E25D13DA300443960 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				41AD9B7F23FF3134001383AD /* Result.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		419B5B3F25D13DB200443960 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4111D58F23FDD81E00B74B83 /* Image.swift */,
+				4111D58C23FDD81D00B74B83 /* ImageSearchResults.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		419B5B4025D13DCB00443960 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				418F33B3243FEEF100193C74 /* ImageDetails.storyboard */,
+				41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */,
+				418F33BF2441E8E200193C74 /* TagsDataSource.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		419B5B4125D13DF800443960 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		419B5B4225D13E0900443960 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				41FBC2FD2442159700DD1480 /* Tag.swift */,
+				41FBC2FF24439D3000DD1480 /* Tags.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		419B5B4325D13E3B00443960 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				418F33B9244132A500193C74 /* HotTagsList.storyboard */,
+				418F33BB244132E800193C74 /* HotTagsListViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		419B5B4425D13E5000443960 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				418F33BD244133E600193C74 /* HotTagsListViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		41AD9B8123FF315F001383AD /* Modules */ = {
@@ -187,18 +274,6 @@
 				418F33B82441324B00193C74 /* HotTagsList */,
 			);
 			path = Modules;
-			sourceTree = "<group>";
-		};
-		41AD9B8223FF317D001383AD /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				41AD9B7F23FF3134001383AD /* Result.swift */,
-				4111D58F23FDD81E00B74B83 /* Image.swift */,
-				4111D58C23FDD81D00B74B83 /* ImageSearchResults.swift */,
-				41FBC2FD2442159700DD1480 /* Tag.swift */,
-				41FBC2FF24439D3000DD1480 /* Tags.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		41AD9B8323FF3353001383AD /* Services */ = {
@@ -215,8 +290,7 @@
 				41AD9B9923FFCFEC001383AD /* AppConstants.swift */,
 				4111D59423FE1DDE00B74B83 /* Helpers.swift */,
 				4111D59623FE200D00B74B83 /* Extensions.swift */,
-				41F1E63124009BA60014672C /* ImagesDataSource.swift */,
-				418F33BF2441E8E200193C74 /* TagsDataSource.swift */,
+				419B5B3E25D13DA300443960 /* Models */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -224,9 +298,9 @@
 		41AD9B8523FF3445001383AD /* ImageDetails */ = {
 			isa = PBXGroup;
 			children = (
-				418F33B3243FEEF100193C74 /* ImageDetails.storyboard */,
-				41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */,
-				41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */,
+				419B5B4025D13DCB00443960 /* View */,
+				419B5B4125D13DF800443960 /* ViewModel */,
+				419B5B4225D13E0900443960 /* Models */,
 			);
 			path = ImageDetails;
 			sourceTree = "<group>";
@@ -243,11 +317,9 @@
 		41E9A6B523FED04C00CDE3D6 /* ImageSearch */ = {
 			isa = PBXGroup;
 			children = (
-				4111D56723FDAEFF00B74B83 /* ImageSearch.storyboard */,
-				4111D58423FDB46D00B74B83 /* CollectionViewHeader.swift */,
-				4111D58A23FDCD6B00B74B83 /* CollectionViewCell.swift */,
-				4111D56523FDAEFF00B74B83 /* ImageSearchViewController.swift */,
-				4111D58623FDC1D700B74B83 /* ImageSearchViewModel.swift */,
+				419B5B3B25D13BE500443960 /* View */,
+				419B5B3D25D13D5200443960 /* ViewModel */,
+				419B5B3F25D13DB200443960 /* Models */,
 			);
 			path = ImageSearch;
 			sourceTree = "<group>";
