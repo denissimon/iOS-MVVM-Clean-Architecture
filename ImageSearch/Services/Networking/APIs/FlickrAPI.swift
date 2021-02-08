@@ -22,17 +22,17 @@ extension FlickrAPI: EndpointType {
         }
     }
     
-    var baseURL: String {
-        return Constants.FlickrAPI.baseURL
-    }
-    
     var path: String {
         switch self {
         case .search(let string):
-            return "rest/?method=flickr.photos.search&api_key=\(Constants.FlickrAPI.apiKey)&text=\(string)&per_page=\(Constants.FlickrAPI.photosPerRequest)&format=json&nojsoncallback=1"
+            return "/rest/?method=flickr.photos.search&api_key=\(Constants.FlickrAPI.apiKey)&text=\(string)&per_page=\(Constants.FlickrAPI.photosPerRequest)&format=json&nojsoncallback=1"
         case .getHotTagsList(let count):
-            return "rest/?method=flickr.tags.getHotList&api_key=\(Constants.FlickrAPI.apiKey)&period=week&count=\(count)&format=json&nojsoncallback=1"
+            return "/rest/?method=flickr.tags.getHotList&api_key=\(Constants.FlickrAPI.apiKey)&period=week&count=\(count)&format=json&nojsoncallback=1"
         }
+    }
+    
+    var baseURL: String {
+        return Constants.FlickrAPI.baseURL
     }
     
     var constructedURL: URL? {
