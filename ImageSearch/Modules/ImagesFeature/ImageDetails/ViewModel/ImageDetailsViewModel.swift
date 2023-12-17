@@ -35,6 +35,7 @@ class ImageDetailsViewModel {
         } else {
             self.showToast.trigger(msg)
         }
+        self.activityIndicatorVisibility.value = false
     }
     
     func loadLargeImage() {
@@ -45,7 +46,7 @@ class ImageDetailsViewModel {
         
         if let url = tappedImage.getImageURL("b") {
             
-            self.activityIndicatorVisibility.value = true
+            activityIndicatorVisibility.value = true
             
             networkService.get(url: url) { [weak self] (result) in
                 guard let self = self else { return }
