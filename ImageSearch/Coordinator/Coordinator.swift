@@ -7,6 +7,10 @@
 
 import UIKit
 
+public typealias CoordinatorStartCompletionHandler = () -> ()
+
 protocol Coordinator {
-    func start()
+    var navigationController: UINavigationController { get }
+    func start(completionHandler: CoordinatorStartCompletionHandler?)
 }
+

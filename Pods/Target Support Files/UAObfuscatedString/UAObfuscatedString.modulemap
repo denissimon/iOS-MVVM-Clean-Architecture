@@ -1,6 +1,0 @@
-framework module UAObfuscatedString {
-  umbrella header "UAObfuscatedString-umbrella.h"
-
-  export *
-  module * { export * }
-}

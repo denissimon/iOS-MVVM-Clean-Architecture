@@ -17,3 +17,9 @@ extension String {
         return self.removingPercentEncoding
     }
 }
+
+extension Array where Element == ImageWrapper {
+    func toUIImageArray() -> [UIImage] {
+        return self.map { $0.image }
+    }
+}

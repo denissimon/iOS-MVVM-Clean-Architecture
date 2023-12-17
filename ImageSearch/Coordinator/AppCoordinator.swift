@@ -7,77 +7,23 @@
 
 import UIKit
 
-protocol ShowDetailsCoordinatorDelegate: class {
-    func showDetailsScreen(of image: Image, header: String, from viewController: UIViewController)
-    func hideDetailsScreen(from viewController: UIViewController)
-}
-
-protocol HotTagsListCoordinatorDelegate: class {
-    func showListScreen(from viewController: UIViewController)
-    func hideListScreen(tappedTag: String?, from viewController: UIViewController)
-}
-
+// Handles the app's flow
 class AppCoordinator: Coordinator {
     
-    var rootNavigationController: UINavigationController!
-    let networkService: NetworkService!
-    let window: UIWindow?
-
-    init(window: UIWindow?, networkService: NetworkService) {
-        self.window = window
-        self.networkService = networkService
-    }
-    
-    func start() {
-        guard let window = window else { return }
+    // MARK: - Properties
+    lazy var navigationController = UINavigationController()
+    let dependencyContainer: DIContainer
         
-        rootNavigationController = UINavigationController(rootViewController: getImageSearchController())
-        window.rootViewController = rootNavigationController
-        window.makeKeyAndVisible()
+    // MARK: - Initializer
+    init(dependencyContainer: DIContainer) {
+        self.dependencyContainer = dependencyContainer
     }
     
-    private func getImageSearchController() -> ImageSearchViewController {
-        let imageSearchVC = UIStoryboard(name: "ImageSearch", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.imageSearchVCIdentifier) as! ImageSearchViewController
-        let viewModel = ImageSearchViewModel(networkService: networkService)
-        imageSearchVC.viewModel = viewModel
-        imageSearchVC.showDetailsCoordinatorDelegate = self
-        imageSearchVC.hotTagsListCoordinatorDelegate = self
-        return imageSearchVC
+    // MARK: - Methods
+    func start(completionHandler: CoordinatorStartCompletionHandler?) {
+        // We can use MainCoordinator as a coordinator for the entire app, as well as for a first tab (with a separate UINavigationController each) or even just for an app feature such as ImageFeature (in this case it's better to rename MainCoordinator to the feature name, and to move it to the feature folder)
+        let mainCoordinator = dependencyContainer.makeMainCoordinator(navigationController: navigationController)
+        mainCoordinator.start(completionHandler: nil)
     }
 }
 
-extension AppCoordinator: ShowDetailsCoordinatorDelegate {
-    
-    func showDetailsScreen(of image: Image, header: String, from viewController: UIViewController) {
-        let imageDetailsVC = UIStoryboard(name: "ImageDetails", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.imageDetailsVCIdentifier) as! ImageDetailsViewController
-        let viewModel = ImageDetailsViewModel(networkService: networkService, tappedImage: image, headerTitle: header)
-        imageDetailsVC.viewModel = viewModel
-        imageDetailsVC.coordinatorDelegate = self
-        
-        let imageDetailsNC = UINavigationController(rootViewController: imageDetailsVC)
-        viewController.show(imageDetailsNC, sender: nil)
-    }
-    
-    func hideDetailsScreen(from viewController: UIViewController) {
-        viewController.dismiss(animated: true, completion: nil)
-    }
-}
-
-extension AppCoordinator: HotTagsListCoordinatorDelegate {
-    func showListScreen(from viewController: UIViewController) {
-        let hotTagsListVC = UIStoryboard(name: "HotTagsList", bundle: nil).instantiateViewController(withIdentifier: Constants.Storyboards.hotTagsListVCIdentifier) as! HotTagsListViewController
-        let viewModel = HotTagsListViewModel(networkService: networkService)
-        hotTagsListVC.viewModel = viewModel
-        hotTagsListVC.coordinatorDelegate = self
-        
-        viewController.navigationController?.pushViewController(hotTagsListVC, animated: true)
-    }
-    
-    func hideListScreen(tappedTag: String?, from viewController: UIViewController) {
-        if let tappedTag = tappedTag {
-            let imageSearchVC = viewController.navigationController?.viewControllers.first as! ImageSearchViewController
-            imageSearchVC.viewModel.searchFlickr(for: tappedTag)
-        }
-        viewController.navigationController?.popViewController(animated: true)
-    }
-}
