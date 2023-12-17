@@ -53,6 +53,7 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         viewModel.updateData.subscribe(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
+            self.scrollTop()
         }
         
         viewModel.showToast.subscribe(self, queue: .main) { (text) in
@@ -64,14 +65,6 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         viewModel.resetSearchBar.subscribe(self) { _ in
             self.searchBar.text = nil
             self.searchBar.resignFirstResponder()
-        }
-        
-        viewModel.scrollTop.subscribe(self, queue: .main) { _ in
-            if let attributes = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
-                }
-            }
         }
         
         // Bindings
@@ -116,6 +109,14 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         
         if #available(iOS 11.0, *) {
             navigationItem.backButtonTitle = ""
+        }
+    }
+    
+    private func scrollTop() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            if let attributes = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
+                self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
+            }
         }
     }
     

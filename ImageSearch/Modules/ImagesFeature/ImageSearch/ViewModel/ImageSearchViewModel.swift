@@ -23,7 +23,6 @@ class ImageSearchViewModel {
     let updateData = Event<[ImageSearchResults]>()
     let showToast = Event<String>()
     let resetSearchBar = Event<Bool?>()
-    let scrollTop = Event<Bool?>()
     
     // Bindings
     let activityIndicatorVisibility = Observable<Bool>(false)
@@ -112,7 +111,6 @@ class ImageSearchViewModel {
                     self.lastTag = searchString
                     
                     self.activityIndicatorVisibility.value = false
-                    self.scrollTop.trigger(nil)
                 } catch {
                     self.showErrorToast(error.localizedDescription)
                 }
