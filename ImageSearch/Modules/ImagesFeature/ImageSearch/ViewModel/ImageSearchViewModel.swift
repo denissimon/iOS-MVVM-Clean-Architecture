@@ -13,9 +13,7 @@ class ImageSearchViewModel {
     
     private(set) var data = [ImageSearchResults]() {
         didSet {
-            DispatchQueue.main.async {
-                self.updateData.trigger(self.data)
-            }
+            self.updateData.trigger(self.data)
         }
     }
     
@@ -23,8 +21,8 @@ class ImageSearchViewModel {
     
     // Delegates
     let updateData = Event<[ImageSearchResults]>()
-    let resetSearchBar = Event<Bool?>()
     let showToast = Event<String>()
+    let resetSearchBar = Event<Bool?>()
     let scrollTop = Event<Bool?>()
     
     // Bindings
@@ -36,14 +34,12 @@ class ImageSearchViewModel {
     }
     
     func showErrorToast(_ msg: String = "") {
-        DispatchQueue.main.async {
-            if msg.isEmpty {
-                self.showToast.trigger("Network error")
-            } else {
-                self.showToast.trigger(msg)
-            }
-            self.activityIndicatorVisibility.value = false
+        if msg.isEmpty {
+            self.showToast.trigger("Network error")
+        } else {
+            self.showToast.trigger(msg)
         }
+        self.activityIndicatorVisibility.value = false
     }
     
     func searchFlickr(for searchString: String) {
@@ -115,12 +111,8 @@ class ImageSearchViewModel {
                     self.data.insert(resultsWrapper, at: 0)
                     self.lastTag = searchString
                     
-                    DispatchQueue.main.async {
-                        self.activityIndicatorVisibility.value = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                            self.scrollTop.trigger(nil)
-                        }
-                    }
+                    self.activityIndicatorVisibility.value = false
+                    self.scrollTop.trigger(nil)
                 } catch {
                     self.showErrorToast(error.localizedDescription)
                 }

@@ -37,7 +37,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     
     private func setup() {
         // Delegates
-        viewModel.updateData.subscribe(self) { (largeImage) in
+        viewModel.updateData.subscribe(self, queue: .main) { (largeImage) in
             self.imageView.image = largeImage.image
         }
             
@@ -48,14 +48,14 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
             self.present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.showToast.subscribe(self) { (text) in
+        viewModel.showToast.subscribe(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
         // Bindings
-        viewModel.activityIndicatorVisibility.bind(self) { (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.activityIndicator.startAnimating()
             } else {

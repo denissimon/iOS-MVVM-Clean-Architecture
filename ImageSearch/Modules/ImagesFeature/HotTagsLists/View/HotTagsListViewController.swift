@@ -40,19 +40,19 @@ class HotTagsListViewController: UIViewController, Storyboarded {
         tableView.delegate = self
         
         // Delegates
-        viewModel.updateData.subscribe(self) { (data) in
+        viewModel.updateData.subscribe(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.tableView.reloadData()
         }
         
-        viewModel.showToast.subscribe(self) { (text) in
+        viewModel.showToast.subscribe(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
         // Bindings
-        viewModel.activityIndicatorVisibility.bind(self) { (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.view.makeToastActivity(.center)
             } else {

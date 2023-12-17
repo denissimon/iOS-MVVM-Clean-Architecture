@@ -22,9 +22,7 @@ class HotTagsListViewModel {
     
     private(set) var data = [Tag]() {
         didSet {
-            DispatchQueue.main.async {
-                self.updateData.trigger(self.data)
-            }
+            self.updateData.trigger(self.data)
         }
     }
     
@@ -45,14 +43,12 @@ class HotTagsListViewModel {
     }
     
     func showErrorToast(_ msg: String = "") {
-        DispatchQueue.main.async {
-            if msg.isEmpty {
-                self.showToast.trigger("Network error")
-            } else {
-                self.showToast.trigger(msg)
-            }
-            self.activityIndicatorVisibility.value = false
+        if msg.isEmpty {
+            self.showToast.trigger("Network error")
+        } else {
+            self.showToast.trigger(msg)
         }
+        self.activityIndicatorVisibility.value = false
     }
     
     func getFlickrHotTags() {
@@ -84,9 +80,7 @@ class HotTagsListViewModel {
                 self.data = allHotTags
             }
             
-            DispatchQueue.main.async {
-                self.activityIndicatorVisibility.value = false
-            }
+            self.activityIndicatorVisibility.value = false
         }
     }
     

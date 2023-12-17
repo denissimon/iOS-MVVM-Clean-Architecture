@@ -50,30 +50,32 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         searchBar.delegate = self
         
         // Delegates
-        viewModel.updateData.subscribe(self) { (data) in
+        viewModel.updateData.subscribe(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
         }
-          
-        viewModel.resetSearchBar.subscribe(self) { _ in
-            self.searchBar.text = nil
-            self.searchBar.resignFirstResponder()
-        }
         
-        viewModel.showToast.subscribe(self) { (text) in
+        viewModel.showToast.subscribe(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
-        viewModel.scrollTop.subscribe(self) { _ in
+        viewModel.resetSearchBar.subscribe(self) { _ in
+            self.searchBar.text = nil
+            self.searchBar.resignFirstResponder()
+        }
+        
+        viewModel.scrollTop.subscribe(self, queue: .main) { _ in
             if let attributes = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
-                self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                    self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
+                }
             }
         }
         
         // Bindings
-        viewModel.activityIndicatorVisibility.bind(self) { (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.view.makeToastActivity(.center)
                 self.searchBar.isUserInteractionEnabled = false
@@ -98,7 +100,6 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         // Other
         // Configure Refresh Control
         refreshControl.addTarget(self, action: #selector(refreshImageData(_:)), for: .valueChanged)
-
     }
     
     private func prepareUI() {

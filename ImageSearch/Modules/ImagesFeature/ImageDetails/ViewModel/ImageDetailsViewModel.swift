@@ -30,12 +30,10 @@ class ImageDetailsViewModel {
     }
     
     func showErrorToast(_ msg: String = "") {
-        DispatchQueue.main.async {
-            if msg.isEmpty {
-                self.showToast.trigger("Network error")
-            } else {
-                self.showToast.trigger(msg)
-            }
+        if msg.isEmpty {
+            self.showToast.trigger("Network error")
+        } else {
+            self.showToast.trigger(msg)
         }
     }
     
@@ -55,11 +53,10 @@ class ImageDetailsViewModel {
                 switch result {
                 case .done(let data):
                     if let returnedImage = Supportive.getImage(data: data) {
-                        self.tappedImage.largeImage = ImageWrapper(image: returnedImage)
-                        DispatchQueue.main.async {
-                            self.updateData.trigger(ImageWrapper(image: returnedImage))
-                            self.activityIndicatorVisibility.value = false
-                        }
+                        let imageWrapper = ImageWrapper(image: returnedImage)
+                        self.tappedImage.largeImage = imageWrapper
+                        self.updateData.trigger(imageWrapper)
+                        self.activityIndicatorVisibility.value = false
                     } else {
                         self.showErrorToast()
                     }
