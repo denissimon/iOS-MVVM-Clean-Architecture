@@ -31,7 +31,7 @@
                                                 <segment title="All Times"/>
                                             </segments>
                                             <connections>
-                                                <action selector="onTagsTypeChange:" destination="hSa-jf-dVK" eventType="valueChanged" id="hv0-kT-hYw"/>
+                                                <action selector="onSelectedSegmentChange:" destination="hSa-jf-dVK" eventType="valueChanged" id="Lk7-a6-Ccd"/>
                                             </connections>
                                         </segmentedControl>
                                     </subviews>

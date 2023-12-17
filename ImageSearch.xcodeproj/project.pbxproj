@@ -191,19 +191,19 @@
 				419B5B3E25D13DA300443960 /* Models */,
 				41E9A6B523FED04C00CDE3D6 /* ImageSearch */,
 				41AD9B8523FF3445001383AD /* ImageDetails */,
-				418F33B82441324B00193C74 /* HotTagsLists */,
+				418F33B82441324B00193C74 /* HotTagsList */,
 			);
 			path = ImagesFeature;
 			sourceTree = "<group>";
 		};
-		418F33B82441324B00193C74 /* HotTagsLists */ = {
+		418F33B82441324B00193C74 /* HotTagsList */ = {
 			isa = PBXGroup;
 			children = (
 				419B5B4325D13E3B00443960 /* View */,
 				419B5B4425D13E5000443960 /* ViewModel */,
 				419B5B4225D13E0900443960 /* Models */,
 			);
-			path = HotTagsLists;
+			path = HotTagsList;
 			sourceTree = "<group>";
 		};
 		419B5B3B25D13BE500443960 /* View */ = {

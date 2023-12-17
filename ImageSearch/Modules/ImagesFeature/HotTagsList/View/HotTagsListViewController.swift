@@ -63,8 +63,8 @@ class HotTagsListViewController: UIViewController, Storyboarded {
     
     // MARK: - Actions
     
-    @IBAction func onTagsTypeChange(_ sender: UISegmentedControl) {
-        viewModel.onTagsTypeChange(sender.selectedSegmentIndex)
+    @IBAction func onSelectedSegmentChange(_ sender: UISegmentedControl) {
+        viewModel.onSelectedSegmentChange(sender.selectedSegmentIndex)
     }
     
     @IBAction func onDoneButton(_ sender: Any) {
@@ -77,7 +77,7 @@ class HotTagsListViewController: UIViewController, Storyboarded {
 extension HotTagsListViewController: UITableViewDelegate {
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tagName = viewModel.getTagName(for: indexPath)
+        let tagName = viewModel.data[indexPath.row].name
         viewModel.didSelect.trigger(ImageQuery(query: tagName))
         coordinatorActions?.closeHotTagsList(self)
     }

@@ -7,10 +7,9 @@
 
 import Foundation
 
-enum HotTagsType {
+enum SegmentType {
     case week
     case allTimes
-    case all
 }
 
 class HotTagsListViewModel {
@@ -18,7 +17,9 @@ class HotTagsListViewModel {
     let networkService: NetworkService
     let didSelect: Event<ImageQuery>
     
-    var dataForWeekTags = [Tag]()
+    var dataForWeekFlickrTags = [Tag]()
+    
+    var selectedSegment: SegmentType = .week
     
     private(set) var data = [Tag]() {
         didSet {
@@ -52,7 +53,6 @@ class HotTagsListViewModel {
     }
     
     func getFlickrHotTags() {
-        
         self.activityIndicatorVisibility.value = true
         
         let endpoint = FlickrAPI.getHotTagsList
@@ -60,31 +60,30 @@ class HotTagsListViewModel {
         networkService.requestEndpoint(endpoint, type: Tags.self) { [weak self] (result) in
             guard let self = self else { return }
             
+            var allHotFlickrTags = [Tag]()
+            
             switch result {
             case .done(let tags):
-                var allHotTags = [Tag]()
-                if tags.stat != "ok" {
-                    allHotTags = self.composeHotTags(type: .week, weekHotTags: nil)
-                } else {
-                    allHotTags = self.composeHotTags(type: .week, weekHotTags: tags.hottags.tag)
+                if tags.stat == "ok" {
+                    allHotFlickrTags = self.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag)
                 }
-                self.dataForWeekTags = allHotTags
-                self.data = allHotTags
+                self.dataForWeekFlickrTags = allHotFlickrTags
+                self.activityIndicatorVisibility.value = false
             case .error(let error):
                 if error.0 != nil {
                     self.showErrorToast(error.0!.localizedDescription)
                 } else {
                     self.showErrorToast()
                 }
-                let allHotTags = self.composeHotTags(type: .week, weekHotTags: nil)
-                self.data = allHotTags
             }
             
-            self.activityIndicatorVisibility.value = false
+            if self.selectedSegment == .week {
+                self.data = allHotFlickrTags
+            }
         }
     }
     
-    private func composeHotTags(type: HotTagsType, weekHotTags: [Tag]?) -> [Tag] {
+    private func composeFlickrHotTags(type: SegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
         let allTimesHotTagsStr = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","bw","old","macro","music","new","moon","orange","garden","blackandwhite","home"]
         var allTimesHotTags = [Tag]()
         for tag in allTimesHotTagsStr {
@@ -100,24 +99,16 @@ class HotTagsListViewModel {
             }
         case .allTimes:
             return allTimesHotTags
-        default:
-            if weekHotTags != nil {
-                return allTimesHotTags + weekHotTags!
-            } else {
-                return allTimesHotTags
-            }
         }
     }
     
-    func getTagName(for indexPath: IndexPath) -> String {
-        return data[indexPath.row].name
-    }
-    
-    func onTagsTypeChange(_ index: Int) {
+    func onSelectedSegmentChange(_ index: Int) {
         if index == 0 {
-            data = dataForWeekTags
+            selectedSegment = .week
+            data = dataForWeekFlickrTags
         } else if index == 1 {
-            data = composeHotTags(type: .allTimes, weekHotTags: nil)
+            selectedSegment = .allTimes
+            data = composeFlickrHotTags(type: .allTimes)
         }
     }
 }
