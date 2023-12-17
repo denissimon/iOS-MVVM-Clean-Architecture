@@ -2,7 +2,7 @@
 //  MainCoordinator.swift
 //  ImageSearch
 //
-//  Created by Denis Simon on 15.12.2023.
+//  Created by Denis Simon on 12/15/2023.
 //
 
 import UIKit

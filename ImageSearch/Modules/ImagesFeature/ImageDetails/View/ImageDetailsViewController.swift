@@ -14,7 +14,6 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var viewModel: ImageDetailsViewModel!
-    //weak var coordinatorDelegate: ShowDetailsCoordinatorDelegate!
     
     static func instantiate(viewModel: ImageDetailsViewModel) -> ImageDetailsViewController {
         let vc = Self.instantiate(from: .imageDetails)

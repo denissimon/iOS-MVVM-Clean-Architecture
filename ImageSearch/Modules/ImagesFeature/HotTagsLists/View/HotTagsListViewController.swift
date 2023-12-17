@@ -16,7 +16,6 @@ class HotTagsListViewController: UIViewController, Storyboarded {
     @IBOutlet weak var tableView: UITableView!
     
     var viewModel: HotTagsListViewModel!
-    //weak var coordinatorDelegate: HotTagsListCoordinatorDelegate!
     
     private var dataSource: TagsDataSource?
     
@@ -31,10 +30,7 @@ class HotTagsListViewController: UIViewController, Storyboarded {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setup()
-        
-        // Get a list of hot tags
         viewModel.getFlickrHotTags()
     }
     
@@ -82,7 +78,6 @@ extension HotTagsListViewController: UITableViewDelegate {
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tagName = viewModel.getTagName(for: indexPath)
-        //viewModel.didSelect(ImageQuery(query: tagName))
         viewModel.didSelect.trigger(ImageQuery(query: tagName))
         coordinatorActions?.closeHotTagsList(self)
     }

@@ -180,8 +180,6 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedImage = viewModel.getImage(for: (indexPath.section, indexPath.row))
-        //let header = viewModel.getSearchString(for: indexPath.section)
-        //self.showDetailsCoordinatorDelegate.showDetailsScreen(of: selectedImage, header: header, from: self)
         coordinatorActions?.showImageDetails(selectedImage)
     }
 }

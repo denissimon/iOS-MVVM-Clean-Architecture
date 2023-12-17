@@ -2,7 +2,7 @@
 //  Storyboarded.swift
 //  ImageSearch
 //
-//  Created by Denis Simon on 16.12.2023.
+//  Created by Denis Simon on 12/16/2023.
 //
 
 import UIKit
