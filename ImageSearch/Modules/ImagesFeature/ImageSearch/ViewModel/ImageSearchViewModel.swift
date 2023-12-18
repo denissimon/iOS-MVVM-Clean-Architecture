@@ -11,22 +11,14 @@ class ImageSearchViewModel {
     
     var networkService: NetworkService
     
-    private(set) var data = [ImageSearchResults]() {
-        didSet {
-            self.updateData.trigger(self.data)
-        }
-    }
-    
     var lastTag = String()
     
-    // Delegates
-    let updateData = Event<[ImageSearchResults]>()
-    let showToast = Event<String>()
-    let resetSearchBar = Event<Bool?>()
-    
     // Bindings
-    let activityIndicatorVisibility = Observable<Bool>(false)
-    let collectionViewTopConstraint = Observable<Float>(0)
+    let data: Observable<[ImageSearchResults]> = Observable([])
+    let showToast: Observable<String> = Observable("")
+    let resetSearchBar: Observable<Bool?> = Observable(nil)
+    let activityIndicatorVisibility: Observable<Bool> = Observable(false)
+    let collectionViewTopConstraint: Observable<Float> = Observable(0)
     
     init(networkService: NetworkService) {
         self.networkService = networkService
@@ -34,9 +26,9 @@ class ImageSearchViewModel {
     
     func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.trigger("Network error")
+            self.showToast.value = "Network error"
         } else {
-            self.showToast.trigger(msg)
+            self.showToast.value = msg
         }
         self.activityIndicatorVisibility.value = false
     }
@@ -107,7 +99,7 @@ class ImageSearchViewModel {
                     }
 
                     let resultsWrapper = ImageSearchResults(searchString: searchString, searchResults: photosFound)
-                    self.data.insert(resultsWrapper, at: 0)
+                    self.data.value.insert(resultsWrapper, at: 0)
                     self.lastTag = searchString
                     
                     self.activityIndicatorVisibility.value = false
@@ -128,7 +120,7 @@ class ImageSearchViewModel {
         guard let searchBarText = searchBarText else { return }
         if !searchBarText.isEmpty {
             searchFlickr(for: searchBarText)
-            resetSearchBar.trigger(nil)
+            resetSearchBar.value = nil
         }
     }
     
@@ -145,15 +137,7 @@ class ImageSearchViewModel {
     }
     
     func getDataSource() -> ImagesDataSource {
-        return ImagesDataSource(with: data)
-    }
-    
-    func getImage(for indexPath: (section: Int, row: Int)) -> Image {
-        return data[indexPath.section].searchResults[indexPath.row]
-    }
-    
-    func getSearchString(for section: Int) -> String {
-        return data[section].searchString
+        return ImagesDataSource(with: data.value)
     }
     
     func getHeightOfCell(width: Float) -> Float {

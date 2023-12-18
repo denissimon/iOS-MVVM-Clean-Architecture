@@ -49,25 +49,24 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         collectionView.delegate = self
         searchBar.delegate = self
         
-        // Delegates
-        viewModel.updateData.subscribe(self, queue: .main) { (data) in
+        // Bindings
+        viewModel.data.bind(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
             self.scrollTop()
         }
         
-        viewModel.showToast.subscribe(self, queue: .main) { (text) in
+        viewModel.showToast.bind(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
-        viewModel.resetSearchBar.subscribe(self) { _ in
+        viewModel.resetSearchBar.bind(self) { _ in
             self.searchBar.text = nil
             self.searchBar.resignFirstResponder()
         }
         
-        // Bindings
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.view.makeToastActivity(.center)
@@ -181,7 +180,7 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedImage = viewModel.getImage(for: (indexPath.section, indexPath.row))
+        let selectedImage = viewModel.data.value[indexPath.section].searchResults[indexPath.row]
         coordinatorActions?.showImageDetails(selectedImage)
     }
 }

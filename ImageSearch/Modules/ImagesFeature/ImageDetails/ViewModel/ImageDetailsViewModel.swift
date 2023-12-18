@@ -12,12 +12,10 @@ class ImageDetailsViewModel {
     var networkService: NetworkService
     var tappedImage: Image
     
-    // Delegates
-    let updateData = Event<ImageWrapper>()
-    let shareImage = Event<[ImageWrapper]>()
-    let showToast = Event<String>()
-    
     // Bindings
+    let updateData: Observable<ImageWrapper?> = Observable(nil)
+    let shareImage: Observable<[ImageWrapper]> = Observable([])
+    let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility = Observable<Bool>(false)
     
     init(networkService: NetworkService, tappedImage: Image) {
@@ -31,16 +29,16 @@ class ImageDetailsViewModel {
     
     func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.trigger("Network error")
+            self.showToast.value = "Network error"
         } else {
-            self.showToast.trigger(msg)
+            self.showToast.value = msg
         }
         self.activityIndicatorVisibility.value = false
     }
     
     func loadLargeImage() {
         if let largeImage = tappedImage.largeImage {
-            updateData.trigger(largeImage)
+            updateData.value = largeImage
             return
         }
         
@@ -56,7 +54,7 @@ class ImageDetailsViewModel {
                     if let returnedImage = Supportive.getImage(data: data) {
                         let imageWrapper = ImageWrapper(image: returnedImage)
                         self.tappedImage.largeImage = imageWrapper
-                        self.updateData.trigger(imageWrapper)
+                        self.updateData.value = imageWrapper
                         self.activityIndicatorVisibility.value = false
                     } else {
                         self.showErrorToast()
@@ -80,9 +78,9 @@ class ImageDetailsViewModel {
     
     func onShareButton() {
         if let largeImage = tappedImage.largeImage {
-            shareImage.trigger([largeImage])
+            shareImage.value = [largeImage]
         } else {
-            self.showToast.trigger("No image to share")
+            self.showToast.value = "No image to share"
         }
     }
 }

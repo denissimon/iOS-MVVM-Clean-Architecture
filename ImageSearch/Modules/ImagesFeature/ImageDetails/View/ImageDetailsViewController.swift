@@ -36,25 +36,26 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     }
     
     private func setup() {
-        // Delegates
-        viewModel.updateData.subscribe(self, queue: .main) { (largeImage) in
-            self.imageView.image = largeImage.image
+        // Bindings
+        viewModel.updateData.bind(self, queue: .main) { (largeImage) in
+            if let largeImage = largeImage {
+                self.imageView.image = largeImage.image
+            }
         }
-            
-        viewModel.shareImage.subscribe(self) { (imageWrapperArray) in
+        
+        viewModel.shareImage.bind(self) { (imageWrapperArray) in
             let activityVC = UIActivityViewController(activityItems: imageWrapperArray.toUIImageArray(), applicationActivities: nil)
             activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
             activityVC.popoverPresentationController?.permittedArrowDirections = .up
             self.present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.showToast.subscribe(self, queue: .main) { (text) in
+        viewModel.showToast.bind(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
-        // Bindings
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.activityIndicator.startAnimating()

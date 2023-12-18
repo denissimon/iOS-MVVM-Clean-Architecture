@@ -21,18 +21,10 @@ class HotTagsListViewModel {
     
     var selectedSegment: SegmentType = .week
     
-    private(set) var data = [Tag]() {
-        didSet {
-            self.updateData.trigger(self.data)
-        }
-    }
-    
-    // Delegates
-    let updateData = Event<[Tag]>()
-    let showToast = Event<String>()
-    
     // Bindings
-    let activityIndicatorVisibility = Observable<Bool>(false)
+    let data: Observable<[Tag]> = Observable([])
+    let showToast: Observable<String> = Observable("")
+    let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
     init(networkService: NetworkService, didSelect: Event<ImageQuery>) {
         self.networkService = networkService
@@ -40,14 +32,14 @@ class HotTagsListViewModel {
     }
     
     func getDataSource() -> TagsDataSource {
-        return TagsDataSource(with: data)
+        return TagsDataSource(with: data.value)
     }
     
     func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.trigger("Network error")
+            self.showToast.value = "Network error"
         } else {
-            self.showToast.trigger(msg)
+            self.showToast.value = msg
         }
         self.activityIndicatorVisibility.value = false
     }
@@ -78,7 +70,7 @@ class HotTagsListViewModel {
             }
             
             if self.selectedSegment == .week {
-                self.data = allHotFlickrTags
+                self.data.value = allHotFlickrTags
             }
         }
     }
@@ -105,10 +97,16 @@ class HotTagsListViewModel {
     func onSelectedSegmentChange(_ index: Int) {
         if index == 0 {
             selectedSegment = .week
-            data = dataForWeekFlickrTags
+            if !dataForWeekFlickrTags.isEmpty {
+                data.value = dataForWeekFlickrTags
+            } else {
+                if !activityIndicatorVisibility.value {
+                    getFlickrHotTags()
+                }
+            }
         } else if index == 1 {
             selectedSegment = .allTimes
-            data = composeFlickrHotTags(type: .allTimes)
+            data.value = composeFlickrHotTags(type: .allTimes)
         }
     }
 }

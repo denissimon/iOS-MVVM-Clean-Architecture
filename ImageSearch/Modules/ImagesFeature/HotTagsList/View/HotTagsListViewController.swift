@@ -39,19 +39,18 @@ class HotTagsListViewController: UIViewController, Storyboarded {
         tableView.dataSource = dataSource
         tableView.delegate = self
         
-        // Delegates
-        viewModel.updateData.subscribe(self, queue: .main) { (data) in
+        // Bindings
+        viewModel.data.bind(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.tableView.reloadData()
         }
         
-        viewModel.showToast.subscribe(self, queue: .main) { (text) in
+        viewModel.showToast.bind(self, queue: .main) { (text) in
             if !text.isEmpty {
                 self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
             }
         }
         
-        // Bindings
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
             if value {
                 self.view.makeToastActivity(.center)
@@ -77,7 +76,7 @@ class HotTagsListViewController: UIViewController, Storyboarded {
 extension HotTagsListViewController: UITableViewDelegate {
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tagName = viewModel.data[indexPath.row].name
+        let tagName = viewModel.data.value[indexPath.row].name
         viewModel.didSelect.trigger(ImageQuery(query: tagName))
         coordinatorActions?.closeHotTagsList(self)
     }
