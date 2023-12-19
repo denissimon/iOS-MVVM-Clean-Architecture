@@ -1,8 +1,8 @@
 //
 //  RequestFactory.swift
-//  ImageSearch
+//  CryptocurrencyInfo
 //
-//  Created by Denis Simon on 03/09/2020.
+//  Created by Denis Simon on 12/19/2020.
 //
 
 import Foundation

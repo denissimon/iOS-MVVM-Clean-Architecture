@@ -48,7 +48,7 @@ class ImageSearchViewModel {
             guard let self = self else { return }
                 
             switch result {
-            case .done(let data):
+            case .success(let data):
                 do {
                     guard
                         let resultsDictionary = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
@@ -106,9 +106,9 @@ class ImageSearchViewModel {
                 } catch {
                     self.showErrorToast(error.localizedDescription)
                 }
-            case .error(let error) :
-                if error.0 != nil {
-                    self.showErrorToast(error.0!.localizedDescription)
+            case .failure(let error) :
+                if error.error != nil {
+                    self.showErrorToast(error.error!.localizedDescription)
                 } else {
                     self.showErrorToast()
                 }
@@ -141,7 +141,7 @@ class ImageSearchViewModel {
     }
     
     func getHeightOfCell(width: Float) -> Float {
-        let baseWidth = Constants.ImageCollection.baseImageWidth
+        let baseWidth = AppConfiguration.ImageCollection.baseImageWidth
         if width > baseWidth {
             return baseWidth
         } else {

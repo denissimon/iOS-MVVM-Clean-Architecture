@@ -47,7 +47,7 @@ class HotTagsListViewController: UIViewController, Storyboarded {
         
         viewModel.showToast.bind(self, queue: .main) { (text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
+                self.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
             }
         }
         

@@ -47,7 +47,7 @@ class HotTagsListViewModel {
     func getFlickrHotTags() {
         self.activityIndicatorVisibility.value = true
         
-        let endpoint = FlickrAPI.getHotTagsList
+        let endpoint = FlickrAPI.getHotTagsList()
         
         networkService.requestEndpoint(endpoint, type: Tags.self) { [weak self] (result) in
             guard let self = self else { return }
@@ -55,15 +55,15 @@ class HotTagsListViewModel {
             var allHotFlickrTags = [Tag]()
             
             switch result {
-            case .done(let tags):
+            case .success(let tags):
                 if tags.stat == "ok" {
                     allHotFlickrTags = self.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag)
                 }
                 self.dataForWeekFlickrTags = allHotFlickrTags
                 self.activityIndicatorVisibility.value = false
-            case .error(let error):
-                if error.0 != nil {
-                    self.showErrorToast(error.0!.localizedDescription)
+            case .failure(let error):
+                if error.error != nil {
+                    self.showErrorToast(error.error!.localizedDescription)
                 } else {
                     self.showErrorToast()
                 }

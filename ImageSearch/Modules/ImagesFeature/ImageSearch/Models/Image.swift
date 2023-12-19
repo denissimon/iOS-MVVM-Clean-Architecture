@@ -24,10 +24,16 @@ class Image {
         self.title = title
     }
     
-    func getImageURL(_ size: String = "m") -> URL? {
-        if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size).jpg") {
+    func getImageURL(_ size: ImageSize = .medium) -> URL? {
+        if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size.rawValue).jpg") {
           return url
         }
         return nil
     }
+}
+
+enum ImageSize: String {
+    case small = "s"
+    case medium = "m"
+    case big = "b"
 }

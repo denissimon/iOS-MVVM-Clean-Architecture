@@ -13,10 +13,12 @@ class ImageDetailsViewModel {
     var tappedImage: Image
     
     // Bindings
-    let updateData: Observable<ImageWrapper?> = Observable(nil)
+    let data: Observable<ImageWrapper?> = Observable(nil)
     let shareImage: Observable<[ImageWrapper]> = Observable([])
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility = Observable<Bool>(false)
+    
+    var downloadingTask: NetworkCancellable?
     
     init(networkService: NetworkService, tappedImage: Image) {
         self.networkService = networkService
@@ -24,7 +26,7 @@ class ImageDetailsViewModel {
     }
     
     deinit {
-        networkService.cancelTask()
+        downloadingTask?.cancel()
     }
     
     func showErrorToast(_ msg: String = "") {
@@ -38,30 +40,30 @@ class ImageDetailsViewModel {
     
     func loadLargeImage() {
         if let largeImage = tappedImage.largeImage {
-            updateData.value = largeImage
+            data.value = largeImage
             return
         }
         
-        if let url = tappedImage.getImageURL("b") {
+        if let url = tappedImage.getImageURL(.big) {
             
             activityIndicatorVisibility.value = true
-            
-            networkService.get(url: url) { [weak self] (result) in
+                    
+            downloadingTask = networkService.fetchFile(url: url) { [weak self] (result) in
                 guard let self = self else { return }
                     
                 switch result {
-                case .done(let data):
+                case .success(let data):
                     if let returnedImage = Supportive.getImage(data: data) {
                         let imageWrapper = ImageWrapper(image: returnedImage)
                         self.tappedImage.largeImage = imageWrapper
-                        self.updateData.value = imageWrapper
+                        self.data.value = imageWrapper
                         self.activityIndicatorVisibility.value = false
                     } else {
                         self.showErrorToast()
                     }
-                case .error(let error):
-                    if error.0 != nil {
-                        self.showErrorToast(error.0!.localizedDescription)
+                case .failure(let error):
+                    if error.error != nil {
+                        self.showErrorToast(error.error!.localizedDescription)
                     } else {
                         self.showErrorToast()
                     }

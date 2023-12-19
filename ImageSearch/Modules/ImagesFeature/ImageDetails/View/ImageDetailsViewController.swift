@@ -37,7 +37,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     
     private func setup() {
         // Bindings
-        viewModel.updateData.bind(self, queue: .main) { (largeImage) in
+        viewModel.data.bind(self, queue: .main) { (largeImage) in
             if let largeImage = largeImage {
                 self.imageView.image = largeImage.image
             }
@@ -52,7 +52,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
         
         viewModel.showToast.bind(self, queue: .main) { (text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: Constants.Other.toastDuration, position: .bottom)
+                self.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
             }
         }
         
