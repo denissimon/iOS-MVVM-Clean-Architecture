@@ -9,7 +9,7 @@ import UIKit
 
 struct ImageSearchCoordinatorActions {
     let showImageDetails: (Image) -> ()
-    let showHotTagsList: (Event<ImageQuery>) -> ()
+    let showHotTags: (Event<ImageQuery>) -> ()
 }
 
 class ImageSearchViewController: UIViewController, Storyboarded {
@@ -54,6 +54,9 @@ class ImageSearchViewController: UIViewController, Storyboarded {
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
             self.scrollTop()
+            if self.refreshControl.isRefreshing {
+                self.refreshControl.endRefreshing()
+            }
         }
         
         viewModel.showToast.bind(self, queue: .main) { (text) in
@@ -124,7 +127,7 @@ class ImageSearchViewController: UIViewController, Storyboarded {
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let imageQueryEvent = Event<ImageQuery>()
         imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchFlickr(for: query.query) }
-        coordinatorActions?.showHotTagsList(imageQueryEvent)
+        coordinatorActions?.showHotTags(imageQueryEvent)
     }
     
     // MARK: - Other methods

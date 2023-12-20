@@ -51,6 +51,7 @@ class ImageSearchViewModel {
             case .success(let data):
                 do {
                     guard
+                        !data.isEmpty,
                         let resultsDictionary = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
                         let stat = resultsDictionary["stat"] as? String
                         else {

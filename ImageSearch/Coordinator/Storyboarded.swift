@@ -10,7 +10,7 @@ import UIKit
 enum StoryboardName: String {
     case imageSearch = "ImageSearch"
     case imageDetails = "ImageDetails"
-    case hotTagsList = "HotTagsList"
+    case hotTags = "HotTags"
 }
 
 protocol Storyboarded {

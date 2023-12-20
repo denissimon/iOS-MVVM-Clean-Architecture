@@ -13,7 +13,7 @@ struct AppConfiguration {
         static let flickrBaseURL = "https://api.flickr.com/services"
         static let flickrApiKey = ""._8.c.a._5._5.b.c.a._1._3._8._4.f._4._5.a.b._9._5._7.b._7._6._1._8.a.f.c._6.e.c.c // "8ca55bca1384f45ab957b7618afc6ecc"
         static let photosPerRequest = 20 // up to 20 photos per search
-        static let hotTagsListCount = 50 // up to 50 trending tags for the week
+        static let hotTagsCount = 50 // up to 50 trending tags for the week
     }
     
     struct ImageCollection {

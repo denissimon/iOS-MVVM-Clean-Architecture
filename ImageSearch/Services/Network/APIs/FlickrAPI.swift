@@ -27,8 +27,8 @@ struct FlickrAPI {
             params: params)
     }
     
-    static func getHotTagsList() -> EndpointType {
-        let path = "/rest/?method=flickr.tags.getHotList&api_key=\(AppConfiguration.ProductionServer.flickrApiKey)&period=week&count=\(AppConfiguration.ProductionServer.hotTagsListCount)&format=json&nojsoncallback=1"
+    static func getHotTags() -> EndpointType {
+        let path = "/rest/?method=flickr.tags.getHotList&api_key=\(AppConfiguration.ProductionServer.flickrApiKey)&period=week&count=\(AppConfiguration.ProductionServer.hotTagsCount)&format=json&nojsoncallback=1"
         
         let params = FlickrAPI.defaultParams
         
@@ -38,4 +38,16 @@ struct FlickrAPI {
             path: path,
             params: params)
     }
+    
+    /*static func getLargeImage(image: Image, size: ImageSize = .medium) -> EndpointType {
+        let baseURL = "https://farm\(image.farm).staticflickr.com"
+        
+        let path = "/\(image.server)/\(image.imageID)_\(image.secret)_\(size.rawValue).jpg"
+        
+        return Endpoint(
+            method: .GET,
+            baseURL: baseURL,
+            path: path,
+            params: nil)
+    }*/
 }

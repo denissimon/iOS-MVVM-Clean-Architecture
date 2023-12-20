@@ -30,9 +30,9 @@
 		4145C7D12B2F4303001DD403 /* UAObfuscatedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */; };
 		4145C7D42B30E5B2001DD403 /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7D32B30E5B2001DD403 /* Cancellable.swift */; };
 		418F33B4243FEEF100193C74 /* ImageDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B3243FEEF100193C74 /* ImageDetails.storyboard */; };
-		418F33BA244132A500193C74 /* HotTagsList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTagsList.storyboard */; };
-		418F33BC244132E900193C74 /* HotTagsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsListViewController.swift */; };
-		418F33BE244133E600193C74 /* HotTagsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BD244133E600193C74 /* HotTagsListViewModel.swift */; };
+		418F33BA244132A500193C74 /* HotTags.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTags.storyboard */; };
+		418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsViewController.swift */; };
+		418F33BE244133E600193C74 /* HotTagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BD244133E600193C74 /* HotTagsViewModel.swift */; };
 		418F33C02441E8E200193C74 /* TagsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BF2441E8E200193C74 /* TagsDataSource.swift */; };
 		41AD9B8723FF512C001383AD /* ImageDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */; };
 		41AD9B8923FF51C3001383AD /* ImageDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */; };
@@ -84,9 +84,9 @@
 		4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UAObfuscatedString.swift; sourceTree = "<group>"; };
 		4145C7D32B30E5B2001DD403 /* Cancellable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
 		418F33B3243FEEF100193C74 /* ImageDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageDetails.storyboard; sourceTree = "<group>"; };
-		418F33B9244132A500193C74 /* HotTagsList.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTagsList.storyboard; sourceTree = "<group>"; };
-		418F33BB244132E800193C74 /* HotTagsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsListViewController.swift; sourceTree = "<group>"; };
-		418F33BD244133E600193C74 /* HotTagsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsListViewModel.swift; sourceTree = "<group>"; };
+		418F33B9244132A500193C74 /* HotTags.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTags.storyboard; sourceTree = "<group>"; };
+		418F33BB244132E800193C74 /* HotTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewController.swift; sourceTree = "<group>"; };
+		418F33BD244133E600193C74 /* HotTagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewModel.swift; sourceTree = "<group>"; };
 		418F33BF2441E8E200193C74 /* TagsDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsDataSource.swift; sourceTree = "<group>"; };
 		41AD9B8623FF512C001383AD /* ImageDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewController.swift; sourceTree = "<group>"; };
 		41AD9B8823FF51C3001383AD /* ImageDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewModel.swift; sourceTree = "<group>"; };
@@ -185,19 +185,19 @@
 				419B5B3E25D13DA300443960 /* Models */,
 				41E9A6B523FED04C00CDE3D6 /* ImageSearch */,
 				41AD9B8523FF3445001383AD /* ImageDetails */,
-				418F33B82441324B00193C74 /* HotTagsList */,
+				418F33B82441324B00193C74 /* HotTags */,
 			);
 			path = ImagesFeature;
 			sourceTree = "<group>";
 		};
-		418F33B82441324B00193C74 /* HotTagsList */ = {
+		418F33B82441324B00193C74 /* HotTags */ = {
 			isa = PBXGroup;
 			children = (
 				419B5B4325D13E3B00443960 /* View */,
 				419B5B4425D13E5000443960 /* ViewModel */,
 				419B5B4225D13E0900443960 /* Models */,
 			);
-			path = HotTagsList;
+			path = HotTags;
 			sourceTree = "<group>";
 		};
 		419B5B3B25D13BE500443960 /* View */ = {
@@ -274,8 +274,8 @@
 		419B5B4325D13E3B00443960 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				418F33B9244132A500193C74 /* HotTagsList.storyboard */,
-				418F33BB244132E800193C74 /* HotTagsListViewController.swift */,
+				418F33B9244132A500193C74 /* HotTags.storyboard */,
+				418F33BB244132E800193C74 /* HotTagsViewController.swift */,
 				418F33BF2441E8E200193C74 /* TagsDataSource.swift */,
 			);
 			path = View;
@@ -284,7 +284,7 @@
 		419B5B4425D13E5000443960 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				418F33BD244133E600193C74 /* HotTagsListViewModel.swift */,
+				418F33BD244133E600193C74 /* HotTagsViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -447,7 +447,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4111D56E23FDAF0200B74B83 /* LaunchScreen.storyboard in Resources */,
-				418F33BA244132A500193C74 /* HotTagsList.storyboard in Resources */,
+				418F33BA244132A500193C74 /* HotTags.storyboard in Resources */,
 				4111D56B23FDAF0200B74B83 /* Assets.xcassets in Resources */,
 				4111D56923FDAEFF00B74B83 /* ImageSearch.storyboard in Resources */,
 				418F33B4243FEEF100193C74 /* ImageDetails.storyboard in Resources */,
@@ -476,11 +476,11 @@
 				41AD9B9723FFBD57001383AD /* AppCoordinator.swift in Sources */,
 				41AD9B9A23FFCFEC001383AD /* AppConfiguration.swift in Sources */,
 				418F33C02441E8E200193C74 /* TagsDataSource.swift in Sources */,
-				418F33BE244133E600193C74 /* HotTagsListViewModel.swift in Sources */,
+				418F33BE244133E600193C74 /* HotTagsViewModel.swift in Sources */,
 				4145C7C22B2C9846001DD403 /* MainCoordinator.swift in Sources */,
 				4145C7C72B2CFF93001DD403 /* SwiftEvents.swift in Sources */,
 				41CC247E24148B620053F23E /* RequestFactory.swift in Sources */,
-				418F33BC244132E900193C74 /* HotTagsListViewController.swift in Sources */,
+				418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */,
 				41CC2480241490570053F23E /* FlickrAPI.swift in Sources */,
 				4145C7C42B2CFEA3001DD403 /* ImageQuery.swift in Sources */,
 				4111D58923FDC27300B74B83 /* NetworkService.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  HotTagsListViewController.swift
+//  HotTagsViewController.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 04/11/2020.
@@ -7,22 +7,22 @@
 
 import UIKit
 
-struct HotTagsListCoordinatorActions {
-    let closeHotTagsList: (UIViewController) -> ()
+struct HotTagsCoordinatorActions {
+    let closeHotTags: (UIViewController) -> ()
 }
 
-class HotTagsListViewController: UIViewController, Storyboarded {
+class HotTagsViewController: UIViewController, Storyboarded {
     
     @IBOutlet weak var tableView: UITableView!
     
-    var viewModel: HotTagsListViewModel!
+    var viewModel: HotTagsViewModel!
     
     private var dataSource: TagsDataSource?
     
-    private var coordinatorActions: HotTagsListCoordinatorActions?
+    private var coordinatorActions: HotTagsCoordinatorActions?
     
-    static func instantiate(viewModel: HotTagsListViewModel, actions: HotTagsListCoordinatorActions) -> HotTagsListViewController {
-        let vc = Self.instantiate(from: .hotTagsList)
+    static func instantiate(viewModel: HotTagsViewModel, actions: HotTagsCoordinatorActions) -> HotTagsViewController {
+        let vc = Self.instantiate(from: .hotTags)
         vc.viewModel = viewModel
         vc.coordinatorActions = actions
         return vc
@@ -67,18 +67,18 @@ class HotTagsListViewController: UIViewController, Storyboarded {
     }
     
     @IBAction func onDoneButton(_ sender: Any) {
-        coordinatorActions?.closeHotTagsList(self)
+        coordinatorActions?.closeHotTags(self)
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension HotTagsListViewController: UITableViewDelegate {
+extension HotTagsViewController: UITableViewDelegate {
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tagName = viewModel.data.value[indexPath.row].name
         viewModel.didSelect.trigger(ImageQuery(query: tagName))
-        coordinatorActions?.closeHotTagsList(self)
+        coordinatorActions?.closeHotTags(self)
     }
 }
 

@@ -31,8 +31,8 @@ extension DIContainer: MainCoordinatorDIContainer {
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     
-    func makeHotTagsListViewController(actions: HotTagsListCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsListViewController {
-        let viewModel = HotTagsListViewModel(networkService: NetworkService(), didSelect: didSelect)
-        return HotTagsListViewController.instantiate(viewModel: viewModel, actions: actions)
+    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController {
+        let viewModel = HotTagsViewModel(networkService: NetworkService(), didSelect: didSelect)
+        return HotTagsViewController.instantiate(viewModel: viewModel, actions: actions)
     }
 }

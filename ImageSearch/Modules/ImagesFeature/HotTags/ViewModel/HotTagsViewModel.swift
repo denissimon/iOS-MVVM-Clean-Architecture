@@ -1,5 +1,5 @@
 //
-//  TagsListViewModel.swift
+//  HotTagsViewModel.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 04/11/2020.
@@ -12,7 +12,7 @@ enum SegmentType {
     case allTimes
 }
 
-class HotTagsListViewModel {
+class HotTagsViewModel {
     
     let networkService: NetworkService
     let didSelect: Event<ImageQuery>
@@ -47,7 +47,7 @@ class HotTagsListViewModel {
     func getFlickrHotTags() {
         self.activityIndicatorVisibility.value = true
         
-        let endpoint = FlickrAPI.getHotTagsList()
+        let endpoint = FlickrAPI.getHotTags()
         
         networkService.requestEndpoint(endpoint, type: Tags.self) { [weak self] (result) in
             guard let self = self else { return }
@@ -101,6 +101,7 @@ class HotTagsListViewModel {
                 data.value = dataForWeekFlickrTags
             } else {
                 if !activityIndicatorVisibility.value {
+                    data.value = []
                     getFlickrHotTags()
                 }
             }
