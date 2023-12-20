@@ -53,10 +53,10 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         viewModel.data.bind(self, queue: .main) { (data) in
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
-            self.scrollTop()
             if self.refreshControl.isRefreshing {
                 self.refreshControl.endRefreshing()
             }
+            self.scrollTop()
         }
         
         viewModel.showToast.bind(self, queue: .main) { (text) in
