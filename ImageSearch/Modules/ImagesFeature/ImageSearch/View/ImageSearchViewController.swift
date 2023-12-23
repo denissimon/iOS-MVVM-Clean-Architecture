@@ -137,13 +137,19 @@ class ImageSearchViewController: UIViewController, Storyboarded {
     }
     
     @objc private func refreshImageData(_ sender: Any) {
-        guard let lastSearchQuery = viewModel.lastSearchQuery else { return }
-        if !lastSearchQuery.query.isEmpty {
-            viewModel.searchBarSearchButtonClicked(with: lastSearchQuery)
+        func endRefreshing() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.refreshControl.endRefreshing()
+            }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.refreshControl.endRefreshing()
+        guard let lastSearchQuery = viewModel.lastSearchQuery else {
+            let imageQuery = ImageQuery(query: "random")
+            self.viewModel.searchFlickr(for: imageQuery)
+            endRefreshing()
+            return
         }
+        viewModel.searchFlickr(for: lastSearchQuery)
+        endRefreshing()
     }
 }
 

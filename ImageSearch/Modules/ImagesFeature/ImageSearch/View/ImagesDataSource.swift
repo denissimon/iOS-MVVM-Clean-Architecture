@@ -46,7 +46,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
                         at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
             if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "CollectionViewHeader", for: indexPath) as? CollectionViewHeader {
-                let searchQuery = data[indexPath.section].search.query
+                let searchQuery = data[indexPath.section].searchQuery.query
                 headerView.label.text = searchQuery
                 return headerView
             }
