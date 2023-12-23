@@ -32,6 +32,10 @@ class Image {
     }
 }
 
+struct Images {
+    let data: [Image]
+}
+
 enum ImageSize: String {
     case small = "s"
     case medium = "m"
