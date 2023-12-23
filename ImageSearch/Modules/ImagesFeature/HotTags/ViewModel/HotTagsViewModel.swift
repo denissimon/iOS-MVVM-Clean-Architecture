@@ -76,7 +76,7 @@ class HotTagsViewModel {
     }
     
     private func composeFlickrHotTags(type: SegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
-        let allTimesHotTagsStr = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","bw","old","macro","music","new","moon","orange","garden","blackandwhite","home"]
+        let allTimesHotTagsStr = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","sunrise","old","macro","music","new","moon","home","orange","garden","blackandwhite"]
         var allTimesHotTags = [Tag]()
         for tag in allTimesHotTagsStr {
             allTimesHotTags.append(Tag(name: tag))
@@ -100,8 +100,8 @@ class HotTagsViewModel {
             if !dataForWeekFlickrTags.isEmpty {
                 data.value = dataForWeekFlickrTags
             } else {
+                data.value = []
                 if !activityIndicatorVisibility.value {
-                    data.value = []
                     getFlickrHotTags()
                 }
             }
