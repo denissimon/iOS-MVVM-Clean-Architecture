@@ -11,7 +11,7 @@ class ImageSearchViewModel {
     
     var networkService: NetworkService
     
-    var lastTag = String()
+    var lastSearchQuery: ImageQuery?
     
     // Bindings
     let data: Observable<[ImageSearchResults]> = Observable([])
@@ -33,16 +33,17 @@ class ImageSearchViewModel {
         self.activityIndicatorVisibility.value = false
     }
     
-    func searchFlickr(for searchString: String) {
+    func searchFlickr(for search: ImageQuery) {
         
         activityIndicatorVisibility.value = true
         
-        guard let escapedString = searchString.encodeURIComponent() else {
+        guard let escapedString = search.query.encodeURIComponent() else {
             showErrorToast()
             return
         }
         
-        let endpoint = FlickrAPI.search(string: escapedString)
+        let imageQuery = ImageQuery(query: escapedString)
+        let endpoint = FlickrAPI.search(imageQuery: imageQuery)
         
         networkService.requestEndpoint(endpoint) { [weak self] (result) in
             guard let self = self else { return }
@@ -71,8 +72,8 @@ class ImageSearchViewModel {
                         self.showErrorToast()
                             return
                     }
-
-                    let photosFound: [Image] = photos.compactMap { photoObject in
+                    
+                    let imagesFound: [Image] = photos.compactMap { photoObject in
                         guard
                             let imageID = photoObject["id"] as? String,
                             let farm = photoObject["farm"] as? Int,
@@ -82,7 +83,7 @@ class ImageSearchViewModel {
                                 return nil
                         }
 
-                        let image = Image(imageID: imageID, farm: farm, server: server, secret: secret, title: searchString)
+                        let image = Image(imageID: imageID, farm: farm, server: server, secret: secret, title: search.query)
 
                         guard
                             let url = image.getImageURL(),
@@ -99,9 +100,9 @@ class ImageSearchViewModel {
                         }
                     }
 
-                    let resultsWrapper = ImageSearchResults(searchString: searchString, searchResults: photosFound)
+                    let resultsWrapper = ImageSearchResults(search: search, searchResults: imagesFound)
                     self.data.value.insert(resultsWrapper, at: 0)
-                    self.lastTag = searchString
+                    self.lastSearchQuery = search
                     
                     self.activityIndicatorVisibility.value = false
                 } catch {
@@ -117,10 +118,10 @@ class ImageSearchViewModel {
         }
     }
     
-    func searchBarSearchButtonClicked(with searchBarText: String?) {
-        guard let searchBarText = searchBarText else { return }
-        if !searchBarText.isEmpty {
-            searchFlickr(for: searchBarText)
+    func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery?) {
+        guard let searchBarQuery = searchBarQuery else { return }
+        if !searchBarQuery.query.isEmpty {
+            searchFlickr(for: searchBarQuery)
             resetSearchBar.value = nil
         }
     }

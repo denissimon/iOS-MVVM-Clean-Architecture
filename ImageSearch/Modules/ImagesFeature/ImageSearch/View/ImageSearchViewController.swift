@@ -40,7 +40,8 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         prepareUI()
         
         // Get some random images at the app's start
-        viewModel.searchFlickr(for: "random")
+        let imageQuery = ImageQuery(query: "random")
+        viewModel.searchFlickr(for: imageQuery)
     }
     
     private func setup() {
@@ -93,7 +94,6 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
         
         // Other
-        // Configure Refresh Control
         refreshControl.addTarget(self, action: #selector(refreshImageData(_:)), for: .valueChanged)
     }
     
@@ -126,7 +126,7 @@ class ImageSearchViewController: UIViewController, Storyboarded {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let imageQueryEvent = Event<ImageQuery>()
-        imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchFlickr(for: query.query) }
+        imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchFlickr(for: query) }
         coordinatorActions?.showHotTags(imageQueryEvent)
     }
     
@@ -137,11 +137,12 @@ class ImageSearchViewController: UIViewController, Storyboarded {
     }
     
     @objc private func refreshImageData(_ sender: Any) {
-        if !viewModel.lastTag.isEmpty {
-            viewModel.searchBarSearchButtonClicked(with: viewModel.lastTag)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.refreshControl.endRefreshing()
-            }
+        guard let lastSearchQuery = viewModel.lastSearchQuery else { return }
+        if !lastSearchQuery.query.isEmpty {
+            viewModel.searchBarSearchButtonClicked(with: lastSearchQuery)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.refreshControl.endRefreshing()
         }
     }
 }
@@ -151,7 +152,10 @@ class ImageSearchViewController: UIViewController, Storyboarded {
 extension ImageSearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.searchBarSearchButtonClicked(with: searchBar.text)
+        if let searchBarText = searchBar.text {
+            let imageQuery = ImageQuery(query: searchBarText)
+            viewModel.searchBarSearchButtonClicked(with: imageQuery)
+        }
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {

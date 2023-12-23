@@ -8,6 +8,6 @@
 import Foundation
 
 struct ImageSearchResults {
-    let searchString: String
+    let search: ImageQuery
     let searchResults: [Image]
 }
