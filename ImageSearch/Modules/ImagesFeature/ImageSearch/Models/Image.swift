@@ -14,14 +14,12 @@ class Image {
     let farm: Int
     let server: String
     let secret: String
-    let title: String
     
-    init (imageID: String, farm: Int, server: String, secret: String, title: String) {
+    init (imageID: String, farm: Int, server: String, secret: String) {
         self.imageID = imageID
         self.farm = farm
         self.server = server
         self.secret = secret
-        self.title = title
     }
     
     func getImageURL(_ size: ImageSize = .medium) -> URL? {

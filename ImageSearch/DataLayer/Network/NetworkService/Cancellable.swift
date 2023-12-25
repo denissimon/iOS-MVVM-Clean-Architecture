@@ -18,12 +18,12 @@ protocol Cancellable {
     func cancel()
 }
 
-class NetworkTask: Cancellable {
-    var task: NetworkCancellable?
+class RepositoryTask: Cancellable {
+    var networkTask: NetworkCancellable?
     var isCancelled = false
     
     func cancel() {
-        task?.cancel()
+        networkTask?.cancel()
         isCancelled = true
     }
 }

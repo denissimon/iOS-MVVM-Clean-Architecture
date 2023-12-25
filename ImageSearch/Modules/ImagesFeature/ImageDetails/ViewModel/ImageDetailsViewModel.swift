@@ -9,8 +9,9 @@ import Foundation
 
 class ImageDetailsViewModel {
     
-    var networkService: NetworkService
-    var tappedImage: Image
+    let imageRepository: ImageRepository
+    let image: Image
+    let imageQuery: ImageQuery
     
     // Bindings
     let data: Observable<ImageWrapper?> = Observable(nil)
@@ -18,15 +19,16 @@ class ImageDetailsViewModel {
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility = Observable<Bool>(false)
     
-    var downloadingTask: NetworkCancellable?
+    private var imageLoadTask: Cancellable?
     
-    init(networkService: NetworkService, tappedImage: Image) {
-        self.networkService = networkService
-        self.tappedImage = tappedImage
+    init(imageRepository: ImageRepository, image: Image, imageQuery: ImageQuery) {
+        self.imageRepository = imageRepository
+        self.image = image
+        self.imageQuery = imageQuery
     }
     
     deinit {
-        downloadingTask?.cancel()
+        imageLoadTask?.cancel()
     }
     
     func showErrorToast(_ msg: String = "") {
@@ -39,23 +41,23 @@ class ImageDetailsViewModel {
     }
     
     func loadLargeImage() {
-        if let largeImage = tappedImage.largeImage {
+        if let largeImage = image.largeImage {
             data.value = largeImage
             return
         }
         
-        if let url = tappedImage.getImageURL(.big) {
+        if let url = image.getImageURL(.big) {
             
             activityIndicatorVisibility.value = true
                     
-            downloadingTask = networkService.fetchFile(url: url) { [weak self] (result) in
+            imageLoadTask = imageRepository.getLargeImage(url: url) { [weak self] (result) in
                 guard let self = self else { return }
                     
                 switch result {
                 case .success(let data):
-                    if let returnedImage = Supportive.getImage(data: data) {
-                        let imageWrapper = ImageWrapper(image: returnedImage)
-                        self.tappedImage.largeImage = imageWrapper
+                    if let largeImage = Supportive.getImage(data: data) {
+                        let imageWrapper = ImageWrapper(image: largeImage)
+                        self.image.largeImage = imageWrapper
                         self.data.value = imageWrapper
                         self.activityIndicatorVisibility.value = false
                     } else {
@@ -75,11 +77,11 @@ class ImageDetailsViewModel {
     }
     
     func getTitle() -> String {
-        return tappedImage.title
+        return imageQuery.query
     }
     
     func onShareButton() {
-        if let largeImage = tappedImage.largeImage {
+        if let largeImage = image.largeImage {
             shareImage.value = [largeImage]
         } else {
             self.showToast.value = "No image to share"

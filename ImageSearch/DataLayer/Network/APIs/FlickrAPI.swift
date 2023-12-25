@@ -15,7 +15,7 @@ struct FlickrAPI {
         (value: ContentType.json.rawValue, forHTTPHeaderField: HTTPHeaderField.acceptType.rawValue),
         (value: ContentType.json.rawValue, forHTTPHeaderField: HTTPHeaderField.contentType.rawValue)])
     
-    static func search(imageQuery: ImageQuery) -> EndpointType {
+    static func search(_ imageQuery: ImageQuery) -> EndpointType {
         let path = "/rest/?method=flickr.photos.search&api_key=\(AppConfiguration.ProductionServer.flickrApiKey)&text=\(imageQuery.query)&per_page=\(AppConfiguration.ProductionServer.photosPerRequest)&format=json&nojsoncallback=1"
         
         let params = FlickrAPI.defaultParams

@@ -8,7 +8,7 @@
 import UIKit
 
 struct ImageSearchCoordinatorActions {
-    let showImageDetails: (Image) -> ()
+    let showImageDetails: (Image, ImageQuery) -> ()
     let showHotTags: (Event<ImageQuery>) -> ()
 }
 
@@ -194,7 +194,7 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedImage = viewModel.data.value[indexPath.section].searchResults[indexPath.row]
-        coordinatorActions?.showImageDetails(selectedImage)
+        coordinatorActions?.showImageDetails(selectedImage, viewModel.data.value[indexPath.section].searchQuery)
     }
 }
 

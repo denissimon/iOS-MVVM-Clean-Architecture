@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Tags: Codable {
+struct Tags: Decodable {
     
-    struct HotTags: Codable {
+    struct HotTags: Decodable {
         let tag: [Tag]
     }
     

@@ -9,7 +9,7 @@ import Foundation
 
 class ImageSearchViewModel {
     
-    var networkService: NetworkService
+    let imageRepository: ImageRepository
     
     var lastSearchQuery: ImageQuery?
     
@@ -20,10 +20,12 @@ class ImageSearchViewModel {
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     let collectionViewTopConstraint: Observable<Float> = Observable(0)
     
-    var downloadingTask: NetworkCancellable?
+    private var imagesLoadTask: Cancellable? {
+        willSet { imagesLoadTask?.cancel() }
+    }
     
-    init(networkService: NetworkService) {
-        self.networkService = networkService
+    init(imageRepository: ImageRepository) {
+        self.imageRepository = imageRepository
     }
     
     func showErrorToast(_ msg: String = "") {
@@ -49,79 +51,28 @@ class ImageSearchViewModel {
             return
         }
         
-        if activityIndicatorVisibility.value {
-            if searchQuery == lastSearchQuery {
-                return
-            }
-            downloadingTask?.cancel()
+        if activityIndicatorVisibility.value && searchQuery == lastSearchQuery {
+            return
         }
         activityIndicatorVisibility.value = true
         
         let imageQuery = ImageQuery(query: searchString)
-        let endpoint = FlickrAPI.search(imageQuery: imageQuery)
-        
-        downloadingTask = networkService.requestEndpoint(endpoint) { [weak self] (result) in
+        imagesLoadTask = imageRepository.searchImages(imageQuery){ [weak self] (result) in
             guard let self = self else { return }
                 
             switch result {
             case .success(let data):
-                do {
-                    guard
-                        !data.isEmpty,
-                        let resultsDictionary = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
-                        let stat = resultsDictionary["stat"] as? String
-                        else {
-                        self.showErrorToast()
-                            return
-                    }
-
-                    if stat != "ok" {
+                self.imageRepository.prepareImages(data) { images in
+                    guard images != nil else {
                         self.showErrorToast()
                         return
                     }
                     
-                    guard
-                        let container = resultsDictionary["photos"] as? [String: AnyObject],
-                        let photos = container["photo"] as? [[String: AnyObject]]
-                        else {
-                        self.showErrorToast()
-                            return
-                    }
-                    
-                    let imagesFound: [Image] = photos.compactMap { photoObject in
-                        guard
-                            let imageID = photoObject["id"] as? String,
-                            let farm = photoObject["farm"] as? Int,
-                            let server = photoObject["server"] as? String,
-                            let secret = photoObject["secret"] as? String
-                            else {
-                                return nil
-                        }
-
-                        let image = Image(imageID: imageID, farm: farm, server: server, secret: secret, title: searchQuery.query)
-
-                        guard
-                            let url = image.getImageURL(),
-                            let imageData = try? Data(contentsOf: url as URL)
-                            else {
-                                return nil
-                        }
-
-                        if let thumbnailImage = Supportive.getImage(data: imageData) {
-                            image.thumbnail = ImageWrapper(image: thumbnailImage)
-                            return image
-                        } else {
-                            return nil
-                        }
-                    }
-
-                    let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: imagesFound)
+                    let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: images!.data)
                     self.data.value.insert(resultsWrapper, at: 0)
                     self.lastSearchQuery = searchQuery
                     
                     self.activityIndicatorVisibility.value = false
-                } catch {
-                    self.showErrorToast(error.localizedDescription)
                 }
             case .failure(let error) :
                 if error.error != nil {

@@ -9,7 +9,7 @@ import UIKit
 
 protocol MainCoordinatorDIContainer {
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController
-    func makeImageDetailsViewController(image: Image) -> ImageDetailsViewController
+    func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController
 }
 
@@ -39,8 +39,8 @@ class MainCoordinator: Coordinator {
         navigationController.pushViewController(imageSearchVC, animated: false)
     }
     
-    private func showImageDetails(image: Image) {
-        let imageDetailsVC = dependencyContainer.makeImageDetailsViewController(image: image)
+    private func showImageDetails(image: Image, imageQuery: ImageQuery) {
+        let imageDetailsVC = dependencyContainer.makeImageDetailsViewController(image: image, imageQuery: imageQuery)
         navigationController.pushViewController(imageDetailsVC, animated: true)
     }
     

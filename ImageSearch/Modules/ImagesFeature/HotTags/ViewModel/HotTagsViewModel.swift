@@ -14,7 +14,7 @@ enum SegmentType {
 
 class HotTagsViewModel {
     
-    let networkService: NetworkService
+    let tagRepository: TagRepository
     let didSelect: Event<ImageQuery>
     
     var dataForWeekFlickrTags = [Tag]()
@@ -26,9 +26,15 @@ class HotTagsViewModel {
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
-    init(networkService: NetworkService, didSelect: Event<ImageQuery>) {
-        self.networkService = networkService
+    private var hotTagsLoadTask: Cancellable?
+    
+    init(tagRepository: TagRepository, didSelect: Event<ImageQuery>) {
+        self.tagRepository = tagRepository
         self.didSelect = didSelect
+    }
+    
+    deinit {
+        hotTagsLoadTask?.cancel()
     }
     
     func getDataSource() -> TagsDataSource {
@@ -47,9 +53,7 @@ class HotTagsViewModel {
     func getFlickrHotTags() {
         self.activityIndicatorVisibility.value = true
         
-        let endpoint = FlickrAPI.getHotTags()
-        
-        networkService.requestEndpoint(endpoint, type: Tags.self) { [weak self] (result) in
+        hotTagsLoadTask = tagRepository.getHotTags() { [weak self] (result) in
             guard let self = self else { return }
             
             var allHotFlickrTags = [Tag]()
