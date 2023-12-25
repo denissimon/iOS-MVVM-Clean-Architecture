@@ -52,7 +52,6 @@ extension DIContainer: MainCoordinatorDIContainer {
     }
     
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController {
-        let imageRepository = makeImageRepository()
         let tagRepository = makeTagRepository()
         let viewModel = HotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
         return HotTagsViewController.instantiate(viewModel: viewModel, actions: actions)
