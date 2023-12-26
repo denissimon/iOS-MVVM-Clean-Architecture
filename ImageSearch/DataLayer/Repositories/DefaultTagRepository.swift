@@ -15,7 +15,7 @@ class DefaultTagRepository: TagRepository {
         self.apiInteractor = apiInteractor
     }
     
-    func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> Cancellable? {
+    private func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> Cancellable? {
         let endpoint = FlickrAPI.getHotTags()
         let task = RepositoryTask()
         task.networkTask = apiInteractor.requestEndpoint(endpoint, type: Tags.self) { result in
@@ -23,5 +23,15 @@ class DefaultTagRepository: TagRepository {
             completionHandler(result)
         }
         return task
+    }
+    
+    // MARK: - async methods
+    
+    func getHotTags() async -> TagsResult {
+        await withCheckedContinuation { continuation in
+            getHotTags() { result in
+                continuation.resume(returning: result)
+            }
+        }
     }
 }

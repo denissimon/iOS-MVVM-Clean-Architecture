@@ -20,7 +20,7 @@ class ImageSearchViewModel {
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     let collectionViewTopConstraint: Observable<Float> = Observable(0)
     
-    private var imagesLoadTask: Cancellable? {
+    private var imagesLoadTask: Task<Void, Never>? {
         willSet { imagesLoadTask?.cancel() }
     }
     
@@ -51,29 +51,32 @@ class ImageSearchViewModel {
             return
         }
         
-        if activityIndicatorVisibility.value && searchQuery == lastSearchQuery {
-            return
-        }
+        if activityIndicatorVisibility.value && searchQuery == lastSearchQuery { return }
         activityIndicatorVisibility.value = true
         
-        let imageQuery = ImageQuery(query: searchString)
-        imagesLoadTask = imageRepository.searchImages(imageQuery){ [weak self] (result) in
-            guard let self = self else { return }
-                
+        imagesLoadTask = Task.detached {
+            
+            let imageQuery = ImageQuery(query: searchString)
+            let result = await self.imageRepository.searchImages(imageQuery)
+            
+            guard !Task.isCancelled else { return }
+            
             switch result {
             case .success(let data):
-                self.imageRepository.prepareImages(data) { images in
-                    guard images != nil else {
-                        self.showErrorToast()
-                        return
-                    }
-                    
-                    let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: images!.data)
-                    self.data.value.insert(resultsWrapper, at: 0)
-                    self.lastSearchQuery = searchQuery
-                    
-                    self.activityIndicatorVisibility.value = false
+                let images = await self.imageRepository.prepareImages(data)
+                
+                guard images != nil else {
+                    self.showErrorToast()
+                    return
                 }
+                
+                guard !Task.isCancelled else { return }
+                
+                let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: images!.data)
+                self.data.value.insert(resultsWrapper, at: 0)
+                self.lastSearchQuery = searchQuery
+                
+                self.activityIndicatorVisibility.value = false
             case .failure(let error) :
                 if error.error != nil {
                     self.showErrorToast(error.error!.localizedDescription)

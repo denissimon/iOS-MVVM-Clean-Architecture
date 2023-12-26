@@ -19,7 +19,7 @@ class ImageDetailsViewModel {
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility = Observable<Bool>(false)
     
-    private var imageLoadTask: Cancellable?
+    private var imageLoadTask: Task<Void, Never>?
     
     init(imageRepository: ImageRepository, image: Image, imageQuery: ImageQuery) {
         self.imageRepository = imageRepository
@@ -49,26 +49,29 @@ class ImageDetailsViewModel {
         if let url = image.getImageURL(.big) {
             
             activityIndicatorVisibility.value = true
-                    
-            imageLoadTask = imageRepository.getLargeImage(url: url) { [weak self] (result) in
-                guard let self = self else { return }
-                    
+            
+            imageLoadTask = Task.detached { [weak self] in
+                
+                let result = await self?.imageRepository.getLargeImage(url: url)
+                
                 switch result {
                 case .success(let data):
                     if let largeImage = Supportive.getImage(data: data) {
                         let imageWrapper = ImageWrapper(image: largeImage)
-                        self.image.largeImage = imageWrapper
-                        self.data.value = imageWrapper
-                        self.activityIndicatorVisibility.value = false
+                        self?.image.largeImage = imageWrapper
+                        self?.data.value = imageWrapper
+                        self?.activityIndicatorVisibility.value = false
                     } else {
-                        self.showErrorToast()
+                        self?.showErrorToast()
                     }
                 case .failure(let error):
                     if error.error != nil {
-                        self.showErrorToast(error.error!.localizedDescription)
+                        self?.showErrorToast(error.error!.localizedDescription)
                     } else {
-                        self.showErrorToast()
+                        self?.showErrorToast()
                     }
+                case .none:
+                    self?.showErrorToast()
                 }
             }
         } else {

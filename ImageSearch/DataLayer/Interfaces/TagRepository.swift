@@ -9,5 +9,9 @@ import Foundation
 
 protocol TagRepository {
     typealias TagsResult = Result<Tags, NetworkError>
-    func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> Cancellable?
+    
+    // Can be used together with or instead of the async method:
+    //func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> Cancellable?
+    
+    func getHotTags() async -> TagsResult
 }

@@ -26,7 +26,7 @@ class HotTagsViewModel {
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
-    private var hotTagsLoadTask: Cancellable?
+    private var hotTagsLoadTask: Task<Void, Never>?
     
     init(tagRepository: TagRepository, didSelect: Event<ImageQuery>) {
         self.tagRepository = tagRepository
@@ -52,29 +52,34 @@ class HotTagsViewModel {
     
     func getFlickrHotTags() {
         self.activityIndicatorVisibility.value = true
-        
-        hotTagsLoadTask = tagRepository.getHotTags() { [weak self] (result) in
-            guard let self = self else { return }
+                
+        hotTagsLoadTask = Task.detached { [weak self] in
+            
+            let result = await self?.tagRepository.getHotTags()
             
             var allHotFlickrTags = [Tag]()
             
             switch result {
             case .success(let tags):
                 if tags.stat == "ok" {
-                    allHotFlickrTags = self.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag)
+                    if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag) {
+                        allHotFlickrTags = receivedHotTags
+                    }
                 }
-                self.dataForWeekFlickrTags = allHotFlickrTags
-                self.activityIndicatorVisibility.value = false
+                self?.dataForWeekFlickrTags = allHotFlickrTags
+                self?.activityIndicatorVisibility.value = false
             case .failure(let error):
                 if error.error != nil {
-                    self.showErrorToast(error.error!.localizedDescription)
+                    self?.showErrorToast(error.error!.localizedDescription)
                 } else {
-                    self.showErrorToast()
+                    self?.showErrorToast()
                 }
+            case .none:
+                self?.showErrorToast()
             }
             
-            if self.selectedSegment == .week {
-                self.data.value = allHotFlickrTags
+            if self?.selectedSegment == .week {
+                self?.data.value = allHotFlickrTags
             }
         }
     }
