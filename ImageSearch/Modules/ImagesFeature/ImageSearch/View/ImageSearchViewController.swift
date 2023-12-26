@@ -51,7 +51,8 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         searchBar.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { (data) in
+        viewModel.data.bind(self, queue: .main) { [weak self] (data) in
+            guard let self = self else { return }
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
             if self.refreshControl.isRefreshing {
@@ -60,18 +61,20 @@ class ImageSearchViewController: UIViewController, Storyboarded {
             self.scrollTop()
         }
         
-        viewModel.showToast.bind(self, queue: .main) { (text) in
+        viewModel.showToast.bind(self, queue: .main) { [weak self] (text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
+                self?.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
             }
         }
         
-        viewModel.resetSearchBar.bind(self) { _ in
+        viewModel.resetSearchBar.bind(self) { [weak self] _ in
+            guard let self = self else { return }
             self.searchBar.text = nil
             self.searchBar.resignFirstResponder()
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
+            guard let self = self else { return }
             if value {
                 self.view.makeToastActivity(.center)
                 self.searchBar.isUserInteractionEnabled = false
@@ -83,7 +86,8 @@ class ImageSearchViewController: UIViewController, Storyboarded {
             }
         }
         
-        viewModel.collectionViewTopConstraint.bind(self) { (value) in
+        viewModel.collectionViewTopConstraint.bind(self) { [weak self] (value) in
+            guard let self = self else { return }
             self.collectionViewTopConstraint.constant = CGFloat(value)
             UIView.animate(withDuration: 0.25) {
                 self.view.layoutIfNeeded()

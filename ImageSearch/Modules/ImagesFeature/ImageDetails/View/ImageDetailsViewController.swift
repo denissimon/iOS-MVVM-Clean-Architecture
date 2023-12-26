@@ -37,26 +37,28 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     
     private func setup() {
         // Bindings
-        viewModel.data.bind(self, queue: .main) { (largeImage) in
+        viewModel.data.bind(self, queue: .main) { [weak self] (largeImage) in
             if let largeImage = largeImage {
-                self.imageView.image = largeImage.image
+                self?.imageView.image = largeImage.image
             }
         }
         
-        viewModel.shareImage.bind(self) { (imageWrapperArray) in
+        viewModel.shareImage.bind(self) { [weak self] (imageWrapperArray) in
+            guard let self = self else { return }
             let activityVC = UIActivityViewController(activityItems: imageWrapperArray.toUIImageArray(), applicationActivities: nil)
             activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
             activityVC.popoverPresentationController?.permittedArrowDirections = .up
             self.present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.showToast.bind(self, queue: .main) { (text) in
+        viewModel.showToast.bind(self, queue: .main) { [weak self] (text) in
             if !text.isEmpty {
-                self.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
+                self?.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
             }
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
+            guard let self = self else { return }
             if value {
                 self.activityIndicator.startAnimating()
             } else {
