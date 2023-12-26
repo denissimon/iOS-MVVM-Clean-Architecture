@@ -56,7 +56,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("NetworkService request:",request)
+        print("\nNetworkService request:",request)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -87,7 +87,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("NetworkService request:",request)
+        print("\nNetworkService request:",request)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -117,7 +117,7 @@ class NetworkService {
     
     func fetchFile(url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
-        print("NetworkService request:",request)
+        print("\nNetworkService request:",request)
      
         let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
