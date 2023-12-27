@@ -72,7 +72,31 @@ class ImageSearchViewModel {
                 
                 guard !Task.isCancelled else { return }
                 
-                let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: images!.data)
+                let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
+                    for item in images!.data {
+                        taskGroup.addTask {
+                            guard let thumbnailUrl = item.getImageURL() else { return item }
+                            let tempImage = item
+                            if let thumbnailImageData = await self.imageRepository.getLargeImage(url: thumbnailUrl) {
+                                if let thumbnailImage = Supportive.getImage(data: thumbnailImageData) {
+                                    tempImage.thumbnail = ImageWrapper(image: thumbnailImage)
+                                }
+                            }
+                            return tempImage
+                        }
+                    }
+                    var processedImages: [Image] = []
+                    for await result in taskGroup {
+                        if result.thumbnail != nil {
+                            processedImages.append(result)
+                        }
+                    }
+                    return processedImages
+                }
+                
+                guard !Task.isCancelled else { return }
+                
+                let resultsWrapper = ImageSearchResults(searchQuery: searchQuery, searchResults: thumbnailImages)
                 self.data.value.insert(resultsWrapper, at: 0)
                 self.lastSearchQuery = searchQuery
                 

@@ -59,21 +59,7 @@ class DefaultImageRepository: ImageRepository {
                         return nil
                 }
 
-                let image = Image(imageID: imageID, farm: farm, server: server, secret: secret)
-
-                guard
-                    let url = image.getImageURL(),
-                    let imageData = try? Data(contentsOf: url as URL)
-                    else {
-                        return nil
-                }
-
-                if let thumbnailImage = Supportive.getImage(data: imageData) {
-                    image.thumbnail = ImageWrapper(image: thumbnailImage)
-                    return image
-                } else {
-                    return nil
-                }
+                return Image(imageID: imageID, farm: farm, server: server, secret: secret)
             }
             
             if imagesFound.isEmpty {
