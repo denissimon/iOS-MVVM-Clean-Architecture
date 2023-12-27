@@ -87,9 +87,10 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    private func getLargeImage(url: URL, completionHandler: @escaping (ImageDataResult) -> Void) -> Cancellable? {
+    private func getLargeImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable? {
         let task = RepositoryTask()
         task.networkTask = apiInteractor.fetchFile(url: url) { result in
+            guard !task.isCancelled else { return }
             completionHandler(result)
         }
         return task
@@ -113,7 +114,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
      
-    func getLargeImage(url: URL) async -> ImageDataResult {
+    func getLargeImage(url: URL) async -> Data? {
          await withCheckedContinuation { continuation in
              getLargeImage(url: url) { result in
                  continuation.resume(returning: result)
