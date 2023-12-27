@@ -15,6 +15,6 @@ protocol APIInteractor {
     func requestEndpoint<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
     
     @discardableResult
-    func fetchFile(url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable?
+    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable?
 }
 

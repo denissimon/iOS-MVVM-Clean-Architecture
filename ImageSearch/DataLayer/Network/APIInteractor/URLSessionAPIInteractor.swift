@@ -23,7 +23,7 @@ class URLSessionAPIInteractor: APIInteractor {
         return urlSessionAdapter.requestEndpoint(endpoint, type: type, completion: completion)
     }
     
-    func fetchFile(url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
+    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         return urlSessionAdapter.fetchFile(url: url, completion: completion)
     }
 }
