@@ -56,7 +56,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("\nNetworkService request:",request)
+        print("\nNetworkService requestEndpoint:",request)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -87,7 +87,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("\nNetworkService request:",request)
+        print("\nNetworkService requestEndpoint<T: Decodable>:",request)
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -115,23 +115,16 @@ class NetworkService {
         return dataTask
     }
     
-    func fetchFile(url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
+    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
-        print("\nNetworkService request:",request)
+        print("\nNetworkService fetchFile:",request)
      
         let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
-            let response = response as? HTTPURLResponse
-            let status = response?.statusCode
-            
             if data != nil && error == nil {
-                completion(Result.success(data!))
+                completion(data!)
                 return
             }
-            if error != nil {
-                completion(Result.failure(NetworkError(error: error!, code: status)))
-            } else {
-                completion(Result.failure(NetworkError(error: nil, code: status)))
-            }
+            return completion(nil)
         }
         
         dataTask.resume()
