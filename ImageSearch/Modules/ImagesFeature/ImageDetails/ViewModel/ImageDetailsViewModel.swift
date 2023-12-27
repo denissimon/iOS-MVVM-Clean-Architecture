@@ -51,11 +51,11 @@ class ImageDetailsViewModel {
             activityIndicatorVisibility.value = true
             
             imageLoadTask = Task.detached { [weak self] in
-                
-                let result = await self?.imageRepository.getLargeImage(url: url)
-                
-                switch result {
-                case .success(let data):
+                if let data = await self?.imageRepository.getLargeImage(url: url) {
+                    guard !data.isEmpty else {
+                        self?.showErrorToast()
+                        return
+                    }
                     if let largeImage = Supportive.getImage(data: data) {
                         let imageWrapper = ImageWrapper(image: largeImage)
                         self?.image.largeImage = imageWrapper
@@ -64,14 +64,6 @@ class ImageDetailsViewModel {
                     } else {
                         self?.showErrorToast()
                     }
-                case .failure(let error):
-                    if error.error != nil {
-                        self?.showErrorToast(error.error!.localizedDescription)
-                    } else {
-                        self?.showErrorToast()
-                    }
-                case .none:
-                    self?.showErrorToast()
                 }
             }
         } else {
