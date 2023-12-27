@@ -26,5 +26,6 @@ struct AppConfiguration {
     
     struct Other {
         static let toastDuration: TimeInterval = 4.0
+        static let allTimesHotTags = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","sunrise","old","macro","music","new","moon","home","orange","garden","blackandwhite"]
     }
 }

@@ -85,7 +85,7 @@ class HotTagsViewModel {
     }
     
     private func composeFlickrHotTags(type: SegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
-        let allTimesHotTagsStr = ["sunset","beach","water","sky","flower","nature","blue","night","white","tree","green","flowers","portrait","art","light","snow","dog","sun","clouds","cat","park","winter","landscape","street","summer","sea","city","trees","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","sunrise","old","macro","music","new","moon","home","orange","garden","blackandwhite"]
+        let allTimesHotTagsStr = AppConfiguration.Other.allTimesHotTags
         var allTimesHotTags = [Tag]()
         for tag in allTimesHotTagsStr {
             allTimesHotTags.append(Tag(name: tag))
