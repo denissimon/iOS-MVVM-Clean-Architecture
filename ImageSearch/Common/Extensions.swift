@@ -20,6 +20,6 @@ extension String {
 
 extension Array where Element == ImageWrapper {
     func toUIImageArray() -> [UIImage] {
-        return self.map { $0.image }
+        return self.map { $0.image ?? UIImage() }
     }
 }

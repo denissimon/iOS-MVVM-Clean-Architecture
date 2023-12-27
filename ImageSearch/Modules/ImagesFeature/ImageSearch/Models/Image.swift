@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Image {
+class Image: Codable {
     var thumbnail: ImageWrapper?
     var largeImage: ImageWrapper?
     let imageID: String
