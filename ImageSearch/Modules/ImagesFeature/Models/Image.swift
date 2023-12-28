@@ -9,7 +9,7 @@ import Foundation
 
 class Image: Codable {
     var thumbnail: ImageWrapper?
-    var largeImage: ImageWrapper?
+    var bigImage: ImageWrapper?
     let imageID: String
     let farm: Int
     let server: String

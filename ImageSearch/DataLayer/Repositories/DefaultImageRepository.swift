@@ -100,7 +100,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
      
-    func getLargeImage(url: URL) async -> Data? {
+    func getBigImage(url: URL) async -> Data? {
          await withCheckedContinuation { continuation in
              getLargeImage(url: url) { result in
                  continuation.resume(returning: result)

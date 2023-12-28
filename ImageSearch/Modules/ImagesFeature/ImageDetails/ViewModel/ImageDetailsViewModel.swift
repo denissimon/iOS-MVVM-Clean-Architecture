@@ -40,9 +40,9 @@ class ImageDetailsViewModel {
         self.activityIndicatorVisibility.value = false
     }
     
-    func loadLargeImage() {
-        if let largeImage = image.largeImage {
-            data.value = largeImage
+    func loadBigImage() {
+        if let bigImage = image.bigImage {
+            data.value = bigImage
             return
         }
         
@@ -51,14 +51,14 @@ class ImageDetailsViewModel {
             activityIndicatorVisibility.value = true
             
             imageLoadTask = Task.detached { [weak self] in
-                if let data = await self?.imageRepository.getLargeImage(url: url) {
+                if let data = await self?.imageRepository.getBigImage(url: url) {
                     guard !data.isEmpty else {
                         self?.showErrorToast()
                         return
                     }
                     if let largeImage = Supportive.getImage(data: data) {
                         let imageWrapper = ImageWrapper(image: largeImage)
-                        self?.image.largeImage = imageWrapper
+                        self?.image.bigImage = imageWrapper
                         self?.data.value = imageWrapper
                         self?.activityIndicatorVisibility.value = false
                     } else {
@@ -76,8 +76,8 @@ class ImageDetailsViewModel {
     }
     
     func onShareButton() {
-        if let largeImage = image.largeImage {
-            shareImage.value = [largeImage]
+        if let bigImage = image.bigImage {
+            shareImage.value = [bigImage]
         } else {
             self.showToast.value = "No image to share"
         }

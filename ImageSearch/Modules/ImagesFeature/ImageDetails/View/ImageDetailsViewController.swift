@@ -27,7 +27,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
         setup()
         prepareUI()
         
-        viewModel.loadLargeImage()
+        viewModel.loadBigImage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -37,9 +37,9 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     
     private func setup() {
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] (largeImage) in
-            if let largeImage = largeImage {
-                self?.imageView.image = largeImage.image
+        viewModel.data.bind(self, queue: .main) { [weak self] (bigImage) in
+            if let bigImage = bigImage {
+                self?.imageView.image = bigImage.image
             }
         }
         
