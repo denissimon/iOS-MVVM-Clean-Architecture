@@ -1,22 +1,38 @@
-# ImageSearch
+# iOS-MVVM-Clean-Architecture
 [![Swift Version](https://img.shields.io/badge/Swift-5-F16D39.svg?style=flat)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/ImageSearch/blob/master/LICENSE)
 
-Example iOS app built using the MVVM-C architecture and Flickr API to get images by any tag or search query.
+Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurrency.
 
-It has three modules: ImageSearch, ImageDetails, HotTags.
+The app retrieves images for any search query or tag via the Flickr API. It has three MVVM modules: ImageSearch, ImageDetails, HotTags.
+
+<table> 
+  <tr>
+    <td> <img src="Screenshots/1 iOS-MVVM-Clean-Architecture Screen Shot - 2021-12-17.png" width = 252px></td>
+    <td> <img src="Screenshots/2 iOS-MVVM-Clean-Architecture Screen Shot - 2021-12-17.png" width = 252px></td>
+    <td> <img src="Screenshots/3 iOS-MVVM-Clean-Architecture Screen Shot - 2021-12-17.png" width = 252px></td>
+  </tr>
+</table>
 
 #### Architecture concepts used here:
 - MVVM using lightweight Observable<T> and Event<T>
 - Flow coordinator implemented with closure-based actions
 - DIContainer
-- Dependency Injection
 - Data Binding
-- Multiple Storyboards
-- Reusable data sources for UITableView and UICollectionView
+- Clean Architecture
+- Dependency Inversion Principle
+- Dependency Injection, protocol composition
 - Reusable and universal NetworkService based on URLSession
+- async-await with remaining the transport layer implemented on callback without changes
+- Reusable data sources for UITableView and UICollectionView
+- Multiple Storyboards
 - Codable
+
+#### Requirements:
+iOS version support: 15.0+
+
+For app versions <= 1.2, iOS version support: 10.0+
 
 #### Built with:
 - [SwiftEvents](https://github.com/denissimon/SwiftEvents) - A lightweight library for creating and observing events.
