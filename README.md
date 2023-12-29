@@ -16,7 +16,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 </table>
 
 #### Architecture concepts used here:
-- MVVM using lightweight Observable<T> and Event<T>
+- MVVM using lightweight Observable\<T\> and Event\<T\>
 - Flow coordinator implemented with closure-based actions
 - DIContainer
 - Data Binding
@@ -24,7 +24,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Dependency Inversion Principle
 - Dependency Injection, protocol composition
 - Reusable and universal NetworkService based on URLSession
-- async-await with remaining the transport layer implemented on callback without changes
+- async-await with remaining the transport layer implemented on callbacks without changes
 - Reusable data sources for UITableView and UICollectionView
 - Multiple Storyboards
 - Codable
