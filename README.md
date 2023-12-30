@@ -26,7 +26,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal NetworkService based on URLSession
 - async-await with remaining the transport layer implemented on callbacks without changes
 - Reusable data sources for UITableView and UICollectionView
-- Multiple Storyboards
+- Multiple storyboards
 - Codable
 
 #### Requirements:
