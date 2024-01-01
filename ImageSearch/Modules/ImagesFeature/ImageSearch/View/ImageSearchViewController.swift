@@ -210,7 +210,7 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                           layout collectionViewLayout: UICollectionViewLayout,
                           sizeForItemAt indexPath: IndexPath) -> CGSize {
         var itemsPerRow = CGFloat()
-        if UIApplication.shared.statusBarOrientation.isLandscape {
+        if UIWindow.isLandscape {
             itemsPerRow = AppConfiguration.ImageCollection.itemsPerRowInHorizOrient
         } else {
             itemsPerRow = AppConfiguration.ImageCollection.itemsPerRowInVertOrient
