@@ -30,11 +30,6 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
         viewModel.loadBigImage()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-       super.viewWillAppear(animated)
-       self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-    }
-    
     private func setup() {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] (bigImage) in
