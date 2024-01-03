@@ -9,11 +9,11 @@ import UIKit
 
 class TagsDataSource: NSObject {
     
-    var data = [Tag]()
+    private(set) var data = [Tag]()
     
     init(with data: [Tag]) {
         super.init()
-        updateData(data)
+        self.data = data
     }
     
     func updateData(_ data: [Tag]) {

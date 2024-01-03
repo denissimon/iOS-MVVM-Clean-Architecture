@@ -9,11 +9,11 @@ import UIKit
 
 class ImagesDataSource: NSObject {
     
-    var data = [ImageSearchResults]()
+    private(set) var data = [ImageSearchResults]()
     
     init(with data: [ImageSearchResults]) {
         super.init()
-        updateData(data)
+        self.data = data
     }
     
     func updateData(_ data: [ImageSearchResults]) {
