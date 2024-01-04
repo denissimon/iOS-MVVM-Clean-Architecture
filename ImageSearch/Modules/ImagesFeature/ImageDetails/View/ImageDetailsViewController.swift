@@ -12,6 +12,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var imageTitle: UILabel!
     
     var viewModel: ImageDetailsViewModel!
     
@@ -64,6 +65,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
     
     private func prepareUI() {
         self.title = viewModel.getTitle()
+        imageTitle.text = viewModel.image.title
     }
     
     // MARK: Actions
