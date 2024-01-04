@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct ImageWrapper: Codable {
+class ImageWrapper: Codable {
     let image: UIImage?
     
     init(image: UIImage) {
@@ -18,7 +18,7 @@ struct ImageWrapper: Codable {
         case image
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let data = try container.decode(Data.self, forKey: CodingKeys.image)
         if let image = UIImage(data: data) {
