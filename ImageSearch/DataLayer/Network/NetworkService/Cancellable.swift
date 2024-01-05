@@ -1,6 +1,6 @@
 //
 //  Cancellable.swift
-//  CryptocurrencyInfo
+//  ImageSearch
 //
 //  Created by Denis Simon on 11/18/2023.
 //

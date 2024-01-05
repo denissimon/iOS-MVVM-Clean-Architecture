@@ -1,6 +1,6 @@
 //
 //  RequestFactory.swift
-//  CryptocurrencyInfo
+//  ImageSearch
 //
 //  Created by Denis Simon on 12/19/2020.
 //
