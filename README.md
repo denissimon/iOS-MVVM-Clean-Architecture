@@ -16,15 +16,16 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 </table>
 
 #### Architecture concepts used here:
-- MVVM using lightweight Observable\<T\> and Event\<T\>
+- MVVM
 - Flow coordinator implemented with closure-based actions
 - DIContainer
-- Data Binding
+- Data Binding using lightweight Observable\<T\>
 - Clean Architecture
 - Dependency Inversion Principle
 - Dependency Injection, protocol composition
 - Reusable and universal NetworkService based on URLSession
 - async-await with remaining the transport layer implemented on callbacks without changes
+- Closure-based delegation using lightweight Event\<T\>
 - Reusable data sources for UITableView and UICollectionView
 - Multiple storyboards
 - Codable
@@ -35,7 +36,7 @@ iOS version support: 15.0+
 For app versions <= 1.2, iOS version support: 10.0+
 
 #### Built with:
-- [SwiftEvents](https://github.com/denissimon/SwiftEvents) - A thread-safe library for data binding and notifications based on events.
+- [SwiftEvents](https://github.com/denissimon/SwiftEvents) - The easiest way to implement data binding and notifications.
 - [Toast-Swift](https://github.com/scalessec/Toast-Swift) - A Swift extension that adds toast notifications to the UIView object class.
 - [UAObfuscatedString](https://github.com/UrbanApps/UAObfuscatedString) - A simple category to hide sensitive strings from appearing in your binary.
 
