@@ -1,15 +1,11 @@
 //
 //  SwiftEvents.swift
-//  https://github.com/denissimon/SwiftEvents (v2.1.1)
+//  ImageSearch
 //
-//  Created by Denis Simon on 05/29/2019.
-//  Copyright © 2019 SwiftEvents. All rights reserved.
+//  Created by Denis Simon on 02/19/2020.
 //
 
 import Foundation
-#if os(Linux)
-import Dispatch
-#endif
 
 protocol Unsubscribable: AnyObject {
     func unsubscribe(_ target: AnyObject)

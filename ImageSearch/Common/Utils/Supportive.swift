@@ -9,7 +9,7 @@ import UIKit
 
 class Supportive {
     
-    static func getImage(data: Data) -> UIImage? {
+    static func toUIImage(from data: Data) -> UIImage? {
         if let image = UIImage(data: data) {
             return image
         }
