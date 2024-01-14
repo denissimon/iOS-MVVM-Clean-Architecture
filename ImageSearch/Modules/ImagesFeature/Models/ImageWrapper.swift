@@ -24,7 +24,6 @@ class ImageWrapper: Codable {
         if let image = UIImage(data: data) {
             self.image = image
         } else {
-            // Error Decode
             self.image = nil
         }
     }
@@ -33,8 +32,6 @@ class ImageWrapper: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let imageData: Data = image?.jpegData(compressionQuality: 1.0) {
             try container.encode(imageData, forKey: .image)
-        } else {
-            // Error Encode
         }
     }
 }
