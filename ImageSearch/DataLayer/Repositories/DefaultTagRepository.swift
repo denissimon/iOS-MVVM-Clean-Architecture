@@ -29,7 +29,7 @@ class DefaultTagRepository: TagRepository {
     
     func getHotTags() async -> TagsResult {
         await withCheckedContinuation { continuation in
-            getHotTags() { result in
+            let _ = getHotTags() { result in
                 continuation.resume(returning: result)
             }
         }
