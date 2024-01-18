@@ -7,7 +7,14 @@
 
 import Foundation
 
-struct ImageSearchResults {
+class ImageSearchResults {
+    let id: String
     let searchQuery: ImageQuery
-    let searchResults: [Image]
+    var searchResults: [Image]
+    
+    init(id: String, searchQuery: ImageQuery, searchResults: [Image]) {
+        self.id = id
+        self.searchQuery = searchQuery
+        self.searchResults = searchResults
+    }
 }
