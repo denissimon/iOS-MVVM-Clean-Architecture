@@ -65,10 +65,8 @@ class HotTagsViewModel {
             
             switch result {
             case .success(let tags):
-                if tags.stat == "ok" {
-                    if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag) {
-                        allHotFlickrTags = receivedHotTags
-                    }
+                if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag) {
+                    allHotFlickrTags = receivedHotTags
                 }
                 self?.dataForWeekFlickrTags = allHotFlickrTags
                 self?.activityIndicatorVisibility.value = false

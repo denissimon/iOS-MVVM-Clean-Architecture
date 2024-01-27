@@ -18,7 +18,16 @@ class DefaultTagRepository: TagRepository {
     private func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> NetworkCancellable? {
         let endpoint = FlickrAPI.getHotTags()
         let networkTask = apiInteractor.requestEndpoint(endpoint, type: Tags.self) { result in
-            completionHandler(result)
+            switch result {
+            case .success(let tags):
+                if tags.stat != "ok" {
+                    completionHandler(.failure(NetworkError(error: nil, code: nil)))
+                    return
+                }
+                completionHandler(.success(tags))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
         }
         return networkTask
     }
