@@ -56,7 +56,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("\nNetworkService requestEndpoint:",request)
+        log("\nNetworkService requestEndpoint: \(request.description)")
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -87,7 +87,7 @@ class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        print("\nNetworkService requestEndpoint<T: Decodable>:",request)
+        log("\nNetworkService requestEndpoint<T: Decodable>: \(request.description)")
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -117,9 +117,9 @@ class NetworkService {
     
     func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
-        print("\nNetworkService fetchFile:",request)
+        log("\nNetworkService fetchFile: \(request.description)")
      
-        let dataTask = self.urlSession.dataTask(with: request) { (data, response, error) in
+        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             if data != nil && error == nil {
                 completion(data!)
                 return
@@ -130,6 +130,12 @@ class NetworkService {
         dataTask.resume()
         
         return dataTask
+    }
+    
+    private func log(_ str: String) {
+        #if DEBUG
+        print(str)
+        #endif
     }
 }
 
