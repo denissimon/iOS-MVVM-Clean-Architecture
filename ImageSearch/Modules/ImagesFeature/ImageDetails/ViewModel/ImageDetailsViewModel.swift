@@ -7,6 +7,10 @@
 
 import Foundation
 
+/* Use Case scenarios:
+ * imageRepository.getImage(url: bigImageURL)
+ */
+
 class ImageDetailsViewModel {
     
     let imageRepository: ImageRepository
@@ -46,18 +50,18 @@ class ImageDetailsViewModel {
             return
         }
         
-        if let url = image.getImageURL(.big) {
+        if let bigImageURL = image.getImageURL(.big) {
             
             activityIndicatorVisibility.value = true
             
             imageLoadTask = Task.detached { [weak self] in
-                if let data = await self?.imageRepository.getBigImage(url: url) {
+                if let data = await self?.imageRepository.getImage(url: bigImageURL) {
                     guard !data.isEmpty else {
                         self?.showErrorToast()
                         return
                     }
-                    if let largeImage = Supportive.getImage(data: data) {
-                        let imageWrapper = ImageWrapper(image: largeImage)
+                    if let bigImage = Supportive.toUIImage(from: data) {
+                        let imageWrapper = ImageWrapper(image: bigImage)
                         self?.image.bigImage = imageWrapper
                         self?.data.value = imageWrapper
                         self?.activityIndicatorVisibility.value = false
