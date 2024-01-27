@@ -59,6 +59,7 @@ open class SQLite {
         
         if sqlite3_open(path, &db) == SQLITE_OK {
             dbPointer = db
+            log("database opened successfully, path: \(path)")
         } else {
             defer {
                 if db != nil {
