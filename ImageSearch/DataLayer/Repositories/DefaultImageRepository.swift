@@ -17,14 +17,12 @@ class DefaultImageRepository: ImageRepository {
         self.imageDBInteractor = imageDBInteractor
     }
     
-    private func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> Cancellable? {
+    private func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> NetworkCancellable? {
         let endpoint = FlickrAPI.search(imageQuery)
-        let task = RepositoryTask()
-        task.networkTask = apiInteractor.requestEndpoint(endpoint) { result in
-            guard !task.isCancelled else { return }
+        let networkTask = apiInteractor.requestEndpoint(endpoint) { result in
             completionHandler(result)
         }
-        return task
+        return networkTask
     }
     
     // A pure transformation of the data (a pure function within the impure context)
@@ -66,13 +64,11 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    private func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable? {
-        let task = RepositoryTask()
-        task.networkTask = apiInteractor.fetchFile(url: url) { result in
-            guard !task.isCancelled else { return }
+    private func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> NetworkCancellable? {
+        let networkTask = apiInteractor.fetchFile(url: url) { result in
             completionHandler(result)
         }
-        return task
+        return networkTask
     }
     
     private func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void) {

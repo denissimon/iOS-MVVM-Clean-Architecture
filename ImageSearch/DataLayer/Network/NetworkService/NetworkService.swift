@@ -7,48 +7,21 @@
 
 import Foundation
 
-protocol EndpointType {
-    var method: Method { get }
-    var path: String { get }
-    var baseURL: String { get }
-    var params: HTTPParams? { get set }
-}
-
-class Endpoint: EndpointType {
-    var method: Method
-    var baseURL: String
-    var path: String
-    var params: HTTPParams?
-    init(method: Method, baseURL: String, path: String, params: HTTPParams?) {
-        self.method = method
-        self.baseURL = baseURL
-        self.path = path
-        self.params = params
-    }
-}
-
-struct HTTPParams {
-    let httpBody: Data?
-    let cachePolicy: URLRequest.CachePolicy?
-    let timeoutInterval: TimeInterval?
-    let headerValues: [(value: String, forHTTPHeaderField: String)]?
-}
-
-struct NetworkError: Error {
+public struct NetworkError: Error {
     let error: Error?
     let code: Int?
 }
 
-class NetworkService {
+open class NetworkService {
        
-    var urlSession: URLSession
+    let urlSession: URLSession
     
-    init(urlSession: URLSession = URLSession.shared) {
+    public init(urlSession: URLSession = URLSession.shared) {
         self.urlSession = urlSession
     }
     
-    // Request API endpoint
-    func requestEndpoint(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
+    /// Request API endpoint
+    public func requestEndpoint(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, code: nil)))
@@ -78,8 +51,8 @@ class NetworkService {
         return dataTask
     }
     
-    // Request API endpoint with decoding of results in Decodable
-    func requestEndpoint<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+    /// Request API endpoint with decoding of results in Decodable
+    public func requestEndpoint<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, code: nil)))
@@ -94,8 +67,7 @@ class NetworkService {
             let status = response?.statusCode
             
             if data != nil && error == nil {
-                let response = ResponseDecodable(data: data!)
-                guard let decoded = response.decode(type) else {
+                guard let decoded = ResponseDecodable.decode(type, data: data!) else {
                     completion(.failure(NetworkError(error: nil, code: status)))
                     return
                 }
@@ -115,7 +87,7 @@ class NetworkService {
         return dataTask
     }
     
-    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
+    public func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
         log("\nNetworkService fetchFile: \(request.description)")
      
@@ -139,35 +111,22 @@ class NetworkService {
     }
 }
 
-struct ResponseDecodable {
-    
-    fileprivate var data: Data
-    
-    init(data: Data) {
-        self.data = data
-    }
-    
-    public func decode<T: Decodable>(_ type: T.Type) -> T? {
-        let jsonDecoder = JSONDecoder()
-        do {
-            let response = try jsonDecoder.decode(T.self, from: data)
-            return response
-        } catch _ {
-            return nil
-        }
-    }
+public protocol NetworkCancellable {
+    func cancel()
 }
 
-enum HTTPHeaderField: String {
+extension URLSessionDataTask: NetworkCancellable {}
+
+public enum HTTPHeaderField: String {
     case authentication = "Authorization"
     case contentType = "Content-Type"
-    case acceptType = "Accept"
+    case accept = "Accept"
     case acceptEncoding = "Accept-Encoding"
     case string = "String"
 }
 
-enum ContentType: String {
-    case json = "application/json"
-    case formEncode = "application/x-www-form-urlencoded"
+public enum ContentType: String {
+    case applicationJson = "application/json"
+    case applicationFormUrlencoded = "application/x-www-form-urlencoded"
 }
 
