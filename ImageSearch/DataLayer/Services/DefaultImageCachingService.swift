@@ -56,12 +56,12 @@ class DefaultImageCachingService: ImageCachingService {
                     if search.searchResults.first?.thumbnail == nil {
                         return search
                     }
-                    guard let cachedImagesCount = await self.imageRepository.getImageCount(searchId: search.id) else {
+                    guard let imagesAreCached = await self.imageRepository.checkImagesAreCached(searchId: search.id) else {
                         return search
                     }
                     for (index, image) in search.searchResults .enumerated(){
                         image.bigImage = nil // We don't necessarily need to cache big images in the local DB, since they are already cached by iOS for a while and are displayed even when offline
-                        if cachedImagesCount == 0 { // cache if image is not already cached
+                        if !imagesAreCached { // cache if image is not already cached
                             let _ = await self.imageRepository.saveImage(image, searchId: search.id, sortId: index+1)
                         }
                         image.thumbnail = nil

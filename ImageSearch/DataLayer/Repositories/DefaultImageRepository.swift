@@ -98,8 +98,8 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    private func getImageCount(searchId: String, completionHandler: @escaping (Int?) -> Void) {
-        imageDBInteractor.getImageCount(searchId: searchId) { result in
+    private func checkImagesAreCached(searchId: String, completionHandler: @escaping (Bool?) -> Void) {
+        imageDBInteractor.checkImagesAreCached(searchId: searchId) { result in
             completionHandler(result)
         }
     }
@@ -148,9 +148,9 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    func getImageCount(searchId: String) async -> Int? {
+    func checkImagesAreCached(searchId: String) async -> Bool? {
         await withCheckedContinuation { continuation in
-            getImageCount(searchId: searchId) { result in
+            checkImagesAreCached(searchId: searchId) { result in
                 continuation.resume(returning: result)
             }
         }

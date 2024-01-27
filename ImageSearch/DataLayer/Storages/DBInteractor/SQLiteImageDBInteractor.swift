@@ -113,18 +113,33 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    func getImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
+    /* Note: another way (albeit more computationally heavy) to perform this check is as follows:
+     func checkImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
+        ...
+        let sql = "SELECT COUNT(*) FROM \(imagesTable) WHERE searchId = ?;"
+        let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, valuesToBind: valuesToBind)
+        completion(rowCount) // Returns 0 if images with the given searchId are not already cached
+        ...
+     }
+     */
+    func checkImagesAreCached(searchId: String, completion: @escaping (Bool?) -> Void) {
         guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else {
             completion(nil)
             return
         }
-        let sql = "SELECT COUNT(*) FROM \(imagesTable) WHERE searchId = ?;"
+        let sql = "SELECT * FROM \(imagesTable) WHERE searchId = ? LIMIT 1"
         do {
             let valuesToBind = SQLValues([
                 (.TEXT, searchId)
             ])
-            let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, valuesToBind: valuesToBind)
-            completion(rowCount)
+            let valuesToGet = SQLValues([
+                (.INT, nil), // id
+                (.TEXT, nil), // searchId
+                (.INT, nil), // sortId
+                (.TEXT, nil) // json
+            ])
+            let rows = try sqliteAdapter.getRow(sql: sql, valuesToBind: valuesToBind, valuesToGet: valuesToGet)
+            completion(rows.count == 1 ? true : false)
         } catch {
             completion(nil)
         }

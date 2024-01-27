@@ -17,7 +17,7 @@ protocol ImageRepository {
     
     func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void)
     func getImages(searchId: String, completionHandler: @escaping ([Image]?) -> Void)
-    func getImageCount(searchId: String, completionHandler: @escaping (Int?) -> Void)
+    func checkImagesAreCached(searchId: String, completionHandler: @escaping (Bool?) -> Void)
     func deleteAllImages()
      */
     
@@ -27,6 +27,6 @@ protocol ImageRepository {
     
     func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool?
     func getImages(searchId: String) async -> [Image]?
-    func getImageCount(searchId: String) async -> Int?
+    func checkImagesAreCached(searchId: String) async -> Bool?
     func deleteAllImages() async
 }
