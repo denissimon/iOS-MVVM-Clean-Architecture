@@ -13,7 +13,7 @@ protocol MainCoordinatorDIContainer {
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController
 }
 
-class MainCoordinator: Coordinator {
+class MainCoordinator: FlowCoordinator {
     
     // MARK: - Properties
     let navigationController: UINavigationController

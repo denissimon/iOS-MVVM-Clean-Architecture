@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AppCoordinator: Coordinator {
+class AppCoordinator: FlowCoordinator {
     
     // MARK: - Properties
     lazy var navigationController = UINavigationController()
