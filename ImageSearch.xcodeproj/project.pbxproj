@@ -24,7 +24,6 @@
 		4145C7BE2B2B8CF6001DD403 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7BD2B2B8CF6001DD403 /* DIContainer.swift */; };
 		4145C7C22B2C9846001DD403 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7C12B2C9846001DD403 /* MainCoordinator.swift */; };
 		4145C7C42B2CFEA3001DD403 /* ImageQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7C32B2CFEA3001DD403 /* ImageQuery.swift */; };
-		4145C7C72B2CFF93001DD403 /* SwiftEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7C62B2CFF93001DD403 /* SwiftEvents.swift */; };
 		4145C7C92B2D039A001DD403 /* Storyboarded.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7C82B2D0399001DD403 /* Storyboarded.swift */; };
 		4145C7CC2B2F2F51001DD403 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7CB2B2F2F51001DD403 /* Toast.swift */; };
 		4145C7D12B2F4303001DD403 /* UAObfuscatedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */; };
@@ -46,6 +45,12 @@
 		41AD9B9823FFBD57001383AD /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9623FFBD57001383AD /* Coordinator.swift */; };
 		41AD9B9A23FFCFEC001383AD /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */; };
 		41B115C62B3CC6E80062CD5F /* ImageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */; };
+		41B115CD2B435C700062CD5F /* ImageDBInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115CC2B435C700062CD5F /* ImageDBInteractor.swift */; };
+		41B115CF2B435FAD0062CD5F /* DefaultImageCachingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115CE2B435FAD0062CD5F /* DefaultImageCachingService.swift */; };
+		41B115D32B4362070062CD5F /* ImageCachingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115D22B4362070062CD5F /* ImageCachingService.swift */; };
+		41B115D52B43624B0062CD5F /* SQLiteImageDBInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115D42B43624B0062CD5F /* SQLiteImageDBInteractor.swift */; };
+		41B116342B45F8AE0062CD5F /* SQLite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B116332B45F8AE0062CD5F /* SQLite.swift */; };
+		41B1163C2B4E04B00062CD5F /* SwiftEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */; };
 		41CC247E24148B620053F23E /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CC247D24148B620053F23E /* RequestFactory.swift */; };
 		41CC2480241490570053F23E /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CC247F241490570053F23E /* FlickrAPI.swift */; };
 		41F1E63224009BA60014672C /* ImagesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F1E63124009BA60014672C /* ImagesDataSource.swift */; };
@@ -85,7 +90,6 @@
 		4145C7BD2B2B8CF6001DD403 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		4145C7C12B2C9846001DD403 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		4145C7C32B2CFEA3001DD403 /* ImageQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQuery.swift; sourceTree = "<group>"; };
-		4145C7C62B2CFF93001DD403 /* SwiftEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEvents.swift; sourceTree = "<group>"; };
 		4145C7C82B2D0399001DD403 /* Storyboarded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboarded.swift; sourceTree = "<group>"; };
 		4145C7CB2B2F2F51001DD403 /* Toast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UAObfuscatedString.swift; sourceTree = "<group>"; };
@@ -107,6 +111,12 @@
 		41AD9B9623FFBD57001383AD /* Coordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWrapper.swift; sourceTree = "<group>"; };
+		41B115CC2B435C700062CD5F /* ImageDBInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDBInteractor.swift; sourceTree = "<group>"; };
+		41B115CE2B435FAD0062CD5F /* DefaultImageCachingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultImageCachingService.swift; sourceTree = "<group>"; };
+		41B115D22B4362070062CD5F /* ImageCachingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCachingService.swift; sourceTree = "<group>"; };
+		41B115D42B43624B0062CD5F /* SQLiteImageDBInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteImageDBInteractor.swift; sourceTree = "<group>"; };
+		41B116332B45F8AE0062CD5F /* SQLite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLite.swift; sourceTree = "<group>"; };
+		41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEvents.swift; sourceTree = "<group>"; };
 		41CC247D24148B620053F23E /* RequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestFactory.swift; sourceTree = "<group>"; };
 		41CC247F241490570053F23E /* FlickrAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrAPI.swift; sourceTree = "<group>"; };
 		41F1E63124009BA60014672C /* ImagesDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesDataSource.swift; sourceTree = "<group>"; };
@@ -153,7 +163,6 @@
 		4111D56023FDAEFF00B74B83 /* ImageSearch */ = {
 			isa = PBXGroup;
 			children = (
-				4145C7BC2B2B3BB6001DD403 /* DIContainer */,
 				41AD9B9423FFBD57001383AD /* Coordinator */,
 				41AD9B8423FF342B001383AD /* Common */,
 				41AD9B8123FF315F001383AD /* Modules */,
@@ -185,10 +194,9 @@
 		4145C7CA2B2F2F36001DD403 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4145C7C62B2CFF93001DD403 /* SwiftEvents.swift */,
+				4111D56A23FDAF0200B74B83 /* Assets.xcassets */,
 				4145C7CB2B2F2F51001DD403 /* Toast.swift */,
 				4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */,
-				4111D56A23FDAF0200B74B83 /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -207,9 +215,10 @@
 		4145C7DE2B377442001DD403 /* DataLayer */ = {
 			isa = PBXGroup;
 			children = (
-				4145C7E22B3774C6001DD403 /* Interfaces */,
 				4145C7E12B3774BD001DD403 /* Repositories */,
 				4145C7DF2B377462001DD403 /* Network */,
+				41B115C92B435B880062CD5F /* Storages */,
+				41B115CA2B435B9A0062CD5F /* Services */,
 			);
 			path = DataLayer;
 			sourceTree = "<group>";
@@ -236,6 +245,7 @@
 		4145C7E12B3774BD001DD403 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
+				4145C7E22B3774C6001DD403 /* Interfaces */,
 				4145C7E72B39CE3C001DD403 /* DefaultImageRepository.swift */,
 				4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */,
 			);
@@ -364,8 +374,7 @@
 			children = (
 				4111D56123FDAEFF00B74B83 /* AppDelegate.swift */,
 				41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */,
-				4111D59423FE1DDE00B74B83 /* Supportive.swift */,
-				4111D59623FE200D00B74B83 /* Extensions.swift */,
+				41C8C9D72B51907A00A8213A /* Utils */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -382,12 +391,58 @@
 		41AD9B9423FFBD57001383AD /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
+				4145C7BC2B2B3BB6001DD403 /* DIContainer */,
 				41AD9B9623FFBD57001383AD /* Coordinator.swift */,
 				41AD9B9523FFBD57001383AD /* AppCoordinator.swift */,
 				4145C7C12B2C9846001DD403 /* MainCoordinator.swift */,
 				4145C7C82B2D0399001DD403 /* Storyboarded.swift */,
 			);
 			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		41B115C92B435B880062CD5F /* Storages */ = {
+			isa = PBXGroup;
+			children = (
+				41B115CB2B435BB30062CD5F /* DBInteractor */,
+				41B116322B45F80B0062CD5F /* SQLite */,
+			);
+			path = Storages;
+			sourceTree = "<group>";
+		};
+		41B115CA2B435B9A0062CD5F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				41B115D22B4362070062CD5F /* ImageCachingService.swift */,
+				41B115CE2B435FAD0062CD5F /* DefaultImageCachingService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		41B115CB2B435BB30062CD5F /* DBInteractor */ = {
+			isa = PBXGroup;
+			children = (
+				41B115CC2B435C700062CD5F /* ImageDBInteractor.swift */,
+				41B115D42B43624B0062CD5F /* SQLiteImageDBInteractor.swift */,
+			);
+			path = DBInteractor;
+			sourceTree = "<group>";
+		};
+		41B116322B45F80B0062CD5F /* SQLite */ = {
+			isa = PBXGroup;
+			children = (
+				41B116332B45F8AE0062CD5F /* SQLite.swift */,
+			);
+			path = SQLite;
+			sourceTree = "<group>";
+		};
+		41C8C9D72B51907A00A8213A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				4111D59423FE1DDE00B74B83 /* Supportive.swift */,
+				4111D59623FE200D00B74B83 /* Extensions.swift */,
+				41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		41E9A6B523FED04C00CDE3D6 /* ImageSearch */ = {
@@ -521,8 +576,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41B115D52B43624B0062CD5F /* SQLiteImageDBInteractor.swift in Sources */,
 				4145C7BE2B2B8CF6001DD403 /* DIContainer.swift in Sources */,
 				41FBC2FE2442159700DD1480 /* Tag.swift in Sources */,
+				41B116342B45F8AE0062CD5F /* SQLite.swift in Sources */,
+				41B115D32B4362070062CD5F /* ImageCachingService.swift in Sources */,
 				4111D56223FDAEFF00B74B83 /* AppDelegate.swift in Sources */,
 				41FBC30024439D3000DD1480 /* Tags.swift in Sources */,
 				4145C7EC2B39D11A001DD403 /* URLSessionAPIInteractor.swift in Sources */,
@@ -534,18 +592,20 @@
 				418F33C02441E8E200193C74 /* TagsDataSource.swift in Sources */,
 				418F33BE244133E600193C74 /* HotTagsViewModel.swift in Sources */,
 				4145C7C22B2C9846001DD403 /* MainCoordinator.swift in Sources */,
-				4145C7C72B2CFF93001DD403 /* SwiftEvents.swift in Sources */,
 				4145C7EE2B39D36C001DD403 /* DefaultTagRepository.swift in Sources */,
 				41CC247E24148B620053F23E /* RequestFactory.swift in Sources */,
+				41B115CD2B435C700062CD5F /* ImageDBInteractor.swift in Sources */,
 				418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */,
 				41B115C62B3CC6E80062CD5F /* ImageWrapper.swift in Sources */,
 				41CC2480241490570053F23E /* FlickrAPI.swift in Sources */,
 				4145C7C42B2CFEA3001DD403 /* ImageQuery.swift in Sources */,
 				4145C7E62B39CDC4001DD403 /* TagRepository.swift in Sources */,
+				41B1163C2B4E04B00062CD5F /* SwiftEvents.swift in Sources */,
 				4111D58923FDC27300B74B83 /* NetworkService.swift in Sources */,
 				4145C7CC2B2F2F51001DD403 /* Toast.swift in Sources */,
 				41AD9B8723FF512C001383AD /* ImageDetailsViewController.swift in Sources */,
 				4145C7D42B30E5B2001DD403 /* Cancellable.swift in Sources */,
+				41B115CF2B435FAD0062CD5F /* DefaultImageCachingService.swift in Sources */,
 				41F1E63224009BA60014672C /* ImagesDataSource.swift in Sources */,
 				4111D58523FDB46D00B74B83 /* CollectionViewHeader.swift in Sources */,
 				4111D59323FDD81E00B74B83 /* Image.swift in Sources */,
@@ -650,7 +710,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -704,7 +764,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

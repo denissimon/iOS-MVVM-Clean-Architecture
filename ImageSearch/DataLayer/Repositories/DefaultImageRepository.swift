@@ -10,9 +10,11 @@ import Foundation
 class DefaultImageRepository: ImageRepository {
     
     let apiInteractor: APIInteractor
+    let imageDBInteractor: ImageDBInteractor
     
-    init(apiInteractor: APIInteractor) {
+    init(apiInteractor: APIInteractor, imageDBInteractor: ImageDBInteractor) {
         self.apiInteractor = apiInteractor
+        self.imageDBInteractor = imageDBInteractor
     }
     
     private func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> Cancellable? {
@@ -25,11 +27,12 @@ class DefaultImageRepository: ImageRepository {
         return task
     }
     
-    private func prepareImages(_ imageData: Data, completionHandler: @escaping (Images?) -> Void) {
+    // A pure transformation of the data (a pure function within the impure context)
+    private func prepareImages(_ imagesData: Data, completionHandler: @escaping (Images?) -> Void) {
         do {
             guard
-                !imageData.isEmpty,
-                let resultsDictionary = try JSONSerialization.jsonObject(with: imageData) as? [String: AnyObject],
+                !imagesData.isEmpty,
+                let resultsDictionary = try JSONSerialization.jsonObject(with: imagesData) as? [String: AnyObject],
                 let stat = resultsDictionary["stat"] as? String
                 else {
                     completionHandler(nil)
@@ -54,12 +57,13 @@ class DefaultImageRepository: ImageRepository {
                     let imageID = photoObject["id"] as? String,
                     let farm = photoObject["farm"] as? Int,
                     let server = photoObject["server"] as? String,
-                    let secret = photoObject["secret"] as? String
+                    let secret = photoObject["secret"] as? String,
+                    let title = photoObject["title"] as? String
                     else {
                         return nil
                 }
 
-                return Image(imageID: imageID, farm: farm, server: server, secret: secret)
+                return Image(imageID: imageID, farm: farm, server: server, secret: secret, title: title)
             }
             
             if imagesFound.isEmpty {
@@ -73,7 +77,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    private func getLargeImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable? {
+    private func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable? {
         let task = RepositoryTask()
         task.networkTask = apiInteractor.fetchFile(url: url) { result in
             guard !task.isCancelled else { return }
@@ -82,11 +86,29 @@ class DefaultImageRepository: ImageRepository {
         return task
     }
     
-    // MARK: - async methods
+    private func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void) {
+        imageDBInteractor.saveImage(image, searchId: searchId, sortId: sortId, type: Image.self) { result in
+            completionHandler(result)
+        }
+    }
+    
+    private func getImages(searchId: String, completionHandler: @escaping ([Image]?) -> Void) {
+        imageDBInteractor.getImages(searchId: searchId, type: Image.self) { result in
+            completionHandler(result)
+        }
+    }
+    
+    private func getImageCount(searchId: String, completionHandler: @escaping (Int?) -> Void) {
+        imageDBInteractor.getImageCount(searchId: searchId) { result in
+            completionHandler(result)
+        }
+    }
+    
+    // MARK: - async API methods
     
     func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
         await withCheckedContinuation { continuation in
-            searchImages(imageQuery) { result in
+            let _ = searchImages(imageQuery) { result in
                 continuation.resume(returning: result)
             }
         }
@@ -100,11 +122,41 @@ class DefaultImageRepository: ImageRepository {
         }
     }
      
-    func getBigImage(url: URL) async -> Data? {
+    func getImage(url: URL) async -> Data? {
          await withCheckedContinuation { continuation in
-             getLargeImage(url: url) { result in
+             let _ = getImage(url: url) { result in
                  continuation.resume(returning: result)
              }
          }
-     }
+    }
+    
+    // MARK: - async DB methods
+    
+    func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
+        await withCheckedContinuation { continuation in
+            saveImage(image, searchId: searchId, sortId: sortId) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+    
+    func getImages(searchId: String) async -> [Image]? {
+        await withCheckedContinuation { continuation in
+            getImages(searchId: searchId) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+    
+    func getImageCount(searchId: String) async -> Int? {
+        await withCheckedContinuation { continuation in
+            getImageCount(searchId: searchId) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+    
+    func deleteAllImages() async {
+        imageDBInteractor.deleteAllImages()
+    }
 }

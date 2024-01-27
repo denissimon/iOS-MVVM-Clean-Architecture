@@ -24,6 +24,15 @@ struct AppConfiguration {
         static let horizontalSpace: CGFloat = 20
     }
     
+    struct MemorySafety {
+        static var enabled = true
+        static var cacheAfterSearches = 3
+    }
+    
+    struct SQLite {
+        static let imageSearchDBPath = try! (FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("image_search.sqlite")).path
+    }
+    
     struct Other {
         static let toastDuration: TimeInterval = 4.0
         static let allTimesHotTags = ["sunset","beach","water","sky","flowers","nature","white","tree","green","sunrise","portrait","art","light","snow","dog","sun","clouds","cat","flower","park","winter","landscape","street","summer","sea","city","trees","night","yellow","lake","christmas","people","bridge","family","bird","river","pink","house","car","food","blue","old","macro","music","new","moon","home","orange","garden","blackandwhite"]
