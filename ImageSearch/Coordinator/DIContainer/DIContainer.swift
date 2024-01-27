@@ -17,15 +17,28 @@ class DIContainer {
         return URLSessionAPIInteractor(with: networkService)
     }()
     
+    // MARK: - Storages
+    
+    lazy var imageDBInteractor: ImageDBInteractor = {
+        let sqliteAdapter = try? SQLite(path: AppConfiguration.SQLite.imageSearchDBPath)
+        return SQLiteImageDBInteractor(with: sqliteAdapter)
+    }()
+    
     // MARK: - Repositories
     
     func makeImageRepository() -> ImageRepository {
-       return DefaultImageRepository(apiInteractor: apiInteractor)
+        return DefaultImageRepository(apiInteractor: apiInteractor, imageDBInteractor: imageDBInteractor)
     }
     
     func makeTagRepository() -> TagRepository {
-       return DefaultTagRepository(apiInteractor: apiInteractor)
+        return DefaultTagRepository(apiInteractor: apiInteractor)
     }
+    
+    // MARK: - Services
+    
+    lazy var imageCachingService: ImageCachingService = {
+        return DefaultImageCachingService(imageRepository: makeImageRepository())
+    }()
     
     // MARK: - Flow Coordinators
     
@@ -41,7 +54,7 @@ extension DIContainer: MainCoordinatorDIContainer {
     
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController {
         let imageRepository = makeImageRepository()
-        let viewModel = ImageSearchViewModel(imageRepository: imageRepository)
+        let viewModel = ImageSearchViewModel(imageRepository: imageRepository, imageCachingService: imageCachingService)
         return ImageSearchViewController.instantiate(viewModel: viewModel, actions: actions)
     }
     
