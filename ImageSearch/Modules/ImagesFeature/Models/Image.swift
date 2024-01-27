@@ -24,6 +24,21 @@ class Image: Codable {
         self.title = title
     }
     
+    init?(from: [String : AnyObject]) {
+        guard let imageID = from["id"] as? String,
+              let farm = from["farm"] as? Int,
+              let server = from["server"] as? String,
+              let secret = from["secret"] as? String,
+              let title = from["title"] as? String else {
+                  return nil
+              }
+        self.imageID = imageID
+        self.farm = farm
+        self.server = server
+        self.secret = secret
+        self.title = title
+    }
+    
     func getImageURL(_ size: ImageSize = .medium) -> URL? {
         if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size.rawValue).jpg") {
           return url

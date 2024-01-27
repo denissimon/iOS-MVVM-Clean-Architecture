@@ -52,26 +52,15 @@ class DefaultImageRepository: ImageRepository {
                     return
             }
             
-            let imagesFound: [Image] = photos.compactMap { photoObject in
-                guard
-                    let imageID = photoObject["id"] as? String,
-                    let farm = photoObject["farm"] as? Int,
-                    let server = photoObject["server"] as? String,
-                    let secret = photoObject["secret"] as? String,
-                    let title = photoObject["title"] as? String
-                    else {
-                        return nil
-                }
-
-                return Image(imageID: imageID, farm: farm, server: server, secret: secret, title: title)
+            let imagesFound: [Image] = photos.compactMap { imageDict in
+                return Image.init(from: imageDict)
             }
             
-            if imagesFound.isEmpty {
+            guard !imagesFound.isEmpty else {
                 completionHandler(nil)
-            } else {
-                let images = Images(data: imagesFound)
-                completionHandler(images)
+                return
             }
+            completionHandler(Images(data: imagesFound))
         } catch {
             completionHandler(nil)
         }
