@@ -12,6 +12,10 @@ enum SegmentType {
     case allTimes
 }
 
+/* Use Case scenarios:
+ * tagRepository.getHotTags()
+ */
+
 class HotTagsViewModel {
     
     let tagRepository: TagRepository
