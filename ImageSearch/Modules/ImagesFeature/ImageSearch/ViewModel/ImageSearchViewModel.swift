@@ -117,7 +117,7 @@ class ImageSearchViewModel {
                 
                 guard !Task.isCancelled else { return }
                 
-                let resultsWrapper = ImageSearchResults(id: UUID().uuidString, searchQuery: searchQuery, searchResults: thumbnailImages)
+                let resultsWrapper = ImageSearchResults(id: self.generateSearchId(), searchQuery: searchQuery, searchResults: thumbnailImages)
                 self.data.value.insert(resultsWrapper, at: 0)
                 self.lastSearchQuery = searchQuery
                 
@@ -133,6 +133,10 @@ class ImageSearchViewModel {
                 }
             }
         }
+    }
+    
+    private func generateSearchId() -> String {
+        UUID().uuidString
     }
     
     private func memorySafetyCheck() {
