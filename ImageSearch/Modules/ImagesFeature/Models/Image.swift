@@ -39,7 +39,7 @@ class Image: Codable {
         self.title = title
     }
     
-    func getImageURL(_ size: ImageSize = .medium) -> URL? {
+    func getImageURL(_ size: ImageSize) -> URL? {
         if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size.rawValue).jpg") {
             return url
         }
@@ -48,7 +48,6 @@ class Image: Codable {
 }
 
 enum ImageSize: String {
-    case small = "s"
-    case medium = "m"
+    case thumbnail = "m"
     case big = "b"
 }

@@ -96,7 +96,7 @@ class ImageSearchViewModel {
                 let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
                     for item in images! {
                         taskGroup.addTask {
-                            guard let thumbnailUrl = item.getImageURL(.medium) else { return item }
+                            guard let thumbnailUrl = item.getImageURL(.thumbnail) else { return item }
                             let tempImage = item
                             if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
                                 if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
