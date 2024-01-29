@@ -36,6 +36,10 @@ class DIContainer {
     
     // MARK: - Services
     
+    lazy var imageService: ImageService = {
+        return DefaultImageService(imageRepository: makeImageRepository())
+    }()
+    
     lazy var imageCachingService: ImageCachingService = {
         return DefaultImageCachingService(imageRepository: makeImageRepository())
     }()
@@ -53,8 +57,7 @@ extension DIContainer: MainCoordinatorDIContainer {
     // MARK: - View Controllers
     
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController {
-        let imageRepository = makeImageRepository()
-        let viewModel = ImageSearchViewModel(imageRepository: imageRepository, imageCachingService: imageCachingService)
+        let viewModel = ImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
         return ImageSearchViewController.instantiate(viewModel: viewModel, actions: actions)
     }
     

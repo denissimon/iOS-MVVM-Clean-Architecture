@@ -38,6 +38,8 @@
 		414D90E02B65ACD8009F37CA /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DB2B65ACD8009F37CA /* Endpoint.swift */; };
 		414D90E12B65ACD8009F37CA /* HTTPParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DC2B65ACD8009F37CA /* HTTPParams.swift */; };
 		414D90E22B65ACD8009F37CA /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DD2B65ACD8009F37CA /* NetworkService.swift */; };
+		414D90FE2B673DDA009F37CA /* DefaultImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90FC2B673DDA009F37CA /* DefaultImageService.swift */; };
+		414D90FF2B673DDA009F37CA /* ImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90FD2B673DDA009F37CA /* ImageService.swift */; };
 		418F33B4243FEEF100193C74 /* ImageDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B3243FEEF100193C74 /* ImageDetails.storyboard */; };
 		418F33BA244132A500193C74 /* HotTags.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTags.storyboard */; };
 		418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsViewController.swift */; };
@@ -106,6 +108,8 @@
 		414D90DB2B65ACD8009F37CA /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		414D90DC2B65ACD8009F37CA /* HTTPParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPParams.swift; sourceTree = "<group>"; };
 		414D90DD2B65ACD8009F37CA /* NetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		414D90FC2B673DDA009F37CA /* DefaultImageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultImageService.swift; sourceTree = "<group>"; };
+		414D90FD2B673DDA009F37CA /* ImageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageService.swift; sourceTree = "<group>"; };
 		418F33B3243FEEF100193C74 /* ImageDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageDetails.storyboard; sourceTree = "<group>"; };
 		418F33B9244132A500193C74 /* HotTags.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTags.storyboard; sourceTree = "<group>"; };
 		418F33BB244132E800193C74 /* HotTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewController.swift; sourceTree = "<group>"; };
@@ -416,6 +420,8 @@
 		41B115CA2B435B9A0062CD5F /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				414D90FD2B673DDA009F37CA /* ImageService.swift */,
+				414D90FC2B673DDA009F37CA /* DefaultImageService.swift */,
 				41B115D22B4362070062CD5F /* ImageCachingService.swift */,
 				41B115CE2B435FAD0062CD5F /* DefaultImageCachingService.swift */,
 			);
@@ -585,6 +591,7 @@
 				41B115D52B43624B0062CD5F /* SQLiteImageDBInteractor.swift in Sources */,
 				4145C7BE2B2B8CF6001DD403 /* DIContainer.swift in Sources */,
 				41FBC2FE2442159700DD1480 /* Tag.swift in Sources */,
+				414D90FE2B673DDA009F37CA /* DefaultImageService.swift in Sources */,
 				41B116342B45F8AE0062CD5F /* SQLite.swift in Sources */,
 				41B115D32B4362070062CD5F /* ImageCachingService.swift in Sources */,
 				4111D56223FDAEFF00B74B83 /* AppDelegate.swift in Sources */,
@@ -617,6 +624,7 @@
 				4111D59323FDD81E00B74B83 /* Image.swift in Sources */,
 				4111D59523FE1DDE00B74B83 /* Supportive.swift in Sources */,
 				4111D56623FDAEFF00B74B83 /* ImageSearchViewController.swift in Sources */,
+				414D90FF2B673DDA009F37CA /* ImageService.swift in Sources */,
 				4145C7D12B2F4303001DD403 /* UAObfuscatedString.swift in Sources */,
 				4111D58B23FDCD6B00B74B83 /* CollectionViewCell.swift in Sources */,
 				4111D58723FDC1D700B74B83 /* ImageSearchViewModel.swift in Sources */,

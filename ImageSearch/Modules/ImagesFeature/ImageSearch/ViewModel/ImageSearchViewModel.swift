@@ -8,17 +8,14 @@
 import Foundation
 
 /* Use Case scenarios:
- * imageRepository.searchImages(imageQuery)
- * imageRepository.prepareImages(imagesData)
- * imageRepository.getImage(url: thumbnailUrl)
+ * imageService.searchImages(imageQuery)
  * imageCachingService.cacheIfNecessary(self.data.value)
  * imageCachingService.getCachedImages(searchId: searchId)
  */
 
 class ImageSearchViewModel {
     
-    let imageRepository: ImageRepository
-    
+    let imageService: ImageService
     let imageCachingService: ImageCachingService
     
     var lastSearchQuery: ImageQuery?
@@ -36,8 +33,8 @@ class ImageSearchViewModel {
         willSet { imagesLoadTask?.cancel() }
     }
     
-    init(imageRepository: ImageRepository, imageCachingService: ImageCachingService) {
-        self.imageRepository = imageRepository
+    init(imageService: ImageService, imageCachingService: ImageCachingService) {
+        self.imageService = imageService
         self.imageCachingService = imageCachingService
         
         setup()
@@ -77,61 +74,31 @@ class ImageSearchViewModel {
         
         imagesLoadTask = Task.detached {
             
-            let imageQuery = ImageQuery(query: searchString)
-            let result = await self.imageRepository.searchImages(imageQuery)
+            var thumbnailImages: [Image]?
+            
+            do {
+                let imageQuery = ImageQuery(query: searchString)
+                thumbnailImages = try await self.imageService.searchImages(imageQuery, imagesLoadTask: self.imagesLoadTask)
+            } catch {
+                self.showErrorToast(error.localizedDescription)
+                return
+            }
             
             guard !Task.isCancelled else { return }
             
-            switch result {
-            case .success(let imagesData):
-                let images = await self.imageRepository.prepareImages(imagesData)
-                
-                guard images != nil else {
-                    self.showErrorToast()
-                    return
-                }
-                
-                guard !Task.isCancelled else { return }
-                
-                let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
-                    for item in images! {
-                        taskGroup.addTask {
-                            guard let thumbnailUrl = item.getImageURL(.thumbnail) else { return item }
-                            let tempImage = item
-                            if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
-                                if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
-                                    tempImage.thumbnail = ImageWrapper(image: thumbnailImage)
-                                }
-                            }
-                            return tempImage
-                        }
-                    }
-                    var processedImages: [Image] = []
-                    for await result in taskGroup {
-                        if result.thumbnail != nil {
-                            processedImages.append(result)
-                        }
-                    }
-                    return processedImages
-                }
-                
-                guard !Task.isCancelled else { return }
-                
-                let resultsWrapper = ImageSearchResults(id: self.generateSearchId(), searchQuery: searchQuery, searchResults: thumbnailImages)
-                self.data.value.insert(resultsWrapper, at: 0)
-                self.lastSearchQuery = searchQuery
-                
+            guard thumbnailImages != nil, let thumbnailImages = thumbnailImages  else {
                 self.activityIndicatorVisibility.value = false
-                self.scrollTop.value = nil
-                
-                self.memorySafetyCheck()
-            case .failure(let error) :
-                if error.error != nil {
-                    self.showErrorToast(error.error!.localizedDescription)
-                } else {
-                    self.showErrorToast()
-                }
+                return
             }
+            
+            let resultsWrapper = ImageSearchResults(id: self.generateSearchId(), searchQuery: searchQuery, searchResults: thumbnailImages)
+            self.data.value.insert(resultsWrapper, at: 0)
+            self.lastSearchQuery = searchQuery
+            
+            self.activityIndicatorVisibility.value = false
+            self.scrollTop.value = nil
+            
+            self.memorySafetyCheck()
         }
     }
     
