@@ -13,8 +13,11 @@ struct Tags: Decodable {
         let tag: [Tag]
     }
     
-    let period: String
-    let count: Int
     let hottags: HotTags
     let stat: String
+    
+    enum CodingKeys: String, CodingKey {
+        case hottags
+        case stat
+    }
 }
