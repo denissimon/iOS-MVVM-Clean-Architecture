@@ -83,7 +83,7 @@ HotTags module:
 
 ### Image caching service
 
-[ImageCachingService](https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Services) implements logic for caching images downloaded from Flickr. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
+[ImageCachingService][ImageCachingServiceLink] implements logic for caching images downloaded from Flickr. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
 
 ### Reusable components from this project
 
