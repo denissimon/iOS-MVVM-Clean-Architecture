@@ -54,7 +54,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Network/NetworkService
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Storages/SQLite
 
-### Layers
+### Main layers
 
 **Presentation Layer**: _coordinators_, _UI elements / views_, _storyboards_, _view controllers_ and _ViewModels_
 
