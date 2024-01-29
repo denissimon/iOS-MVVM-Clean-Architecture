@@ -51,7 +51,7 @@ class DefaultImageRepository: ImageRepository {
             }
             
             let imagesFound: [Image] = photos.compactMap { imageDict in
-                return Image.init(from: imageDict)
+                return Image(from: imageDict)
             }
             
             guard !imagesFound.isEmpty else {
