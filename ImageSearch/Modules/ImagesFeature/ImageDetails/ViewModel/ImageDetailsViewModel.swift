@@ -21,7 +21,7 @@ class ImageDetailsViewModel {
     let data: Observable<ImageWrapper?> = Observable(nil)
     let shareImage: Observable<[ImageWrapper]> = Observable([])
     let showToast: Observable<String> = Observable("")
-    let activityIndicatorVisibility = Observable<Bool>(false)
+    let activityIndicatorVisibility: Observable<Bool> = Observable<Bool>(false)
     
     private var imageLoadTask: Task<Void, Never>?
     
