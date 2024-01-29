@@ -26,7 +26,7 @@ class DefaultImageRepository: ImageRepository {
     }
     
     // A pure transformation of the data (a pure function within the impure context)
-    private func prepareImages(_ imagesData: Data, completionHandler: @escaping (Images?) -> Void) {
+    private func prepareImages(_ imagesData: Data, completionHandler: @escaping ([Image]?) -> Void) {
         do {
             guard
                 !imagesData.isEmpty,
@@ -58,7 +58,7 @@ class DefaultImageRepository: ImageRepository {
                 completionHandler(nil)
                 return
             }
-            completionHandler(Images(data: imagesFound))
+            completionHandler(imagesFound)
         } catch {
             completionHandler(nil)
         }
@@ -99,7 +99,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    func prepareImages(_ imageData: Data) async -> Images? {
+    func prepareImages(_ imageData: Data) async -> [Image]? {
         await withCheckedContinuation { continuation in
             prepareImages(imageData) { result in
                 continuation.resume(returning: result)

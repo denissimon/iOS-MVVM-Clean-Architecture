@@ -12,7 +12,7 @@ protocol ImageRepository {
     
     /* Can be used together with or instead of async methods:
     func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> Cancellable?
-    func prepareImages(_ imageData: Data, completionHandler: @escaping (Images?) -> Void)
+    func prepareImages(_ imageData: Data, completionHandler: @escaping ([Image]?) -> Void)
     func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable?
     
     func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void)
@@ -22,7 +22,7 @@ protocol ImageRepository {
      */
     
     func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult
-    func prepareImages(_ imageData: Data) async -> Images?
+    func prepareImages(_ imageData: Data) async -> [Image]?
     func getImage(url: URL) async -> Data?
     
     func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool?

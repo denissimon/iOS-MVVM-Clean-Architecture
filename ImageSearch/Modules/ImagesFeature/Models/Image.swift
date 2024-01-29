@@ -41,14 +41,10 @@ class Image: Codable {
     
     func getImageURL(_ size: ImageSize = .medium) -> URL? {
         if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size.rawValue).jpg") {
-          return url
+            return url
         }
         return nil
     }
-}
-
-struct Images {
-    let data: [Image]
 }
 
 enum ImageSize: String {

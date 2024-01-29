@@ -94,7 +94,7 @@ class ImageSearchViewModel {
                 guard !Task.isCancelled else { return }
                 
                 let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
-                    for item in images!.data {
+                    for item in images! {
                         taskGroup.addTask {
                             guard let thumbnailUrl = item.getImageURL(.medium) else { return item }
                             let tempImage = item
