@@ -10,17 +10,6 @@ import Foundation
 protocol ImageRepository {
     typealias ImagesDataResult = Result<Data, NetworkError>
     
-    /* Can be used together with or instead of async methods:
-    func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> Cancellable?
-    func prepareImages(_ imageData: Data, completionHandler: @escaping ([Image]?) -> Void)
-    func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> Cancellable?
-    
-    func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void)
-    func getImages(searchId: String, completionHandler: @escaping ([Image]?) -> Void)
-    func checkImagesAreCached(searchId: String, completionHandler: @escaping (Bool?) -> Void)
-    func deleteAllImages()
-     */
-    
     func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult
     func prepareImages(_ imageData: Data) async -> [Image]?
     func getImage(url: URL) async -> Data?
