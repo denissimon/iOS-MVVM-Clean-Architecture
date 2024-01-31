@@ -1,5 +1,5 @@
 //
-//  HotTagsViewModel.swift
+//  DefaultHotTagsViewModel.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 04/11/2020.
@@ -16,7 +16,22 @@ enum SegmentType {
  * tagRepository.getHotTags()
  */
 
-class HotTagsViewModel {
+protocol HotTagsViewModelInput {
+    var didSelect: Event<ImageQuery> { get }
+    func getFlickrHotTags()
+    func getDataSource() -> TagsDataSource
+    func onSelectedSegmentChange(_ index: Int)
+}
+
+protocol HotTagsViewModelOutput {
+    var data: Observable<[Tag]> { get }
+    var showToast: Observable<String> { get }
+    var activityIndicatorVisibility: Observable<Bool> { get }
+}
+
+typealias HotTagsViewModel = HotTagsViewModelInput & HotTagsViewModelOutput
+
+class DefaultHotTagsViewModel: HotTagsViewModel {
     
     let tagRepository: TagRepository
     let didSelect: Event<ImageQuery>

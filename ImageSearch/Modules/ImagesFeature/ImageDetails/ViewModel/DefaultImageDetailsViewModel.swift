@@ -1,5 +1,5 @@
 //
-//  ImageDetailsViewModel.swift
+//  DefaultImageDetailsViewModel.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 02/20/2020.
@@ -11,7 +11,23 @@ import Foundation
  * imageRepository.getImage(url: bigImageURL)
  */
 
-class ImageDetailsViewModel {
+protocol ImageDetailsViewModelInput {
+    func loadBigImage()
+    func getTitle() -> String
+    func onShareButton()
+}
+
+protocol ImageDetailsViewModelOutput {
+    var data: Observable<ImageWrapper?> { get }
+    var shareImage: Observable<[ImageWrapper]> { get }
+    var showToast: Observable<String> { get }
+    var activityIndicatorVisibility: Observable<Bool> { get }
+    var image: Image { get }
+}
+
+typealias ImageDetailsViewModel = ImageDetailsViewModelInput & ImageDetailsViewModelOutput
+
+class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     let imageRepository: ImageRepository
     let image: Image

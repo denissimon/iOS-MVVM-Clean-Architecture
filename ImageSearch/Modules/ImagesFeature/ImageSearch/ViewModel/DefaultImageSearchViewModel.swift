@@ -1,5 +1,5 @@
 //
-//  ImageSearchViewModel.swift
+//  DefaultImageSearchViewModel.swift
 //  ImageSearch
 //
 //  Created by Denis Simon on 02/19/2020.
@@ -13,7 +13,30 @@ import Foundation
  * imageCachingService.getCachedImages(searchId: searchId)
  */
 
-class ImageSearchViewModel {
+protocol ImageSearchViewModelInput {
+    func searchFlickr(for searchQuery: ImageQuery)
+    func getDataSource() -> ImagesDataSource
+    func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery)
+    func scrollUp()
+    func scrollDown(_ searchBarHeight: Float)
+    func updateSection(_ searchId: String)
+    func getHeightOfCell(width: Float) -> Float
+}
+
+protocol ImageSearchViewModelOutput {
+    var data: Observable<[ImageSearchResults]> { get }
+    var sectionData: Observable<([ImageSearchResults], IndexSet)> { get }
+    var scrollTop: Observable<Bool?> { get }
+    var showToast: Observable<String> { get }
+    var resetSearchBar: Observable<Bool?> { get }
+    var activityIndicatorVisibility: Observable<Bool> { get }
+    var collectionViewTopConstraint: Observable<Float> { get }
+    var lastSearchQuery: ImageQuery? { get }
+}
+
+typealias ImageSearchViewModel = ImageSearchViewModelInput & ImageSearchViewModelOutput
+
+class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     let imageService: ImageService
     let imageCachingService: ImageCachingService

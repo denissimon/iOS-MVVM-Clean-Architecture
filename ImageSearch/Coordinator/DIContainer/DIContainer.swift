@@ -57,19 +57,19 @@ extension DIContainer: MainCoordinatorDIContainer {
     // MARK: - View Controllers
     
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController {
-        let viewModel = ImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let viewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
         return ImageSearchViewController.instantiate(viewModel: viewModel, actions: actions)
     }
     
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController {
         let imageRepository = makeImageRepository()
-        let viewModel = ImageDetailsViewModel(imageRepository: imageRepository, image: image, imageQuery: imageQuery)
+        let viewModel = DefaultImageDetailsViewModel(imageRepository: imageRepository, image: image, imageQuery: imageQuery)
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController {
         let tagRepository = makeTagRepository()
-        let viewModel = HotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        let viewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
         return HotTagsViewController.instantiate(viewModel: viewModel, actions: actions)
     }
 }
