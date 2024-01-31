@@ -174,7 +174,7 @@
 				41AD9B9423FFBD57001383AD /* Coordinator */,
 				41AD9B8423FF342B001383AD /* Common */,
 				41AD9B8123FF315F001383AD /* Modules */,
-				4145C7DE2B377442001DD403 /* Data Layer */,
+				4145C7DE2B377442001DD403 /* Data */,
 				4145C7CA2B2F2F36001DD403 /* Resources */,
 				4111D56C23FDAF0200B74B83 /* LaunchScreen.storyboard */,
 				4111D56F23FDAF0200B74B83 /* Info.plist */,
@@ -220,7 +220,7 @@
 			path = ImagesFeature;
 			sourceTree = "<group>";
 		};
-		4145C7DE2B377442001DD403 /* Data Layer */ = {
+		4145C7DE2B377442001DD403 /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				4145C7E12B3774BD001DD403 /* Repositories */,
@@ -228,7 +228,7 @@
 				41B115C92B435B880062CD5F /* Storages */,
 				41B115CA2B435B9A0062CD5F /* Services */,
 			);
-			path = "Data Layer";
+			path = Data;
 			sourceTree = "<group>";
 		};
 		4145C7DF2B377462001DD403 /* Network */ = {
