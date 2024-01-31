@@ -174,6 +174,7 @@
 				41AD9B9423FFBD57001383AD /* Coordinator */,
 				41AD9B8423FF342B001383AD /* Common */,
 				41AD9B8123FF315F001383AD /* Modules */,
+				414D91002B6A6295009F37CA /* Domain */,
 				4145C7DE2B377442001DD403 /* Data */,
 				4145C7CA2B2F2F36001DD403 /* Resources */,
 				4111D56C23FDAF0200B74B83 /* LaunchScreen.storyboard */,
@@ -212,7 +213,6 @@
 		4145C7D22B2F58EA001DD403 /* ImagesFeature */ = {
 			isa = PBXGroup;
 			children = (
-				419B5B3E25D13DA300443960 /* Models */,
 				41E9A6B523FED04C00CDE3D6 /* ImageSearch */,
 				41AD9B8523FF3445001383AD /* ImageDetails */,
 				418F33B82441324B00193C74 /* HotTags */,
@@ -223,10 +223,10 @@
 		4145C7DE2B377442001DD403 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				41B115CA2B435B9A0062CD5F /* Services */,
 				4145C7E12B3774BD001DD403 /* Repositories */,
 				4145C7DF2B377462001DD403 /* Network */,
 				41B115C92B435B880062CD5F /* Storages */,
-				41B115CA2B435B9A0062CD5F /* Services */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -253,20 +253,66 @@
 		4145C7E12B3774BD001DD403 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
-				4145C7E22B3774C6001DD403 /* Interfaces */,
 				4145C7E72B39CE3C001DD403 /* DefaultImageRepository.swift */,
 				4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
 		};
-		4145C7E22B3774C6001DD403 /* Interfaces */ = {
+		414D91002B6A6295009F37CA /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				414D91052B6A651E009F37CA /* Services */,
+				414D91012B6A62B1009F37CA /* Entities */,
+				414D91022B6A62C3009F37CA /* Interfaces */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		414D91012B6A62B1009F37CA /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				4111D58F23FDD81E00B74B83 /* Image.swift */,
+				41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */,
+				4145C7C32B2CFEA3001DD403 /* ImageQuery.swift */,
+				41FBC2FF24439D3000DD1480 /* Tags.swift */,
+				41FBC2FD2442159700DD1480 /* Tag.swift */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		414D91022B6A62C3009F37CA /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				414D91032B6A62C9009F37CA /* Services */,
+				414D91042B6A62F5009F37CA /* Repositories */,
+			);
+			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		414D91032B6A62C9009F37CA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				414D90FD2B673DDA009F37CA /* ImageService.swift */,
+				41B115D22B4362070062CD5F /* ImageCachingService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		414D91042B6A62F5009F37CA /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
 				4145C7E32B39CCE1001DD403 /* ImageRepository.swift */,
 				4145C7E52B39CDC4001DD403 /* TagRepository.swift */,
 			);
-			path = Interfaces;
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		414D91052B6A651E009F37CA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		418F33B82441324B00193C74 /* HotTags */ = {
@@ -274,7 +320,6 @@
 			children = (
 				419B5B4325D13E3B00443960 /* View */,
 				419B5B4425D13E5000443960 /* ViewModel */,
-				419B5B4225D13E0900443960 /* Models */,
 			);
 			path = HotTags;
 			sourceTree = "<group>";
@@ -307,16 +352,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		419B5B3E25D13DA300443960 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				4145C7C32B2CFEA3001DD403 /* ImageQuery.swift */,
-				41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */,
-				4111D58F23FDD81E00B74B83 /* Image.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		419B5B3F25D13DB200443960 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -340,15 +375,6 @@
 				41AD9B8823FF51C3001383AD /* DefaultImageDetailsViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		419B5B4225D13E0900443960 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				41FBC2FD2442159700DD1480 /* Tag.swift */,
-				41FBC2FF24439D3000DD1480 /* Tags.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		419B5B4325D13E3B00443960 /* View */ = {
@@ -420,9 +446,7 @@
 		41B115CA2B435B9A0062CD5F /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				414D90FD2B673DDA009F37CA /* ImageService.swift */,
 				414D90FC2B673DDA009F37CA /* DefaultImageService.swift */,
-				41B115D22B4362070062CD5F /* ImageCachingService.swift */,
 				41B115CE2B435FAD0062CD5F /* DefaultImageCachingService.swift */,
 			);
 			path = Services;
