@@ -39,10 +39,10 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [ExplicitArchitectureLink]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together
 [DependencyInversionPrincipleLink]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
-[AsyncAwaitLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Repositories
+[AsyncAwaitLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Repositories
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/ViewModel/HotTagsViewModel.swift
-[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data%20Layer/Services/DefaultImageCachingService.swift
-[PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data%20Layer/Repositories/DefaultImageRepository.swift 
+[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Services/DefaultImageCachingService.swift
+[PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Repositories/DefaultImageRepository.swift 
 [UITableViewDataSourceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/View/TagsDataSource.swift
 [UICollectionViewDataSourceLink]:  https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/ImageSearch/View/ImagesDataSource.swift
 [CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/Models/Image.swift
@@ -51,8 +51,8 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 
-[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Network/NetworkService
-[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data%20Layer/Storages/SQLite
+[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Network/NetworkService
+[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Storages/SQLite
 
 ### Main layers
 
