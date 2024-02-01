@@ -8,6 +8,7 @@
 import UIKit
 
 class ImageWrapper: Codable {
+    
     let image: UIImage?
     
     init(image: UIImage) {
