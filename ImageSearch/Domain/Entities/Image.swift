@@ -8,6 +8,7 @@
 import Foundation
 
 class Image: Codable {
+    
     var thumbnail: ImageWrapper?
     var bigImage: ImageWrapper?
     let imageID: String
@@ -37,13 +38,6 @@ class Image: Codable {
         self.server = server
         self.secret = secret
         self.title = title
-    }
-    
-    func getImageURL(_ size: ImageSize) -> URL? {
-        if let url = URL(string: "https://farm\(farm).staticflickr.com/\(server)/\(imageID)_\(secret)_\(size.rawValue).jpg") {
-            return url
-        }
-        return nil
     }
 }
 
