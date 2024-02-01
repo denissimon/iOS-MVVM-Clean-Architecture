@@ -79,7 +79,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
                     }
                     if let bigImage = Supportive.toUIImage(from: data) {
                         let imageWrapper = ImageWrapper(image: bigImage)
-                        self.image.bigImage = imageWrapper
+                        ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
                         self.data.value = imageWrapper
                         self.activityIndicatorVisibility.value = false
                     } else {

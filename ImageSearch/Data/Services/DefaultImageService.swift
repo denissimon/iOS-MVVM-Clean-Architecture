@@ -39,7 +39,8 @@ class DefaultImageService: ImageService {
                         let tempImage = item
                         if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
                             if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
-                                tempImage.thumbnail = ImageWrapper(image: thumbnailImage)
+                                let imageWrapper = ImageWrapper(image: thumbnailImage)
+                                ImageBehavior.updateImage(tempImage, newWrapper: imageWrapper, for: .thumbnail)
                             }
                         }
                         return tempImage

@@ -21,4 +21,16 @@ class ImageBehavior {
         }
         return nil
     }
+    
+    // Note: another option is to first make a deep copy of 'image', then it'll be updated and returned
+    @discardableResult
+    static func updateImage(_ image: Image, newWrapper: ImageWrapper?, for size: ImageSize) -> Image {
+        switch size {
+        case .thumbnail:
+            image.thumbnail = newWrapper
+        case .big:
+            image.bigImage = newWrapper
+        }
+        return image
+    }
 }
