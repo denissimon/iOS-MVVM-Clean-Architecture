@@ -31,7 +31,7 @@ class HotTagsViewController: UIViewController, Storyboarded {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        viewModel.getFlickrHotTags()
+        viewModel.getHotTags()
     }
     
     private func setup() {

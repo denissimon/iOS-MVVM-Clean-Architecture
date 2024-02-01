@@ -18,7 +18,7 @@ enum SegmentType {
 
 protocol HotTagsViewModelInput {
     var didSelect: Event<ImageQuery> { get }
-    func getFlickrHotTags()
+    func getHotTags()
     func getDataSource() -> TagsDataSource
     func onSelectedSegmentChange(_ index: Int)
 }
@@ -69,7 +69,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
         self.activityIndicatorVisibility.value = false
     }
     
-    func getFlickrHotTags() {
+    func getHotTags() {
         self.activityIndicatorVisibility.value = true
                 
         hotTagsLoadTask = Task.detached { [weak self] in
@@ -128,7 +128,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             } else {
                 data.value = []
                 if !activityIndicatorVisibility.value {
-                    getFlickrHotTags()
+                    getHotTags()
                 }
             }
         } else if index == 1 {
