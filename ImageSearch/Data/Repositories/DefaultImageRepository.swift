@@ -51,7 +51,7 @@ class DefaultImageRepository: ImageRepository {
             }
             
             let imagesFound: [Image] = photos.compactMap { imageDict in
-                return Image(from: imageDict)
+                return Image(flickrParams: imageDict)
             }
             
             guard !imagesFound.isEmpty else {

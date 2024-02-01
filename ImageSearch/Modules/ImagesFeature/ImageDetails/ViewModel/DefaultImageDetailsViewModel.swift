@@ -66,7 +66,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
             return
         }
         
-        if let bigImageURL = ImageBehavior.getImageURL(image, size: .big) {
+        if let bigImageURL = ImageBehavior.getFlickrImageURL(image, size: .big) {
             
             activityIndicatorVisibility.value = true
             

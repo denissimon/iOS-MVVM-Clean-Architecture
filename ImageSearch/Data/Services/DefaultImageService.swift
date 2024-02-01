@@ -35,7 +35,7 @@ class DefaultImageService: ImageService {
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
                 for item in images! {
                     taskGroup.addTask {
-                        guard let thumbnailUrl = ImageBehavior.getImageURL(item, size: .thumbnail) else { return item }
+                        guard let thumbnailUrl = ImageBehavior.getFlickrImageURL(item, size: .thumbnail) else { return item }
                         let tempImage = item
                         if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
                             if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
