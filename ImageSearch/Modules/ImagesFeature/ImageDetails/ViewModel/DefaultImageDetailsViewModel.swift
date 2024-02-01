@@ -29,7 +29,7 @@ typealias ImageDetailsViewModel = ImageDetailsViewModelInput & ImageDetailsViewM
 
 class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
-    let imageRepository: ImageRepository
+    let imageService: ImageService
     let image: Image
     let imageQuery: ImageQuery
     
@@ -41,8 +41,8 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     private var imageLoadTask: Task<Void, Never>?
     
-    init(imageRepository: ImageRepository, image: Image, imageQuery: ImageQuery) {
-        self.imageRepository = imageRepository
+    init(imageService: ImageService, image: Image, imageQuery: ImageQuery) {
+        self.imageService = imageService
         self.image = image
         self.imageQuery = imageQuery
     }
@@ -66,29 +66,27 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
             return
         }
         
-        if let bigImageURL = ImageBehavior.getFlickrImageURL(image, size: .big) {
-            
-            activityIndicatorVisibility.value = true
-            
-            imageLoadTask = Task.detached { [weak self] in
-                guard let self = self else { return }
-                if let data = await self.imageRepository.getImage(url: bigImageURL) {
-                    guard !data.isEmpty else {
-                        self.showErrorToast()
-                        return
-                    }
-                    if let bigImage = Supportive.toUIImage(from: data) {
-                        let imageWrapper = ImageWrapper(image: bigImage)
-                        ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
-                        self.data.value = imageWrapper
-                        self.activityIndicatorVisibility.value = false
-                    } else {
-                        self.showErrorToast()
-                    }
+        activityIndicatorVisibility.value = true
+        
+        imageLoadTask = Task.detached { [weak self] in
+            guard let self = self else { return }
+            if let imageData = await self.imageService.getBigImage(self.image) {
+                guard !imageData.isEmpty else {
+                    self.showErrorToast()
+                    return
                 }
+                if let bigImage = Supportive.toUIImage(from: imageData) {
+                    let imageWrapper = ImageWrapper(image: bigImage)
+                    ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
+                    self.data.value = imageWrapper
+                    
+                    self.activityIndicatorVisibility.value = false
+                } else {
+                    self.showErrorToast()
+                }
+            } else {
+                self.showErrorToast()
             }
-        } else {
-            showErrorToast()
         }
     }
     

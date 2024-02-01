@@ -62,8 +62,7 @@ extension DIContainer: MainCoordinatorDIContainer {
     }
     
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController {
-        let imageRepository = makeImageRepository()
-        let viewModel = DefaultImageDetailsViewModel(imageRepository: imageRepository, image: image, imageQuery: imageQuery)
+        let viewModel = DefaultImageDetailsViewModel(imageService: imageService, image: image, imageQuery: imageQuery)
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     

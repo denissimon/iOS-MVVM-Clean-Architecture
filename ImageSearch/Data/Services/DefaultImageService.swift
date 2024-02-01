@@ -61,4 +61,13 @@ class DefaultImageService: ImageService {
             throw NetworkError.init(error: error.error, code: nil)
         }
     }
+    
+    func getBigImage(_ image: Image) async -> Data? {
+        if let bigImageURL = ImageBehavior.getFlickrImageURL(image, size: .big) {
+            if let imageData = await self.imageRepository.getImage(url: bigImageURL) {
+                return imageData
+            }
+        }
+        return nil
+    }
 }
