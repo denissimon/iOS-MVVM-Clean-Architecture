@@ -41,7 +41,7 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         
         // Get some random images at the app's start
         let imageQuery = ImageQuery(query: "random")
-        viewModel.searchFlickr(for: imageQuery)
+        viewModel.searchImage(for: imageQuery)
     }
     
     private func setup() {
@@ -140,7 +140,7 @@ class ImageSearchViewController: UIViewController, Storyboarded {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let imageQueryEvent = Event<ImageQuery>()
-        imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchFlickr(for: query) }
+        imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchImage(for: query) }
         coordinatorActions?.showHotTags(imageQueryEvent)
     }
     
@@ -158,11 +158,11 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         }
         guard let lastSearchQuery = viewModel.lastSearchQuery else {
             let imageQuery = ImageQuery(query: "random")
-            self.viewModel.searchFlickr(for: imageQuery)
+            self.viewModel.searchImage(for: imageQuery)
             endRefreshing()
             return
         }
-        viewModel.searchFlickr(for: lastSearchQuery)
+        viewModel.searchImage(for: lastSearchQuery)
         endRefreshing()
     }
 }

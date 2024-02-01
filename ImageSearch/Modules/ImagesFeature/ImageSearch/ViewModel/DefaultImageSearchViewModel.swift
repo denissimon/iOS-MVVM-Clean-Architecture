@@ -14,7 +14,7 @@ import Foundation
  */
 
 protocol ImageSearchViewModelInput {
-    func searchFlickr(for searchQuery: ImageQuery)
+    func searchImage(for searchQuery: ImageQuery)
     func getDataSource() -> ImagesDataSource
     func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery)
     func scrollUp()
@@ -78,7 +78,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         self.activityIndicatorVisibility.value = false
     }
     
-    func searchFlickr(for searchQuery: ImageQuery) {
+    func searchImage(for searchQuery: ImageQuery) {
         let trimmedString = searchQuery.query.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmedString.isEmpty {
             showToast.value = "Empty search query"
@@ -138,7 +138,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery) {
-        searchFlickr(for: searchBarQuery)
+        searchImage(for: searchBarQuery)
         resetSearchBar.value = nil
     }
     
