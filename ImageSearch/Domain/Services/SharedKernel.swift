@@ -23,15 +23,14 @@ class ImageBehavior {
         return nil
     }
     
-    // Note: another option is to first make a deep copy of 'image', then it'll be updated and returned
-    @discardableResult
     static func updateImage(_ image: Image, newWrapper: ImageWrapper?, for size: ImageSize) -> Image {
+        let resultImage = image.deepCopy()
         switch size {
         case .thumbnail:
-            image.thumbnail = newWrapper
+            resultImage.thumbnail = newWrapper
         case .big:
-            image.bigImage = newWrapper
+            resultImage.bigImage = newWrapper
         }
-        return image
+        return resultImage
     }
 }
