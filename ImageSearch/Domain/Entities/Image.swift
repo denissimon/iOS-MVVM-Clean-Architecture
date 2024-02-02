@@ -9,7 +9,7 @@
 
 import Foundation
 
-struct FlickrParameters: Codable {
+struct FlickrImageParameters: Codable {
     let imageID: String
     let farm: Int
     let server: String
@@ -21,9 +21,9 @@ class Image: Codable {
     var thumbnail: ImageWrapper?
     var bigImage: ImageWrapper?
     let title: String
-    let flickr: FlickrParameters?
+    let flickr: FlickrImageParameters?
     
-    init(title: String, flickr: FlickrParameters? = nil) {
+    init(title: String, flickr: FlickrImageParameters? = nil) {
         self.title = title
         self.flickr = flickr
     }
@@ -36,7 +36,7 @@ class Image: Codable {
               let title = flickrParams["title"] as? String else {
                   return nil
               }
-        let flickr = FlickrParameters(imageID: imageID, farm: farm, server: server, secret: secret)
+        let flickr = FlickrImageParameters(imageID: imageID, farm: farm, server: server, secret: secret)
         self.init(title: title, flickr: flickr)
     }
 }
