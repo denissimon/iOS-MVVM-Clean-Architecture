@@ -39,6 +39,21 @@ class Image: Codable {
         let flickr = FlickrImageParameters(imageID: imageID, farm: farm, server: server, secret: secret)
         self.init(title: title, flickr: flickr)
     }
+    
+    func deepCopy() -> Image {
+        var thumbnail: ImageWrapper?
+        if self.thumbnail != nil {
+            thumbnail = ImageWrapper(image: self.thumbnail!.image)
+        }
+        var bigImage: ImageWrapper?
+        if self.bigImage != nil {
+            bigImage = ImageWrapper(image: self.bigImage!.image)
+        }
+        let newImage = Image(title: self.title, flickr: flickr)
+        newImage.thumbnail = thumbnail
+        newImage.bigImage = bigImage
+        return newImage
+    }
 }
 
 enum ImageSize: String {

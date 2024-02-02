@@ -30,7 +30,7 @@ typealias ImageDetailsViewModel = ImageDetailsViewModelInput & ImageDetailsViewM
 class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     let imageService: ImageService
-    let image: Image
+    var image: Image
     let imageQuery: ImageQuery
     
     // Bindings
@@ -77,7 +77,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
                 }
                 if let bigImage = Supportive.toUIImage(from: imageData) {
                     let imageWrapper = ImageWrapper(image: bigImage)
-                    ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
+                    self.image = ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
                     self.data.value = imageWrapper
                     
                     self.activityIndicatorVisibility.value = false

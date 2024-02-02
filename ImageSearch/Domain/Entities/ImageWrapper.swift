@@ -11,7 +11,7 @@ class ImageWrapper: Codable {
     
     let image: UIImage?
     
-    init(image: UIImage) {
+    init(image: UIImage?) {
         self.image = image
     }
     
