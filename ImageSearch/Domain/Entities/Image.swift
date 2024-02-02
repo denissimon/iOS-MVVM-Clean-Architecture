@@ -40,6 +40,7 @@ class Image: Codable {
         self.init(title: title, flickr: flickr)
     }
     
+    // Another way to make a deep copy is to use DeepCopier.copy(of:)
     func deepCopy() -> Image {
         var thumbnail: ImageWrapper?
         if self.thumbnail != nil {
