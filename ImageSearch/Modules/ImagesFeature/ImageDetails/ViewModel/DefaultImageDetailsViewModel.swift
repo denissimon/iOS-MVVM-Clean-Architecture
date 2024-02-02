@@ -8,7 +8,7 @@
 import Foundation
 
 /* Use Case scenarios:
- * imageRepository.getImage(url: bigImageURL)
+ * imageService.getBigImage(self.image)
  */
 
 protocol ImageDetailsViewModelInput {
