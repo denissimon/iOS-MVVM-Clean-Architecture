@@ -70,7 +70,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         
         imageLoadTask = Task.detached { [weak self] in
             guard let self = self else { return }
-            if let imageData = await self.imageService.getBigImage(self.image) {
+            if let imageData = await self.imageService.getBigImage(for: self.image) {
                 guard !imageData.isEmpty else {
                     self.showErrorToast()
                     return
