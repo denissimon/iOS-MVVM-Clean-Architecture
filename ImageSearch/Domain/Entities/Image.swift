@@ -5,7 +5,7 @@
 //  Created by Denis Simon on 02/19/2020.
 //
 
-// Note: in case of using SwiftUI, it's better to change the name of Image class to e.g. ISImage
+// Note: in case of using SwiftUI, it's better to rename the Image class e.g. to ISImage
 
 import Foundation
 
