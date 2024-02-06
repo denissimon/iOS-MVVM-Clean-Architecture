@@ -33,12 +33,12 @@ typealias HotTagsViewModel = HotTagsViewModelInput & HotTagsViewModelOutput
 
 class DefaultHotTagsViewModel: HotTagsViewModel {
     
-    let tagRepository: TagRepository
+    private let tagRepository: TagRepository
+    
     let didSelect: Event<ImageQuery>
     
-    var dataForWeekFlickrTags = [Tag]()
-    
-    var selectedSegment: SegmentType = .week
+    private var dataForWeekFlickrTags = [Tag]()
+    private var selectedSegment: SegmentType = .week
     
     // Bindings
     let data: Observable<[Tag]> = Observable([])
@@ -60,7 +60,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
         return TagsDataSource(with: data.value)
     }
     
-    func showErrorToast(_ msg: String = "") {
+    private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
             self.showToast.value = "Network error"
         } else {

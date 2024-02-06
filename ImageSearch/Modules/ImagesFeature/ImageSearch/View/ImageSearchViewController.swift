@@ -12,13 +12,13 @@ struct ImageSearchCoordinatorActions {
     let showHotTags: (Event<ImageQuery>) -> ()
 }
 
-class ImageSearchViewController: UIViewController, Storyboarded {
+class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
-    @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var collectionViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var searchBar: UISearchBar!
+    @IBOutlet private weak var collectionView: UICollectionView!
+    @IBOutlet private weak var collectionViewTopConstraint: NSLayoutConstraint!
     
-    var viewModel: ImageSearchViewModel!
+    private var viewModel: ImageSearchViewModel!
     
     private var dataSource: ImagesDataSource?
     
@@ -71,10 +71,9 @@ class ImageSearchViewController: UIViewController, Storyboarded {
             self.scrollTop()
         }
         
-        viewModel.showToast.bind(self, queue: .main) { [weak self] (text) in
-            if !text.isEmpty {
-                self?.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
-            }
+        viewModel.showToast.bind(self, queue: .main) { [weak self] (message) in
+            guard !message.isEmpty else { return }
+            self?.makeToast(message: message)
         }
         
         viewModel.resetSearchBar.bind(self) { [weak self] _ in
@@ -86,11 +85,11 @@ class ImageSearchViewController: UIViewController, Storyboarded {
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
             guard let self = self else { return }
             if value {
-                self.view.makeToastActivity(.center)
+                self.makeToastActivity()
                 self.searchBar.isUserInteractionEnabled = false
                 self.searchBar.placeholder = "..."
             } else {
-                self.view.hideToastActivity()
+                self.hideToastActivity()
                 self.searchBar.isUserInteractionEnabled = true
                 self.searchBar.placeholder = "Search"
             }

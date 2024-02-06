@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-public enum SQLiteError: Error {
+enum SQLiteError: Error {
     case OpenDB(_ msg: String)
     case Prepare(_ msg: String)
     case Step(_ msg: String)
@@ -18,7 +18,7 @@ public enum SQLiteError: Error {
 }
 
 // http://www.sqlite.org/datatype3.html
-public enum SQLType {
+enum SQLType {
     case INT // Includes INT, INTEGER, INT2, INT8, BIGINT, MEDIUMINT, SMALLINT, TINYINT
     case BOOL // Includes BOOL, BOOLEAN, BIT
     case TEXT // Includes TEXT, CHAR, CHARACTER, VARCHAR, CLOB, VARIANT, VARYING_CHARACTER, NATIONAL_VARYING_CHARACTER, NATIVE_CHARACTER, NCHAR, NVARCHAR
@@ -28,7 +28,7 @@ public enum SQLType {
     // TODO: DATE, DATETIME, TIME, TIMESTAMP
 }
 
-public enum SQLOrder {
+enum SQLOrder {
     case ASC
     case DESC
     case none
@@ -41,16 +41,16 @@ public enum SQLOrder {
 /// case REAL (includes REAL, NUMERIC, DECIMAL, FLOAT, DOUBLE, DOUBLE_PRECISION)
 /// case BLOB (includes BLOB, BINARY, VARBINARY)
 /// case NULL
-public typealias SQLValues = [(type: SQLType, value: Any?)]
+typealias SQLValues = [(type: SQLType, value: Any?)]
 
-open class SQLite {
+class SQLite {
     
     private var dbPointer: OpaquePointer?
     
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
-    public init(path: String, recreateDB: Bool = false) throws {
+    init(path: String, recreateDB: Bool = false) throws {
         if recreateDB {
             try deleteDB(path: path)
         }
@@ -84,18 +84,18 @@ open class SQLite {
         }
     }
     
+    private func log(_ str: String) {
+        #if DEBUG
+        print("SQLite: \(str)")
+        #endif
+    }
+    
     private func getErrorMessage(dbPointer: OpaquePointer?) -> String {
         if let errorPointer = sqlite3_errmsg(dbPointer) {
             let errorMessage = String(cString: errorPointer)
             return errorMessage
         }
         return "SQLite error"
-    }
-    
-    private func log(_ str: String) {
-        #if DEBUG
-        print("SQLite: \(str)")
-        #endif
     }
     
     private func prepareStatement(sql: String) throws -> OpaquePointer? {
@@ -184,12 +184,12 @@ open class SQLite {
         }
     }
     
-    public func createTable(sql: String) throws {
+    func createTable(sql: String) throws {
         try operation(sql: sql)
         log("successfully created table, sql: \(sql)")
     }
     
-    public func dropTable(_ tableName: String, vacuum: Bool = true) throws {
+    func dropTable(_ tableName: String, vacuum: Bool = true) throws {
         let sql = "DROP TABLE IF EXISTS \(tableName);"
         try operation(sql: sql)
         if vacuum {
@@ -198,7 +198,7 @@ open class SQLite {
         log("successfully droped table \(tableName)")
     }
     
-    public func deleteAllRows(in tableName: String, vacuum: Bool = true, resetAutoincrement: Bool = true) throws {
+    func deleteAllRows(in tableName: String, vacuum: Bool = true, resetAutoincrement: Bool = true) throws {
         let sql = "DELETE FROM \(tableName);"
         try operation(sql: sql)
         if vacuum {
@@ -210,14 +210,14 @@ open class SQLite {
         }
     }
     
-    public func dropIndex(in tableName: String, forColumn columnName: String) throws {
+    func dropIndex(in tableName: String, forColumn columnName: String) throws {
         let indexName = "\(tableName)_\(columnName)_idx"
         let sql = "DROP INDEX IF EXISTS \"\(indexName)\";"
         try operation(sql: sql)
         log("successfully droped index in \(tableName) for column \(columnName)")
     }
     
-    public func addIndex(to tableName: String, forColumn columnName: String, unique: Bool = false, order: SQLOrder = .none) throws {
+    func addIndex(to tableName: String, forColumn columnName: String, unique: Bool = false, order: SQLOrder = .none) throws {
         
         let indexName = "\(tableName)_\(columnName)_idx"
         
@@ -241,44 +241,44 @@ open class SQLite {
         log("successfully added index to \(tableName) for column \(columnName)")
     }
     
-    public func beginTransaction() throws {
+    func beginTransaction() throws {
         let sql = "BEGIN TRANSACTION;"
         try operation(sql: sql)
         log("BEGIN TRANSACTION")
     }
     
-    public func endTransaction() throws {
+    func endTransaction() throws {
         let sql = "COMMIT;"
         try operation(sql: sql)
         log("COMMIT")
     }
     
     /// Can be used to insert one or several rows depending on the SQL statement
-    public func insertRow(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func insertRow(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully inserted row(s), sql: \(sql)")
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
-    public func updateRow(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func updateRow(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully updated row(s), sql: \(sql)")
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
-    public func deleteRow(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func deleteRow(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully deleted row(s), sql: \(sql)")
     }
     
-    public func deleteByID(in tableName: String, id: Int) throws {
+    func deleteByID(in tableName: String, id: Int) throws {
         let sql = "DELETE FROM \(tableName) WHERE id = ?;"
         let valuesToBind = SQLValues([(.INT, id)])
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully deleted a row by id \(id) in \(tableName)")
     }
     
-    public func getRowCount(in tableName: String) throws -> Int {
+    func getRowCount(in tableName: String) throws -> Int {
         let sql = "SELECT COUNT(*) FROM \(tableName);"
         let sqlStatement = try prepareStatement(sql: sql)
         defer {
@@ -292,7 +292,7 @@ open class SQLite {
         return Int(count)
     }
     
-    public func getRowCountWithCondition(sql: String, valuesToBind: SQLValues) throws -> Int {
+    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues) throws -> Int {
         let sqlStatement = try prepareStatement(sql: sql)
         defer {
             sqlite3_finalize(sqlStatement)
@@ -309,7 +309,7 @@ open class SQLite {
     }
     
     /// Can be used to read one or several rows depending on the SQL statement
-    public func getRow(sql: String, valuesToBind: SQLValues? = nil, valuesToGet: SQLValues) throws -> [SQLValues] {
+    func getRow(sql: String, valuesToBind: SQLValues? = nil, valuesToGet: SQLValues) throws -> [SQLValues] {
         let sqlStatement = try prepareStatement(sql: sql)
         defer {
             sqlite3_finalize(sqlStatement)
@@ -354,14 +354,14 @@ open class SQLite {
         return allRows
     }
     
-    public func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues] {
+    func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues] {
         let sql = "SELECT * FROM \(tableName);"
         let result = try getRow(sql: sql, valuesToGet: valuesToGet)
         log("successfully read all rows in \(tableName), count: \(result.count)")
         return result
     }
     
-    public func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues {
+    func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues {
         let sql = "SELECT * FROM \(tableName) WHERE id = ? LIMIT 1;"
         let valueToBind = SQLValues([(.INT, id)])
         let result = try getRow(sql: sql, valuesToBind: valueToBind, valuesToGet: valuesToGet)
@@ -374,20 +374,20 @@ open class SQLite {
     }
     
     /// Repack the DB to take advantage of deleted data
-    public func vacuum() throws {
+    func vacuum() throws {
         let sql = "VACUUM;"
         try operation(sql: sql)
         log("VACUUM")
     }
     
-    public func resetAutoincrement(in tableName: String) throws {
+    func resetAutoincrement(in tableName: String) throws {
         let sql = "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME=\"\(tableName)\";"
         try operation(sql: sql)
         log("successfully reseted autoincrement in \(tableName)")
     }
     
     /// Any other query except a reading
-    public func query(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func query(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successful query, sql: \(sql)")
     }

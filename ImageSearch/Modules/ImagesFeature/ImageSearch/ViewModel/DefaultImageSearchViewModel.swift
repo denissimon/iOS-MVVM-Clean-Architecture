@@ -38,8 +38,8 @@ typealias ImageSearchViewModel = ImageSearchViewModelInput & ImageSearchViewMode
 
 class DefaultImageSearchViewModel: ImageSearchViewModel {
     
-    let imageService: ImageService
-    let imageCachingService: ImageCachingService
+    private let imageService: ImageService
+    private let imageCachingService: ImageCachingService
     
     var lastSearchQuery: ImageQuery?
     
@@ -69,7 +69,11 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
     
-    func showErrorToast(_ msg: String = "") {
+    func getDataSource() -> ImagesDataSource {
+        return ImagesDataSource(with: data.value)
+    }
+    
+    private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
             self.showToast.value = "Network error"
         } else {
@@ -152,10 +156,6 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         if collectionViewTopConstraint.value == 0 {
             collectionViewTopConstraint.value = searchBarHeight * -1
         }
-    }
-    
-    func getDataSource() -> ImagesDataSource {
-        return ImagesDataSource(with: data.value)
     }
     
     func getHeightOfCell(width: Float) -> Float {

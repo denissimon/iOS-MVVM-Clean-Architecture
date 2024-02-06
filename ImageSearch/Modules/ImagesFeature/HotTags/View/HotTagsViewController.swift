@@ -11,11 +11,11 @@ struct HotTagsCoordinatorActions {
     let closeHotTags: (UIViewController) -> ()
 }
 
-class HotTagsViewController: UIViewController, Storyboarded {
+class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet private weak var tableView: UITableView!
     
-    var viewModel: HotTagsViewModel!
+    private var viewModel: HotTagsViewModel!
     
     private var dataSource: TagsDataSource?
     
@@ -46,18 +46,17 @@ class HotTagsViewController: UIViewController, Storyboarded {
             self.tableView.reloadData()
         }
         
-        viewModel.showToast.bind(self, queue: .main) { [weak self] (text) in
-            if !text.isEmpty {
-                self?.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
-            }
+        viewModel.showToast.bind(self, queue: .main) { [weak self] (message) in
+            guard !message.isEmpty else { return }
+            self?.makeToast(message: message)
         }
         
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
             guard let self = self else { return }
             if value {
-                self.view.makeToastActivity(.center)
+                self.makeToastActivity()
             } else {
-                self.view.hideToastActivity()
+                self.hideToastActivity()
             }
         }
     }

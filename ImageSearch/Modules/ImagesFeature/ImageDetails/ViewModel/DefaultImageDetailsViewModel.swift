@@ -8,7 +8,7 @@
 import Foundation
 
 /* Use Case scenarios:
- * imageService.getBigImage(self.image)
+ * imageService.getBigImage(for: self.image)
  */
 
 protocol ImageDetailsViewModelInput {
@@ -29,7 +29,8 @@ typealias ImageDetailsViewModel = ImageDetailsViewModelInput & ImageDetailsViewM
 
 class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
-    let imageService: ImageService
+    private let imageService: ImageService
+    
     var image: Image
     let imageQuery: ImageQuery
     
@@ -51,7 +52,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         imageLoadTask?.cancel()
     }
     
-    func showErrorToast(_ msg: String = "") {
+    private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
             self.showToast.value = "Network error"
         } else {

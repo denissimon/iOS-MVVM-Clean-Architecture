@@ -7,14 +7,14 @@
 
 import UIKit
 
-class ImageDetailsViewController: UIViewController, Storyboarded {
+class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var imageTitle: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var shareBarButtonItem: UIBarButtonItem!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var imageTitle: UILabel!
     
-    var viewModel: ImageDetailsViewModel!
+    private var viewModel: ImageDetailsViewModel!
     
     static func instantiate(viewModel: ImageDetailsViewModel) -> ImageDetailsViewController {
         let vc = Self.instantiate(from: .imageDetails)
@@ -47,10 +47,9 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
             self.present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.showToast.bind(self, queue: .main) { [weak self] (text) in
-            if !text.isEmpty {
-                self?.view.makeToast(text, duration: AppConfiguration.Other.toastDuration, position: .bottom)
-            }
+        viewModel.showToast.bind(self, queue: .main) { [weak self] (message) in
+            guard !message.isEmpty else { return }
+            self?.makeToast(message: message)
         }
         
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
@@ -68,7 +67,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded {
         imageTitle.text = viewModel.image.title
     }
     
-    // MARK: Actions
+    // MARK: - Actions
     
     @IBAction func onShareButton(_ sender: UIBarButtonItem) {
         viewModel.onShareButton()

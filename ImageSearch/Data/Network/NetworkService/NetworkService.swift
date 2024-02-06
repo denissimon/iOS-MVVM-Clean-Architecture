@@ -7,21 +7,20 @@
 
 import Foundation
 
-public struct NetworkError: Error {
+struct NetworkError: Error {
     let error: Error?
     let code: Int?
 }
 
-open class NetworkService {
+class NetworkService {
        
     let urlSession: URLSession
     
-    public init(urlSession: URLSession = URLSession.shared) {
+    init(urlSession: URLSession = URLSession.shared) {
         self.urlSession = urlSession
     }
     
-    /// Request API endpoint
-    public func requestEndpoint(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
+    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, code: nil)))
@@ -29,7 +28,7 @@ open class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService requestEndpoint: \(request.description)")
+        log("\nNetworkService request \(endpoint.method.rawValue), url: \(url)")
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -51,8 +50,7 @@ open class NetworkService {
         return dataTask
     }
     
-    /// Request API endpoint with decoding of results in Decodable
-    public func requestEndpoint<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, code: nil)))
@@ -60,7 +58,7 @@ open class NetworkService {
         }
         
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService requestEndpoint<T: Decodable>: \(request.description)")
+        log("\nNetworkService request<T: Decodable> \(endpoint.method.rawValue), url: \(url)")
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -87,9 +85,9 @@ open class NetworkService {
         return dataTask
     }
     
-    public func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
+    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
-        log("\nNetworkService fetchFile: \(request.description)")
+        log("\nNetworkService fetchFile: \(url)")
      
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             if data != nil && error == nil {
@@ -104,20 +102,20 @@ open class NetworkService {
         return dataTask
     }
     
-    private func log(_ str: String) {
+    func log(_ str: String) {
         #if DEBUG
         print(str)
         #endif
     }
 }
 
-public protocol NetworkCancellable {
+protocol NetworkCancellable {
     func cancel()
 }
 
 extension URLSessionDataTask: NetworkCancellable {}
 
-public enum HTTPHeaderField: String {
+enum HTTPHeader: String {
     case authentication = "Authorization"
     case contentType = "Content-Type"
     case accept = "Accept"
@@ -125,7 +123,7 @@ public enum HTTPHeaderField: String {
     case string = "String"
 }
 
-public enum ContentType: String {
+enum ContentType: String {
     case applicationJson = "application/json"
     case applicationFormUrlencoded = "application/x-www-form-urlencoded"
 }
