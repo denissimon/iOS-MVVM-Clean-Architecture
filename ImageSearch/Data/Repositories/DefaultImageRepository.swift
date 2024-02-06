@@ -19,7 +19,7 @@ class DefaultImageRepository: ImageRepository {
     
     private func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> NetworkCancellable? {
         let endpoint = FlickrAPI.search(imageQuery)
-        let networkTask = apiInteractor.requestEndpoint(endpoint) { result in
+        let networkTask = apiInteractor.request(endpoint) { result in
             completionHandler(result)
         }
         return networkTask
