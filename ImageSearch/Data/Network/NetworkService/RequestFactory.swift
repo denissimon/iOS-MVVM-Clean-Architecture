@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum Method: String {
+enum HTTPMethod: String {
     case GET
     case POST
     case PUT
@@ -17,7 +17,7 @@ public enum Method: String {
 
 class RequestFactory {
     
-    static func request(url: URL, method: Method, params: HTTPParams? = nil) -> URLRequest {
+    static func request(url: URL, method: HTTPMethod, params: HTTPParams? = nil) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         
