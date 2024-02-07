@@ -485,10 +485,10 @@
 		41C8C9D72B51907A00A8213A /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				414D910B2B726549009F37CA /* Protocols */,
 				4111D59423FE1DDE00B74B83 /* Supportive.swift */,
 				4111D59623FE200D00B74B83 /* Extensions.swift */,
 				41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */,
+				414D910B2B726549009F37CA /* Protocols */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
