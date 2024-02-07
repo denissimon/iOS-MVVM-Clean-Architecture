@@ -19,14 +19,14 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [MVVM][MVVMLink]
 - [Flow coordinator][FlowCoordinatorLink] implemented with closure-based actions
 - [Dependency Injection][DIContainerLink], DIContainer
-- [Data Binding][DataBindingLink] using lightweight [Observable\<T\>][ObservableLink]
+- [Data Binding][DataBindingLink] using the lightweight [Observable\<T\>][ObservableLink]
 - [Clean Architecture][CleanArchitectureLink]
 - [Explicit Architecture][ExplicitArchitectureLink]
-- [Dependency Inversion Principle][DependencyInversionPrincipleLink]
-- [async/await][AsyncAwaitLink] with remaining the Transport Layer implemented on callbacks without changes
-- [Closure-based delegation][ClosureBasedDelegationLink] using lightweight [Event\<T\>][EventLink]
-- [Image caching service][ImageCachingServiceLink]
-- [Pure functional transformations][PureFunctionalTransformationsLink] within impure context
+- [Protocol-Oriented Programming][POPLink]
+- [async/await][AsyncAwaitLink] with the remaining existing Transport Layer unchanged
+- [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
+- [Pure functional transformations][PureFunctionalTransformationsLink]
+- [Shared Kernel][SharedKernelLink], delegating entity behavior
 - Separate data sources for [UITableView][UITableViewDataSourceLink] and [UICollectionView][UICollectionViewDataSourceLink]
 - [Codable][CodableLink]
 
@@ -38,11 +38,11 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Common/Utils/SwiftEvents.swift
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [ExplicitArchitectureLink]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together
-[DependencyInversionPrincipleLink]: https://en.wikipedia.org/wiki/Dependency_inversion_principle
+[POPLink]: https://www.swiftanytime.com/blog/protocol-oriented-programming-in-swift
 [AsyncAwaitLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Repositories
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
-[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Services/DefaultImageCachingService.swift
 [PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Repositories/DefaultImageRepository.swift 
+[SharedKernelLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/SharedKernel.swift
 [UITableViewDataSourceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/View/TagsDataSource.swift
 [UICollectionViewDataSourceLink]:  https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/ImageSearch/View/ImagesDataSource.swift
 [CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Image.swift
@@ -50,9 +50,11 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 ### Includes
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
+- [Image caching service][ImageCachingServiceLink]
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Network/NetworkService
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Storages/SQLite/SQLite.swift
+[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Services/DefaultImageCachingService.swift
 
 ### Main layers
 
@@ -73,7 +75,7 @@ ImageSearch module:
 
 ImageDetails module:
 ```swift
-* imageRepository.getImage(url: bigImageURL)
+* imageService.getBigImage(for: self.image)
 ```
 
 HotTags module:
