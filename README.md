@@ -23,7 +23,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [Clean Architecture][CleanArchitectureLink]
 - [Explicit Architecture][ExplicitArchitectureLink]
 - [Protocol-Oriented Programming][POPLink]
-- [async/await][AsyncAwaitLink] with the remaining existing Transport Layer unchanged
+- [async/await][AsyncAwaitLink] with the existing Transport Layer remaining unchanged
 - [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
 - [Pure functional transformations][PureFunctionalTransformationsLink]
 - [Shared Kernel][SharedKernelLink], delegating entity behavior
@@ -60,7 +60,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Presentation Layer**: _coordinators_, _UI elements / views_, _storyboards_, _view controllers_ and _ViewModels_
 
-**Domain Layer**: _entities_ (or _domain models_), _interfaces_ (for repositories and services) and, optionally, _domain services_
+**Domain Layer**: _entities_ (or _domain models_), _interfaces_ (for repositories and services) and _domain services_
 
 **Data Layer**: _services_, _entity repositories_, _API/DB interactors_ (or network services and storages) and _adapters_
 
