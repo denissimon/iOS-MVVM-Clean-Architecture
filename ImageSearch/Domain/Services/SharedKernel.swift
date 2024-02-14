@@ -7,12 +7,8 @@
 
 import Foundation
 
-/* Note: Behavior classes should ideally contain pure functions without side effects.
-Input: an entity / collection of entities, and, optionally, additional parameters
-Output: a transformed entity / collection of entities, or a specified simple type such as URL? or Int
-*/
-
-// Delegate the behavior of Image entity
+// Delegate the behavior of Image entity.
+// Contains pure functions without side effects.
 class ImageBehavior {
     
     static func getFlickrImageURL(_ image: Image, size: ImageSize) -> URL? {
