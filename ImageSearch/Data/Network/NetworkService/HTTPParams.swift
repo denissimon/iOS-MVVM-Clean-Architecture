@@ -21,3 +21,25 @@ struct HTTPParams {
         self.headerValues = headerValues
     }
 }
+
+enum HTTPHeader: String {
+    case authentication = "Authorization"
+    case contentType = "Content-Type"
+    case accept = "Accept"
+    case acceptEncoding = "Accept-Encoding"
+    case acceptLanguage = "Accept-Language"
+    case connection = "Connection"
+}
+
+enum ContentType: String {
+    case applicationJson = "application/json"
+    case applicationJsonCharsetUTF8 = "application/json; charset=utf-8"
+    case applicationFormUrlencoded = "application/x-www-form-urlencoded"
+    case applicationFormUrlencodedCharsetUTF8 = "application/x-www-form-urlencoded; charset=utf-8"
+    case multipartFormData = "multipart/form-data"
+    case multipartFormDataCharsetUTF8 = "multipart/form-data; charset=utf-8"
+    case textPlain = "text/plain"
+    case textPlainCharsetUTF8 = "text/plain; charset=utf-8"
+    case applicationXML = "application/xml"
+    case applicationXMLCharsetUTF8 = "application/xml; charset=utf-8"
+}
