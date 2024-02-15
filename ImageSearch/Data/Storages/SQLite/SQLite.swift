@@ -265,7 +265,7 @@ class SQLite {
         log("successfully updated row(s), sql: \(sql)")
     }
     
-    /// Can be used to update one or several rows depending on the SQL statement
+    /// Can be used to delete one or several rows depending on the SQL statement
     func deleteRow(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully deleted row(s), sql: \(sql)")
