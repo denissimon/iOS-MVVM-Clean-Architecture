@@ -16,8 +16,8 @@ class DefaultImageService: ImageService {
     }
     
     func searchImages(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async throws -> [Image]? {
-        guard imagesLoadTask != nil, let imagesLoadTask = imagesLoadTask else { return nil }
-                
+        guard let imagesLoadTask = imagesLoadTask else { return nil }
+        
         let result = await self.imageRepository.searchImages(imageQuery)
         
         guard !imagesLoadTask.isCancelled else { return nil }
@@ -58,7 +58,7 @@ class DefaultImageService: ImageService {
             return thumbnailImages
             
         case .failure(let error) :
-            throw NetworkError.init(error: error.error, code: nil)
+            throw NetworkError(error: error.error, code: nil)
         }
     }
     
