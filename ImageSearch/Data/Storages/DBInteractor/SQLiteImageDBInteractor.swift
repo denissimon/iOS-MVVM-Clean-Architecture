@@ -19,7 +19,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     }
     
     private func createImageTable() {
-        guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else { return }
+        guard let sqliteAdapter = sqliteAdapter else { return }
         let sqlStatement = """
             CREATE TABLE IF NOT EXISTS "\(imagesTable)"(
                 "id" INTEGER NOT NULL,
@@ -41,7 +41,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     }
     
     func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type, completion: @escaping (Bool?) -> Void) {
-        guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else {
+        guard let sqliteAdapter = sqliteAdapter else {
             completion(nil)
             return
         }
@@ -69,7 +69,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     }
     
     func getImages<T: Codable>(searchId: String, type: T.Type, completion: @escaping ([T]?) -> Void) {
-        guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else {
+        guard let sqliteAdapter = sqliteAdapter else {
             completion(nil)
             return
         }
@@ -123,7 +123,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
      }
      */
     func checkImagesAreCached(searchId: String, completion: @escaping (Bool?) -> Void) {
-        guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else {
+        guard let sqliteAdapter = sqliteAdapter else {
             completion(nil)
             return
         }
@@ -146,7 +146,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     }
     
     func deleteAllImages() {
-        guard sqliteAdapter != nil, let sqliteAdapter = sqliteAdapter else { return }
+        guard let sqliteAdapter = sqliteAdapter else { return }
         do {
             try sqliteAdapter.deleteAllRows(in: imagesTable)
         } catch {
