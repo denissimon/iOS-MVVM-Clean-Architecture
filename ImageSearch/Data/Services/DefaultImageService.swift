@@ -16,11 +16,9 @@ class DefaultImageService: ImageService {
     }
     
     func searchImages(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async throws -> [Image]? {
-        guard let imagesLoadTask = imagesLoadTask else { return nil }
-        
         let result = await self.imageRepository.searchImages(imageQuery)
         
-        guard !imagesLoadTask.isCancelled else { return nil }
+        if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }
         
         switch result {
         case .success(let imagesData):
@@ -30,7 +28,7 @@ class DefaultImageService: ImageService {
                 throw NetworkError(error: nil, code: nil)
             }
             
-            guard !imagesLoadTask.isCancelled else { return nil }
+            if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }
             
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
                 for item in images! {
