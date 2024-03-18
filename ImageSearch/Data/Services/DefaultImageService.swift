@@ -9,7 +9,7 @@ import Foundation
 
 class DefaultImageService: ImageService {
     
-    let imageRepository: ImageRepository
+    private let imageRepository: ImageRepository
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository

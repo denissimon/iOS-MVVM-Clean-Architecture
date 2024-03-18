@@ -9,7 +9,7 @@ import Foundation
 
 class DefaultImageCachingService: ImageCachingService {
     
-    let imageRepository: ImageRepository
+    private let imageRepository: ImageRepository
     
     // To avoid reading from cache and updating UI while writing to cache may be in progress
     var checkingInProgress = false
