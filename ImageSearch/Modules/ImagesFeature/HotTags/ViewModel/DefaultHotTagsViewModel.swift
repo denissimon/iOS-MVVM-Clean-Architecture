@@ -106,12 +106,6 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     }
     
     private func composeFlickrHotTags(type: SegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
-        let allTimesHotTagsStr = AppConfiguration.Other.allTimesHotTags
-        var allTimesHotTags = [Tag]()
-        for tag in allTimesHotTagsStr {
-            allTimesHotTags.append(Tag(name: tag))
-        }
-        
         switch type {
         case .week:
             if weekHotTags != nil {
@@ -120,6 +114,11 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
                 return [Tag]()
             }
         case .allTimes:
+            let allTimesHotTagsStr = AppConfiguration.Other.allTimesHotTags
+            var allTimesHotTags = [Tag]()
+            for tag in allTimesHotTagsStr {
+                allTimesHotTags.append(Tag(name: tag))
+            }
             return allTimesHotTags
         }
     }
