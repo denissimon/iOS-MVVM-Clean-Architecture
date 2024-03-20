@@ -169,7 +169,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     func updateSection(_ searchId: String) {
         guard !imageCachingService.checkingInProgress else { return }
-        guard !imageCachingService.idsToGetFromCache.contains(searchId) else { return }
+        guard !imageCachingService.searchIdsToGetFromCache.contains(searchId) else { return }
         Task.detached {
             if let images = await self.imageCachingService.getCachedImages(searchId: searchId) {
                 if images.isEmpty { return }

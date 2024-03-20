@@ -14,8 +14,8 @@ class DefaultImageCachingService: ImageCachingService {
     // To avoid reading from cache and updating UI while writing to cache may be in progress
     var checkingInProgress = false
     
-    // Contains a set of searchIds, the images of which are retrieved from the cache
-    var idsToGetFromCache: Set<String> = []
+    // To prevent images with the same searchId from being read again from the cache
+    var searchIdsToGetFromCache: Set<String> = []
     
     var didProcess: Event<[ImageSearchResults]> = Event()
     
@@ -38,7 +38,7 @@ class DefaultImageCachingService: ImageCachingService {
             checkingInProgress = false
             return
         }
-        idsToGetFromCache = []
+        searchIdsToGetFromCache = []
         let dataPart1 = Array(data.prefix(AppConfiguration.MemorySafety.cacheAfterSearches))
         let dataPart2 = Array(data.suffix(data.count - AppConfiguration.MemorySafety.cacheAfterSearches))
         let processedPart2 = await processData(dataPart2)
@@ -79,8 +79,8 @@ class DefaultImageCachingService: ImageCachingService {
     }
     
     func getCachedImages(searchId: String) async -> [Image]? {
-        if !idsToGetFromCache.contains(searchId) {
-            idsToGetFromCache.insert(searchId)
+        if !searchIdsToGetFromCache.contains(searchId) {
+            searchIdsToGetFromCache.insert(searchId)
             let images = await self.imageRepository.getImages(searchId: searchId)
             return images
         } else {
