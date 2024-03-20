@@ -57,6 +57,18 @@ class Image: Codable {
     }
 }
 
+extension Image: Equatable {
+    static func == (lhs: Image, rhs: Image) -> Bool {
+        if lhs.title == rhs.title &&
+            lhs.flickr?.imageID == rhs.flickr?.imageID &&
+            ((lhs.thumbnail != nil && rhs.thumbnail != nil) ||
+                (lhs.thumbnail == nil && rhs.thumbnail == nil)) {
+            return true
+        }
+        return false
+    }
+}
+
 enum ImageSize: String {
     case thumbnail = "m"
     case big = "b"
