@@ -113,7 +113,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
             
             guard !Task.isCancelled else { return }
             
-            guard let thumbnailImages = thumbnailImages  else {
+            guard let thumbnailImages = thumbnailImages else {
                 self.activityIndicatorVisibility.value = false
                 return
             }
