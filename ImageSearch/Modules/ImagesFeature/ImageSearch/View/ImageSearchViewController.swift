@@ -138,9 +138,9 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     // MARK: - Actions
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
-        let imageQueryEvent = Event<ImageQuery>()
-        imageQueryEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchImage(for: query) }
-        coordinatorActions?.showHotTags(imageQueryEvent)
+        let didSelectEvent = Event<ImageQuery>()
+        didSelectEvent.subscribe(self) { [weak self] (query) in self?.viewModel.searchImage(for: query) }
+        coordinatorActions?.showHotTags(didSelectEvent)
     }
     
     // MARK: - Other methods
