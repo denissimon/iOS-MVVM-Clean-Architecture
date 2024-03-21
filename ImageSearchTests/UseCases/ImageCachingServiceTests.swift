@@ -11,16 +11,16 @@ import XCTest
 class ImageCachingServiceTests: XCTestCase {
     
     static let searchResultsStub = [
-        ImageSearchResults(id: "id1", searchQuery: ImageQuery(query: "query1"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
-        ImageSearchResults(id: "id2", searchQuery: ImageQuery(query: "query2"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
+        ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query5"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
+        ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
         ImageSearchResults(id: "id3", searchQuery: ImageQuery(query: "query3"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil)]),
-        ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)]),
-        ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)])
+        ImageSearchResults(id: "id2", searchQuery: ImageQuery(query: "query2"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)]),
+        ImageSearchResults(id: "id1", searchQuery: ImageQuery(query: "query1"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)])
     ]
     
     static let cachedImagesStub = [
-        (image: Image(title: "image1", flickr: nil), searchId: "id4", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id4", sortId: 2),
-        (image: Image(title: "image1", flickr: nil), searchId: "id5", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id5", sortId: 2)
+        (image: Image(title: "image1", flickr: nil), searchId: "id2", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id2", sortId: 2),
+        (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2)
     ]
     
     class ImageRepositoryMock: ImageRepository {
@@ -132,12 +132,12 @@ class ImageCachingServiceTests: XCTestCase {
         XCTAssertEqual(imageRepository.dbMethodsCallsCount, 6) // checkImagesAreCached(), saveImage() 2 times, checkImagesAreCached(), and saveImage() 2 times
         XCTAssertEqual(precessedData.count, 5)
         for image in precessedData[3].searchResults {
-            XCTAssertNil(image.thumbnail) // thumbnails of the 4th item have been cleared from memory
+            XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
         }
         for image in precessedData[4].searchResults {
-            XCTAssertNil(image.thumbnail) // thumbnails of the 5th item have been cleared from memory
+            XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
         }
-        XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 4th item and 2 images of the 5th item in ImageCachingServiceTests.searchResultsStub have been cached
+        XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub have been cached
     }
     
     func testGetCachedImagesUseCase_whenThereAreNoCachedImages() async {
@@ -157,7 +157,7 @@ class ImageCachingServiceTests: XCTestCase {
         let imageRepository = ImageRepositoryMock(cachedImages: ImageCachingServiceTests.cachedImagesStub)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
-        let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id4")
+        let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id2")
         
         XCTAssertNotNil(retrievedImagesFromCache)
         XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
