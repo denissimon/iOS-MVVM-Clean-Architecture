@@ -25,16 +25,16 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     static let searchResultsStub = [
-        ImageSearchResults(id: "id1", searchQuery: ImageQuery(query: "query1"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
-        ImageSearchResults(id: "id2", searchQuery: ImageQuery(query: "query2"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
+        ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query5"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
+        ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
         ImageSearchResults(id: "id3", searchQuery: ImageQuery(query: "query3"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil)]),
-        ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)]),
-        ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query4"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)])
+        ImageSearchResults(id: "id2", searchQuery: ImageQuery(query: "query2"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)]),
+        ImageSearchResults(id: "id1", searchQuery: ImageQuery(query: "query1"), searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil)])
     ]
     
     static let cachedImagesStub = [
-        (image: Image(title: "image1", flickr: nil), searchId: "id4", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id4", sortId: 2),
-        (image: Image(title: "image1", flickr: nil), searchId: "id5", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id5", sortId: 2)
+        (image: Image(title: "image1", flickr: nil), searchId: "id2", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id2", sortId: 2),
+        (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2)
     ]
     
     class ImageRepositoryMock: ImageRepository {
@@ -247,7 +247,7 @@ class ImageSearchViewModelTests: XCTestCase {
         bind(imageSearchViewModel)
         
         imageSearchViewModel.data.value = ImageSearchViewModelTests.searchResultsStub // 5 searches are done
-        XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 4th search and 2 images of the 5th search in ImageCachingServiceTests.searchResultsStub are cached
+        XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub are cached
         for image in imageSearchViewModel.data.value[3].searchResults {
             XCTAssertNil(image.thumbnail)
         }
@@ -255,8 +255,8 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertNil(image.thumbnail)
         }
         
-        // Get images of the 4th search from cache and update data
-        imageSearchViewModel.updateSection("id4")
+        // Get images of the 2nd search from cache and update data
+        imageSearchViewModel.updateSection("id2")
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         for image in imageSearchViewModel.data.value[3].searchResults {
             XCTAssertNotNil(image.thumbnail)
@@ -265,8 +265,8 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertNil(image.thumbnail)
         }
         
-        // Get images of the 5th search from cache and update data
-        imageSearchViewModel.updateSection("id5")
+        // Get images of the 1st search from cache and update data
+        imageSearchViewModel.updateSection("id1")
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         for image in imageSearchViewModel.data.value[3].searchResults {
             XCTAssertNotNil(image.thumbnail)
