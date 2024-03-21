@@ -19,9 +19,6 @@ class ImageCachingServiceTests: XCTestCase {
     ]
     
     static let cachedImagesStub = [
-        (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2), (image: Image(title: "image3", flickr: nil), searchId: "id1", sortId: 3), (image: Image(title: "image4", flickr: nil), searchId: "id1", sortId: 3),
-        (image: Image(title: "image1", flickr: nil), searchId: "id2", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id2", sortId: 2), (image: Image(title: "image3", flickr: nil), searchId: "id2", sortId: 3), (image: Image(title: "image4", flickr: nil), searchId: "id2", sortId: 3),
-        (image: Image(title: "image1", flickr: nil), searchId: "id3", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id3", sortId: 2), (image: Image(title: "image3", flickr: nil), searchId: "id3", sortId: 3),
         (image: Image(title: "image1", flickr: nil), searchId: "id4", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id4", sortId: 2),
         (image: Image(title: "image1", flickr: nil), searchId: "id5", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id5", sortId: 2)
     ]
@@ -160,12 +157,12 @@ class ImageCachingServiceTests: XCTestCase {
         let imageRepository = ImageRepositoryMock(cachedImages: ImageCachingServiceTests.cachedImagesStub)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
-        let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id2")
+        let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id4")
         
         XCTAssertNotNil(retrievedImagesFromCache)
         XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
         XCTAssertEqual(imageRepository.dbMethodsCallsCount, 1) // getImages()
         XCTAssertEqual(imageCachingService.searchIdsToGetFromCache.count, 1)
-        XCTAssertEqual(retrievedImagesFromCache!.count, 4)
+        XCTAssertEqual(retrievedImagesFromCache!.count, 2)
     }
 }
