@@ -45,6 +45,9 @@
 		41500DAD2BA96BE300ABD258 /* TagRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DAC2BA96BE300ABD258 /* TagRepositoryTests.swift */; };
 		41500DAF2BA9773F00ABD258 /* ImageCachingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DAE2BA9773F00ABD258 /* ImageCachingServiceTests.swift */; };
 		41500DB12BA9F42C00ABD258 /* ImageBehaviorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB02BA9F42C00ABD258 /* ImageBehaviorTests.swift */; };
+		41500DB32BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB22BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift */; };
+		41500DB52BAC100E00ABD258 /* HotTagsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */; };
+		41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */; };
 		418F33B4243FEEF100193C74 /* ImageDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B3243FEEF100193C74 /* ImageDetails.storyboard */; };
 		418F33BA244132A500193C74 /* HotTags.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTags.storyboard */; };
 		418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsViewController.swift */; };
@@ -120,6 +123,9 @@
 		41500DAC2BA96BE300ABD258 /* TagRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRepositoryTests.swift; sourceTree = "<group>"; };
 		41500DAE2BA9773F00ABD258 /* ImageCachingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCachingServiceTests.swift; sourceTree = "<group>"; };
 		41500DB02BA9F42C00ABD258 /* ImageBehaviorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBehaviorTests.swift; sourceTree = "<group>"; };
+		41500DB22BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewModelTests.swift; sourceTree = "<group>"; };
+		41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewModelTests.swift; sourceTree = "<group>"; };
+		41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewModelTests.swift; sourceTree = "<group>"; };
 		418F33B3243FEEF100193C74 /* ImageDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageDetails.storyboard; sourceTree = "<group>"; };
 		418F33B9244132A500193C74 /* HotTags.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTags.storyboard; sourceTree = "<group>"; };
 		418F33BB244132E800193C74 /* HotTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewController.swift; sourceTree = "<group>"; };
@@ -359,6 +365,9 @@
 		41500DAA2BA9607100ABD258 /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */,
+				41500DB22BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift */,
+				41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -723,9 +732,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41500DB32BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift in Sources */,
 				41500DAF2BA9773F00ABD258 /* ImageCachingServiceTests.swift in Sources */,
 				41500DB12BA9F42C00ABD258 /* ImageBehaviorTests.swift in Sources */,
+				41500DB52BAC100E00ABD258 /* HotTagsViewModelTests.swift in Sources */,
 				41500DAD2BA96BE300ABD258 /* TagRepositoryTests.swift in Sources */,
+				41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */,
 				4111D57923FDAF0200B74B83 /* ImageServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
