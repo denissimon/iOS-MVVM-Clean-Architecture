@@ -50,8 +50,7 @@ class ImageCachingServiceTests: XCTestCase {
         
         func getImage(url: URL) async -> Data? {
             apiMethodsCallsCount += 1
-            let image = UIImage(systemName: "heart.fill")
-            return image?.pngData()
+            return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
