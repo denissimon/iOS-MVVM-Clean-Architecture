@@ -46,8 +46,7 @@ class ImageServiceTests: XCTestCase {
         
         func getImage(url: URL) async -> Data? {
             apiMethodsCallsCount += 1
-            let image = UIImage(systemName: "heart.fill")
-            return image?.pngData()
+            return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
@@ -110,6 +109,9 @@ class ImageServiceTests: XCTestCase {
         
         XCTAssertNotNil(bigImageData)
         XCTAssertTrue(!bigImageData!.isEmpty)
+        if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
+            XCTAssertEqual(bigImageData, expectedImageData)
+        }
         XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
         XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
     }

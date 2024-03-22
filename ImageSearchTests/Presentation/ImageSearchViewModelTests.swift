@@ -65,8 +65,7 @@ class ImageSearchViewModelTests: XCTestCase {
         
         func getImage(url: URL) async -> Data? {
             apiMethodsCallsCount += 1
-            let image = UIImage(systemName: "heart.fill")
-            return image?.pngData()
+            return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
@@ -171,6 +170,9 @@ class ImageSearchViewModelTests: XCTestCase {
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
         XCTAssertTrue(imageSearchViewModel.data.value[0].searchResults.contains(ImageSearchViewModelTests.testImageStub))
+        if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
+            XCTAssertEqual(imageSearchViewModel.data.value[0].searchResults[0].thumbnail?.image?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
+        }
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery)
         XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
     }
