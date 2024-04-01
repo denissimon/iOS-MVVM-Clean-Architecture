@@ -12,20 +12,20 @@ class NetworkServiceMock: NetworkServiceType {
        
     let urlSession: URLSession
     
-    let responceData: Data
+    let responseData: Data
     
-    init(urlSession: URLSession = URLSession.shared, responceData: Data) {
+    init(urlSession: URLSession = URLSession.shared, responseData: Data) {
         self.urlSession = urlSession
-        self.responceData = responceData
+        self.responseData = responseData
     }
     
     func request(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
-        completion(.success(responceData))
+        completion(.success(responseData))
         return nil
     }
     
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
-        guard let decoded = ResponseDecodable.decode(type, data: responceData) else {
+        guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
             completion(.failure(NetworkError(error: nil, code: nil)))
             return nil
         }
@@ -54,7 +54,7 @@ class FlickrAPITests: XCTestCase {
     
     func testGetHotTags() async {
         let endpoint = FlickrAPI.getHotTags()
-        let networkServiceMock = NetworkServiceMock(responceData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
+        let networkServiceMock = NetworkServiceMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
         let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
             switch result {
             case .success(let tags):
@@ -73,7 +73,7 @@ class FlickrAPITests: XCTestCase {
     func testSearch() async {
         let endpoint = FlickrAPI.search(ImageQuery(query: "random"))
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
-        let networkServiceMock = NetworkServiceMock(responceData: expectedData)
+        let networkServiceMock = NetworkServiceMock(responseData: expectedData)
         
         var resultData = Data()
         let _ = networkServiceMock.request(endpoint) { result in
