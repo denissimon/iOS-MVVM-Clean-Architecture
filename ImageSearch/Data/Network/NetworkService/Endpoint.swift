@@ -10,14 +10,14 @@ import Foundation
 protocol EndpointType {
     var method: HTTPMethod { get }
     var baseURL: String { get }
-    var path: String { get }
+    var path: String { get set }
     var params: HTTPParams? { get set }
 }
 
 class Endpoint: EndpointType {
     let method: HTTPMethod
     let baseURL: String
-    let path: String
+    var path: String
     var params: HTTPParams?
     
     init(method: HTTPMethod, baseURL: String, path: String, params: HTTPParams?) {
