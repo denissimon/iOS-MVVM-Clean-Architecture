@@ -66,6 +66,7 @@
 		41B116342B45F8AE0062CD5F /* SQLite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B116332B45F8AE0062CD5F /* SQLite.swift */; };
 		41B1163C2B4E04B00062CD5F /* SwiftEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */; };
 		41CC2480241490570053F23E /* FlickrAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41CC247F241490570053F23E /* FlickrAPI.swift */; };
+		41F1659F2BBAC6FF00F869DC /* FlickrAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F1659E2BBAC6FF00F869DC /* FlickrAPITests.swift */; };
 		41FBC2FE2442159700DD1480 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FBC2FD2442159700DD1480 /* Tag.swift */; };
 		41FBC30024439D3000DD1480 /* Tags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FBC2FF24439D3000DD1480 /* Tags.swift */; };
 /* End PBXBuildFile section */
@@ -144,6 +145,7 @@
 		41B116332B45F8AE0062CD5F /* SQLite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLite.swift; sourceTree = "<group>"; };
 		41B1163B2B4E04B00062CD5F /* SwiftEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEvents.swift; sourceTree = "<group>"; };
 		41CC247F241490570053F23E /* FlickrAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrAPI.swift; sourceTree = "<group>"; };
+		41F1659E2BBAC6FF00F869DC /* FlickrAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrAPITests.swift; sourceTree = "<group>"; };
 		41FBC2FD2442159700DD1480 /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		41FBC2FF24439D3000DD1480 /* Tags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -375,6 +377,7 @@
 		41500DAB2BA9608100ABD258 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				41F1659E2BBAC6FF00F869DC /* FlickrAPITests.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -739,6 +742,7 @@
 				41500DAD2BA96BE300ABD258 /* TagRepositoryTests.swift in Sources */,
 				41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */,
 				4111D57923FDAF0200B74B83 /* ImageServiceTests.swift in Sources */,
+				41F1659F2BBAC6FF00F869DC /* FlickrAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
