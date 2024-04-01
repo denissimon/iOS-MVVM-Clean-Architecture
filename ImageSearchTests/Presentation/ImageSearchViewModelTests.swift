@@ -97,7 +97,7 @@ class ImageSearchViewModelTests: XCTestCase {
             return false
         }
         
-        // Called once when initializing the ImageCachingService to clear the Image table at the app's start
+        // Called once when initializing the ImageCachingService to clear the Image table
         func deleteAllImages() async {}
     }
     
