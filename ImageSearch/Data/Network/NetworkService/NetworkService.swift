@@ -12,7 +12,15 @@ struct NetworkError: Error {
     let code: Int? // the response’s HTTP status code
 }
 
-class NetworkService {
+protocol NetworkServiceType {
+    var urlSession: URLSession { get }
+    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable?
+    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
+    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable?
+    func log(_ str: String)
+}
+
+class NetworkService: NetworkServiceType {
        
     let urlSession: URLSession
     
