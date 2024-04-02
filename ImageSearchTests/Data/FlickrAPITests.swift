@@ -52,24 +52,6 @@ class FlickrAPITests: XCTestCase {
     {"period":"day","count":2,"hottags":{"tag":[{"_content":"digital","thm_data":{"photos":{"photo":[{"id":"30239309451","secret":"10f9bdfddd","server":"8273","farm":9,"owner":"135037635@N03","username":null,"title":"Fire on the sky","ispublic":1,"isfriend":0,"isfamily":0}]}}},{"_content":"shine","thm_data":{"photos":{"photo":[{"id":"26695870685","secret":"0e25f93ea0","server":"1641","farm":2,"owner":"76458369@N07","username":null,"title":"#Storm","ispublic":1,"isfriend":0,"isfamily":0}]}}}]},"stat":"ok"}
     """
     
-    func testGetHotTags() async {
-        let endpoint = FlickrAPI.getHotTags()
-        let networkServiceMock = NetworkServiceMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
-        let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
-            switch result {
-            case .success(let tags):
-                if tags.stat != "ok" {
-                    XCTFail()
-                }
-                XCTAssertEqual(tags.hottags.tag.count, 2)
-                XCTAssertEqual(tags.hottags.tag[0].name, "digital")
-                XCTAssertEqual(tags.hottags.tag[1].name, "shine")
-            case .failure(let error):
-                XCTFail(error.localizedDescription)
-            }
-        }
-    }
-    
     func testSearch() async {
         let endpoint = FlickrAPI.search(ImageQuery(query: "random"))
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
@@ -96,6 +78,24 @@ class FlickrAPITests: XCTestCase {
         XCTAssertEqual(images![0].title, "Andrea  Modelo  Model")
     }
     
+    func testGetHotTags() async {
+        let endpoint = FlickrAPI.getHotTags()
+        let networkServiceMock = NetworkServiceMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
+        let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
+            switch result {
+            case .success(let tags):
+                if tags.stat != "ok" {
+                    XCTFail()
+                }
+                XCTAssertEqual(tags.hottags.tag.count, 2)
+                XCTAssertEqual(tags.hottags.tag[0].name, "digital")
+                XCTAssertEqual(tags.hottags.tag[1].name, "shine")
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+        }
+    }
+    
     func testNetworkError_whenInvalidAPIKey() async {
         let promise = expectation(description: "testNetworkError")
         
@@ -108,6 +108,10 @@ class FlickrAPITests: XCTestCase {
                 XCTFail()
             case .failure(let error):
                 XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+                if error.data != nil {
+                    let dataStr = String(data: error.data!, encoding: .utf8)
+                    XCTAssertEqual(dataStr, "{\"stat\":\"fail\",\"code\":100,\"message\":\"Invalid API Key (Key has invalid format)\"}")
+                }
             }
             promise.fulfill()
         }
