@@ -18,7 +18,6 @@ protocol NetworkServiceType {
     func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
     func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable?
-    func log(_ str: String)
 }
 
 class NetworkService: NetworkServiceType {
@@ -102,7 +101,7 @@ class NetworkService: NetworkServiceType {
         return dataTask
     }
     
-    func log(_ str: String) {
+    private func log(_ str: String) {
         #if DEBUG
         print(str)
         #endif

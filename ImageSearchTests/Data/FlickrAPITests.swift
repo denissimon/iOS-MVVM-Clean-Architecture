@@ -36,8 +36,6 @@ class NetworkServiceMock: NetworkServiceType {
     func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         return nil
     }
-    
-    func log(_ str: String) {}
 }
 
 class FlickrAPITests: XCTestCase {
