@@ -96,6 +96,19 @@ class FlickrAPITests: XCTestCase {
         }
     }
     
+    func testNetworkError_whenInvalidResponse() async {
+        let endpoint = FlickrAPI.getHotTags()
+        let networkServiceMock = NetworkServiceMock(responseData: "some_data".data(using: .utf8)!)
+        let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+            }
+        }
+    }
+    
     func testNetworkError_whenInvalidAPIKey() async {
         let promise = expectation(description: "testNetworkError")
         
