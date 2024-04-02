@@ -26,10 +26,9 @@ class DefaultImageRepository: ImageRepository {
     }
     
     // A pure transformation of the data (a pure function within the impure context)
-    private func prepareImages(_ imagesData: Data, completionHandler: @escaping ([Image]?) -> Void) {
+    private func prepareImages(_ imagesData: Data?, completionHandler: @escaping ([Image]?) -> Void) {
         do {
-            guard
-                !imagesData.isEmpty,
+            guard let imagesData = imagesData, !imagesData.isEmpty,
                 let resultsDictionary = try JSONSerialization.jsonObject(with: imagesData) as? [String: AnyObject],
                 let stat = resultsDictionary["stat"] as? String
                 else {
@@ -99,7 +98,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    func prepareImages(_ imageData: Data) async -> [Image]? {
+    func prepareImages(_ imageData: Data?) async -> [Image]? {
         await withCheckedContinuation { continuation in
             prepareImages(imageData) { result in
                 continuation.resume(returning: result)

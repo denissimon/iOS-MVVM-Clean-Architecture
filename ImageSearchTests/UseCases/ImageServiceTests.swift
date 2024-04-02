@@ -24,11 +24,11 @@ class ImageServiceTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data, NetworkError>?
+        let result: Result<Data?, NetworkError>?
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data, NetworkError>? = nil) {
+        init(result: Result<Data?, NetworkError>? = nil) {
             self.result = result
         }
         
@@ -39,9 +39,9 @@ class ImageServiceTests: XCTestCase {
             return result!
         }
         
-        func prepareImages(_ imageData: Data) async -> [Image]? {
+        func prepareImages(_ imageData: Data?) async -> [Image]? {
             apiMethodsCallsCount += 1
-            return try? JSONDecoder().decode([Image].self, from: imageData)
+            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
@@ -90,7 +90,7 @@ class ImageServiceTests: XCTestCase {
     }
     
     func testSearchImagesUseCase_whenResultIsFailure() async throws {
-        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, code: nil)))
+        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, statusCode: nil, data: nil)))
         let imageService = DefaultImageService(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")

@@ -39,12 +39,12 @@ class ImageSearchViewModelTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data, NetworkError>?
+        let result: Result<Data?, NetworkError>?
         var cachedImages: [(image: Image, searchId: String, sortId: Int)] = []
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data, NetworkError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
+        init(result: Result<Data?, NetworkError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
             self.result = result
             if !cachedImages.isEmpty {
                 self.cachedImages = cachedImages
@@ -58,9 +58,9 @@ class ImageSearchViewModelTests: XCTestCase {
             return result!
         }
         
-        func prepareImages(_ imageData: Data) async -> [Image]? {
+        func prepareImages(_ imageData: Data?) async -> [Image]? {
             apiMethodsCallsCount += 1
-            return try? JSONDecoder().decode([Image].self, from: imageData)
+            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
@@ -178,7 +178,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
-        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, code: nil)))
+        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, statusCode: nil, data: nil)))
         let imageService = DefaultImageService(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         

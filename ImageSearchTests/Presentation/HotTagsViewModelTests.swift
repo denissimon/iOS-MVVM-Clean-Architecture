@@ -70,7 +70,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testGetHotTags_whenResultIsFailure() async throws {
         let hotTagsViewModel: HotTagsViewModel!
         
-        let tagRepository = TagRepositoryMock(result: .failure(NetworkError.init(error: nil, code: nil)))
+        let tagRepository = TagRepositoryMock(result: .failure(NetworkError.init(error: nil, statusCode: nil, data: nil)))
         let didSelect = Event<ImageQuery>()
         hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
         bind(hotTagsViewModel)

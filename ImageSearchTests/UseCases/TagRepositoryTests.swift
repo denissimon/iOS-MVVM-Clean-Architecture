@@ -42,7 +42,7 @@ class TagRepositoryTests: XCTestCase {
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
-        let tagRepository = TagRepositoryMock(result: .failure(NetworkError(error: nil, code: nil)))
+        let tagRepository = TagRepositoryMock(result: .failure(NetworkError(error: nil, statusCode: nil, data: nil)))
         
         let tagsResult = await tagRepository.getHotTags()
         

@@ -19,14 +19,14 @@ class NetworkServiceMock: NetworkServiceType {
         self.responseData = responseData
     }
     
-    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data, NetworkError>) -> Void) -> NetworkCancellable? {
+    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         completion(.success(responseData))
         return nil
     }
     
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
         guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
-            completion(.failure(NetworkError(error: nil, code: nil)))
+            completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
             return nil
         }
         completion(.success(decoded))
@@ -75,7 +75,7 @@ class FlickrAPITests: XCTestCase {
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
         let networkServiceMock = NetworkServiceMock(responseData: expectedData)
         
-        var resultData = Data()
+        var resultData: Data? = Data()
         let _ = networkServiceMock.request(endpoint) { result in
             switch result {
             case .success(let data):
@@ -96,11 +96,11 @@ class FlickrAPITests: XCTestCase {
         XCTAssertEqual(images![0].title, "Andrea  Modelo  Model")
     }
     
-    func testNetworkError() async {
+    func testNetworkError_whenInvalidAPIKey() async {
         let promise = expectation(description: "testNetworkError")
         
         var endpoint = FlickrAPI.getHotTags()
-        endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1" // Invalid API Key
+        endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
         let networkService = NetworkService()
         let _ = networkService.request(endpoint, type: Tags.self) { result in
             switch result {

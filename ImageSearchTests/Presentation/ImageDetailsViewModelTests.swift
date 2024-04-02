@@ -33,9 +33,9 @@ class ImageDetailsViewModelTests: XCTestCase {
             return .success(Data())
         }
         
-        func prepareImages(_ imageData: Data) async -> [Image]? {
+        func prepareImages(_ imageData: Data?) async -> [Image]? {
             apiMethodsCallsCount += 1
-            return try? JSONDecoder().decode([Image].self, from: imageData)
+            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {

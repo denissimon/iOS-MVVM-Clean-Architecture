@@ -25,7 +25,7 @@ class DefaultImageService: ImageService {
             let images = await self.imageRepository.prepareImages(imagesData)
             
             guard images != nil else {
-                throw NetworkError(error: nil, code: nil)
+                throw NetworkError(error: nil, statusCode: nil, data: nil)
             }
             
             if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }
@@ -56,7 +56,7 @@ class DefaultImageService: ImageService {
             return thumbnailImages
             
         case .failure(let error) :
-            throw NetworkError(error: error.error, code: nil)
+            throw NetworkError(error: error.error, statusCode: nil, data: nil)
         }
     }
     
