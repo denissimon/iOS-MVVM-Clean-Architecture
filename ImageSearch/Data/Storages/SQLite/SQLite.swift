@@ -43,7 +43,29 @@ enum SQLOrder {
 /// case NULL
 typealias SQLValues = [(type: SQLType, value: Any?)]
 
-class SQLite {
+protocol SQLiteType {
+    func createTable(sql: String) throws
+    func dropTable(_ tableName: String, vacuum: Bool) throws
+    func deleteAllRows(in tableName: String, vacuum: Bool, resetAutoincrement: Bool) throws
+    func dropIndex(in tableName: String, forColumn columnName: String) throws
+    func addIndex(to tableName: String, forColumn columnName: String, unique: Bool, order: SQLOrder) throws
+    func beginTransaction() throws
+    func endTransaction() throws
+    func insertRow(sql: String, valuesToBind: SQLValues?) throws
+    func updateRow(sql: String, valuesToBind: SQLValues?) throws
+    func deleteRow(sql: String, valuesToBind: SQLValues?) throws
+    func deleteByID(in tableName: String, id: Int) throws
+    func getRowCount(in tableName: String) throws -> Int
+    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues) throws -> Int
+    func getRow(sql: String, valuesToBind: SQLValues?, valuesToGet: SQLValues) throws -> [SQLValues]
+    func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues]
+    func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues
+    func vacuum() throws
+    func resetAutoincrement(in tableName: String) throws
+    func query(sql: String, valuesToBind: SQLValues?) throws
+}
+
+class SQLite: SQLiteType {
     
     private var dbPointer: OpaquePointer?
     
