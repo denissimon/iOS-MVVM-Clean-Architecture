@@ -89,11 +89,11 @@ class NetworkService: NetworkServiceType {
         log("\nNetworkService fetchFile: \(url)")
      
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-            if data != nil && error == nil {
-                completion(data!)
+            guard let data = data, !data.isEmpty, error == nil else {
+                completion(nil)
                 return
             }
-            return completion(nil)
+            completion(data)
         }
         
         dataTask.resume()
