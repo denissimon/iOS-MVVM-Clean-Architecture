@@ -51,6 +51,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
+- Unit tests for a number of components from all layers
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Network/NetworkService
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Storages/SQLite/SQLite.swift
@@ -60,7 +61,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Presentation Layer**: _coordinators_, _UI elements / views_, _storyboards_, _view controllers_ and _ViewModels_
 
-**Domain Layer**: _entities_ (or _domain models_), _interfaces_ (for repositories and services) and _domain services_
+**Domain Layer**: _entities_ (or _domain models_), _interfaces_ (for services and repositories) and _domain services_
 
 **Data Layer**: _services_, _entity repositories_, _API/DB interactors_ (or network services and storages) and _adapters_
 
@@ -85,7 +86,7 @@ HotTags module:
 
 ### Image caching service
 
-[ImageCachingService][ImageCachingServiceLink] implements logic for caching images downloaded from Flickr. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
+[ImageCachingService][ImageCachingServiceLink] implements logic for caching images downloaded from Flickr. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching, the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
 
 ### Reusable components from this project
 
