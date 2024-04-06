@@ -48,8 +48,8 @@ protocol SQLiteType {
     func checkIfTableExists(_ tableName: String) throws -> Bool
     func dropTable(_ tableName: String, vacuum: Bool) throws
     func deleteAllRows(in tableName: String, vacuum: Bool, resetAutoincrement: Bool) throws
-    func dropIndex(in tableName: String, forColumn columnName: String) throws
     func addIndex(to tableName: String, forColumn columnName: String, unique: Bool, order: SQLOrder) throws
+    func dropIndex(in tableName: String, forColumn columnName: String) throws
     func beginTransaction() throws
     func endTransaction() throws
     func insertRow(sql: String, valuesToBind: SQLValues?) throws
@@ -242,13 +242,6 @@ class SQLite: SQLiteType {
         }
     }
     
-    func dropIndex(in tableName: String, forColumn columnName: String) throws {
-        let indexName = "\(tableName)_\(columnName)_idx"
-        let sql = "DROP INDEX IF EXISTS \"\(indexName)\";"
-        try operation(sql: sql)
-        log("successfully droped index in \(tableName) for column \(columnName)")
-    }
-    
     func addIndex(to tableName: String, forColumn columnName: String, unique: Bool = false, order: SQLOrder = .none) throws {
         
         let indexName = "\(tableName)_\(columnName)_idx"
@@ -271,6 +264,13 @@ class SQLite: SQLiteType {
         
         try operation(sql: sql)
         log("successfully added index to \(tableName) for column \(columnName)")
+    }
+    
+    func dropIndex(in tableName: String, forColumn columnName: String) throws {
+        let indexName = "\(tableName)_\(columnName)_idx"
+        let sql = "DROP INDEX IF EXISTS \"\(indexName)\";"
+        try operation(sql: sql)
+        log("successfully droped index in \(tableName) for column \(columnName)")
     }
     
     func beginTransaction() throws {
