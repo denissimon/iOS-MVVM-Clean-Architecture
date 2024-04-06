@@ -45,6 +45,7 @@ typealias SQLValues = [(type: SQLType, value: Any?)]
 
 protocol SQLiteType {
     func createTable(sql: String) throws
+    func checkIfTableExists(_ tableName: String) throws -> Bool
     func dropTable(_ tableName: String, vacuum: Bool) throws
     func deleteAllRows(in tableName: String, vacuum: Bool, resetAutoincrement: Bool) throws
     func dropIndex(in tableName: String, forColumn columnName: String) throws
@@ -209,6 +210,15 @@ class SQLite: SQLiteType {
     func createTable(sql: String) throws {
         try operation(sql: sql)
         log("successfully created table, sql: \(sql)")
+    }
+    
+    func checkIfTableExists(_ tableName: String) throws -> Bool {
+        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_schema WHERE type='table' AND name='\(tableName)';", valuesToBind: nil) {
+            let result = count == 1 ? true : false
+            log("successfully checked if \(tableName) exists: \(result)")
+            return result
+        }
+        throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
     }
     
     func dropTable(_ tableName: String, vacuum: Bool = true) throws {
