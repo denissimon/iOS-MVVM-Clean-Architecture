@@ -56,7 +56,7 @@ protocol SQLiteType {
     func deleteRow(sql: String, valuesToBind: SQLValues?) throws
     func deleteByID(in tableName: String, id: Int) throws
     func getRowCount(in tableName: String) throws -> Int
-    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues) throws -> Int
+    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues?) throws -> Int
     func getRow(sql: String, valuesToBind: SQLValues?, valuesToGet: SQLValues) throws -> [SQLValues]
     func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues]
     func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues
@@ -314,7 +314,7 @@ class SQLite: SQLiteType {
         return Int(count)
     }
     
-    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues) throws -> Int {
+    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues? = nil) throws -> Int {
         let sqlStatement = try prepareStatement(sql: sql)
         defer {
             sqlite3_finalize(sqlStatement)
