@@ -49,6 +49,7 @@ protocol SQLiteType {
     func dropTable(_ tableName: String, vacuum: Bool) throws
     func deleteAllRows(in tableName: String, vacuum: Bool, resetAutoincrement: Bool) throws
     func addIndex(to tableName: String, forColumn columnName: String, unique: Bool, order: SQLOrder) throws
+    func checkIfIndexExists(in tableName: String, indexName: String) throws -> Bool
     func dropIndex(in tableName: String, forColumn columnName: String) throws
     func beginTransaction() throws
     func endTransaction() throws
@@ -264,6 +265,15 @@ class SQLite: SQLiteType {
         
         try operation(sql: sql)
         log("successfully added index \(indexName)")
+    }
+    
+    func checkIfIndexExists(in tableName: String, indexName: String) throws -> Bool {
+        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_schema WHERE type='index' AND tbl_name='\(tableName)' AND name='\(indexName)';", valuesToBind: nil) {
+            let result = count == 1 ? true : false
+            log("successfully checked if index \(indexName) exists: \(result)")
+            return result
+        }
+        throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
     }
     
     func dropIndex(in tableName: String, forColumn columnName: String) throws {
