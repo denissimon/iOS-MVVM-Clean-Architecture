@@ -76,6 +76,8 @@ class SQLite: SQLiteType {
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
+    var primaryKey = "id"
+    
     init(path: String, recreateDB: Bool = false) throws {
         if recreateDB {
             try deleteDB(path: path)
@@ -309,7 +311,7 @@ class SQLite: SQLiteType {
     }
     
     func deleteByID(in tableName: String, id: Int) throws {
-        let sql = "DELETE FROM \(tableName) WHERE id = ?;"
+        let sql = "DELETE FROM \(tableName) WHERE \(primaryKey) = ?;"
         let valuesToBind = SQLValues([(.INT, id)])
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully deleted a row by id \(id) in \(tableName)")
@@ -411,7 +413,7 @@ class SQLite: SQLiteType {
     }
     
     func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues {
-        let sql = "SELECT * FROM \(tableName) WHERE id = ? LIMIT 1;"
+        let sql = "SELECT * FROM \(tableName) WHERE \(primaryKey) = ? LIMIT 1;"
         let valueToBind = SQLValues([(.INT, id)])
         let result = try getRow(sql: sql, valuesToBind: valueToBind, valuesToGet: valuesToGet)
         if result.count == 1 {
@@ -423,7 +425,7 @@ class SQLite: SQLiteType {
     }
     
     func getLastRow(in tableName: String, valuesToGet: SQLValues) throws -> SQLValues {
-        let sql = "SELECT * FROM \(tableName) WHERE id = (SELECT MAX(id) FROM \(tableName));"
+        let sql = "SELECT * FROM \(tableName) WHERE \(primaryKey) = (SELECT MAX(\(primaryKey)) FROM \(tableName));"
         let result = try getRow(sql: sql, valuesToBind: nil, valuesToGet: valuesToGet)
         if result.count == 1 {
             log("successfully read last row in \(tableName)")
