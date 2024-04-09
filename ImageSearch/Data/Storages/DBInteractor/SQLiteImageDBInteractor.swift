@@ -54,7 +54,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
                         (.INT, sortId),
                         (.TEXT, jsonString)
                     ])
-                    try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable) (searchId, sortId, json) VALUES (?, ?, ?);", valuesToBind: valuesToBind)
+                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable) (searchId, sortId, json) VALUES (?, ?, ?);", valuesToBind: valuesToBind)
                     completion(true)
                 } catch {
                     print("SQLite:", error.localizedDescription)
