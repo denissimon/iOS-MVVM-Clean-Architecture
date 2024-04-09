@@ -98,7 +98,10 @@ class SQLite: SQLiteType {
     }
     
     deinit {
-        sqlite3_close(dbPointer)
+        if dbPointer != nil {
+            sqlite3_close(dbPointer)
+            dbPointer = nil
+        }
     }
     
     private func deleteDB(path: String) throws {
