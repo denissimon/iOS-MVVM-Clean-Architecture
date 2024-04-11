@@ -393,7 +393,7 @@ class SQLite: SQLiteType {
                         let stringValue = String(cString: queryResult)
                         rowValues.append((value.type, stringValue))
                     } else {
-                        throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+                        rowValues.append((value.type, nil))
                     }
                 case .REAL:
                     let doubleValue = sqlite3_column_double(sqlStatement, index)
@@ -402,7 +402,7 @@ class SQLite: SQLiteType {
                     let dataValue = sqlite3_column_blob(sqlStatement, index)
                     rowValues.append((value.type, dataValue))
                 default:
-                    break
+                    rowValues.append((value.type, nil))
                 }
             }
             allRows.append(rowValues)
