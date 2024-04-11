@@ -12,6 +12,12 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     let sqliteAdapter: SQLite?
     
     let imagesTable = "Images"
+    let imagesColumns = SQLValues([
+        (.INT, nil), // id
+        (.TEXT, nil), // searchId
+        (.INT, nil), // sortId
+        (.TEXT, nil) // json
+    ])
     
     init(with sqliteAdapter: SQLite?) {
         self.sqliteAdapter = sqliteAdapter
@@ -49,12 +55,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         if let encodedData = try? encoder.encode(image) {
             if let jsonString = String(data: encodedData, encoding: .utf8) {
                 do {
-                    let valuesToBind = SQLValues([
-                        (.TEXT, searchId),
-                        (.INT, sortId),
-                        (.TEXT, jsonString)
-                    ])
-                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable) (searchId, sortId, json) VALUES (?, ?, ?);", valuesToBind: valuesToBind)
+                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable) (searchId, sortId, json) VALUES (?, ?, ?);", params: [searchId, sortId, jsonString])
                     completion(true)
                 } catch {
                     print("SQLite:", error.localizedDescription)
@@ -75,35 +76,22 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
         
         do {
-            let valuesToBind = SQLValues([
-                (.TEXT, searchId)
-            ])
-            let valuesToGet = SQLValues([
-                (.INT, nil), // id
-                (.TEXT, nil), // searchId
-                (.INT, nil), // sortId
-                (.TEXT, nil) // json
-            ])
             let sql = "SELECT * FROM \(imagesTable) WHERE searchId = ? ORDER BY sortId ASC;"
-            let results = try sqliteAdapter.getRow(sql: sql, valuesToBind: valuesToBind, valuesToGet: valuesToGet)
+            let results = try sqliteAdapter.getRow(sql: sql, params: [searchId], valuesToGet: imagesColumns)
             
             var images: [T] = []
             
             for row in results {
-                for (index,value) in row.enumerated() {
-                    if index == 3 && value.type == .TEXT {
-                        if let jsonData = (value.value as! String).data(using: .utf8) {
-                            let decoder = JSONDecoder()
-                            if let decoded = try? decoder.decode(type, from: jsonData) {
-                                images.append(decoded)
-                            } else {
-                                completion(nil)
-                            }
-                        } else {
-                            completion(nil)
-                        }
-                        break
+                let json = row[3] // 'json' column
+                if let jsonData = (json.value as! String).data(using: .utf8) {
+                    let decoder = JSONDecoder()
+                    if let decoded = try? decoder.decode(type, from: jsonData) {
+                        images.append(decoded)
+                    } else {
+                        completion(nil)
                     }
+                } else {
+                    completion(nil)
                 }
             }
             completion(images)
@@ -117,7 +105,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
      func checkImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
         ...
         let sql = "SELECT COUNT(*) FROM \(imagesTable) WHERE searchId = ?;"
-        let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, valuesToBind: valuesToBind)
+        let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, params: [searchId])
         completion(rowCount) // Returns 0 if images with the given searchId are not already cached
         ...
      }
@@ -129,16 +117,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
         let sql = "SELECT * FROM \(imagesTable) WHERE searchId = ? LIMIT 1"
         do {
-            let valuesToBind = SQLValues([
-                (.TEXT, searchId)
-            ])
-            let valuesToGet = SQLValues([
-                (.INT, nil), // id
-                (.TEXT, nil), // searchId
-                (.INT, nil), // sortId
-                (.TEXT, nil) // json
-            ])
-            let rows = try sqliteAdapter.getRow(sql: sql, valuesToBind: valuesToBind, valuesToGet: valuesToGet)
+            let rows = try sqliteAdapter.getRow(sql: sql, params: [searchId], valuesToGet: imagesColumns)
             completion(rows.count == 1 ? true : false)
         } catch {
             completion(nil)
