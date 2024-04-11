@@ -71,7 +71,8 @@ protocol SQLiteType {
 
 class SQLite: SQLiteType {
     
-    private var dbPointer: OpaquePointer?
+    private(set) var dbPointer: OpaquePointer?
+    private(set) var dbPath: String!
     
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
@@ -87,6 +88,7 @@ class SQLite: SQLiteType {
         
         if sqlite3_open(path, &db) == SQLITE_OK {
             dbPointer = db
+            dbPath = path
             log("database opened successfully, path: \(path)")
         } else {
             defer {
