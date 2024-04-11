@@ -63,7 +63,7 @@ protocol SQLiteType {
     func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues]
     func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues
     func getLastRow(in tableName: String, valuesToGet: SQLValues) throws -> SQLValues
-    func getLastInsertID() throws -> Int
+    func getLastInsertID() -> Int
     func vacuum() throws
     func resetAutoincrement(in tableName: String) throws
     func query(sql: String, valuesToBind: SQLValues?) throws
@@ -295,7 +295,7 @@ class SQLite: SQLiteType {
     func insertRow(sql: String, valuesToBind: SQLValues? = nil) throws -> Int {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successfully inserted row(s), sql: \(sql)")
-        return Int(sqlite3_last_insert_rowid(dbPointer))
+        return getLastInsertID()
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
@@ -435,17 +435,8 @@ class SQLite: SQLiteType {
         }
     }
     
-    func getLastInsertID() throws -> Int {
-        let sqlStatement = try prepareStatement(sql: "SELECT last_insert_rowid();")
-        defer {
-            sqlite3_finalize(sqlStatement)
-        }
-        guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
-            throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
-        }
-        let id = sqlite3_column_int(sqlStatement, 0)
-        log("successfully got last_insert_id: \(id)")
-        return Int(id)
+    func getLastInsertID() -> Int {
+        return Int(sqlite3_last_insert_rowid(dbPointer))
     }
     
     /// Repack the DB to take advantage of deleted data
