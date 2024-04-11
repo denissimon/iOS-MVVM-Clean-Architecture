@@ -78,6 +78,8 @@ class SQLite: SQLiteType {
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
+    private let dateFormatter = DateFormatter()
+    
     var primaryKey = "id"
     
     init(path: String, recreateDB: Bool = false) throws {
@@ -90,6 +92,7 @@ class SQLite: SQLiteType {
         if sqlite3_open(path, &db) == SQLITE_OK {
             dbPointer = db
             dbPath = path
+            setUp()
             log("database opened successfully, path: \(path)")
         } else {
             defer {
@@ -107,6 +110,12 @@ class SQLite: SQLiteType {
             sqlite3_close(dbPointer)
             dbPointer = nil
         }
+    }
+    
+    private func setUp() {
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     }
     
     private func deleteDB(path: String) throws {
