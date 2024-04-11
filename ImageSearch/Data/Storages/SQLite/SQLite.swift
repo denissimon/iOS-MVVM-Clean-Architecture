@@ -475,7 +475,7 @@ class SQLite: SQLiteType {
         log("successfully reseted autoincrement in \(tableName)")
     }
     
-    /// Any other query except a reading
+    /// Any other query except reading
     func query(sql: String, valuesToBind: SQLValues? = nil) throws {
         try operation(sql: sql, valuesToBind: valuesToBind)
         log("successful query, sql: \(sql)")
