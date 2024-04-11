@@ -53,21 +53,21 @@ protocol SQLiteType {
     func dropIndex(in tableName: String, forColumn columnName: String) throws
     func beginTransaction() throws
     func endTransaction() throws
-    func insertRow(sql: String, valuesToBind: SQLValues?) throws -> Int
-    func updateRow(sql: String, valuesToBind: SQLValues?) throws
-    func deleteRow(sql: String, valuesToBind: SQLValues?) throws
+    func insertRow(sql: String, params: [Any]?) throws -> Int
+    func updateRow(sql: String, params: [Any]?) throws
+    func deleteRow(sql: String, params: [Any]?) throws
     func deleteByID(in tableName: String, id: Int) throws
     func deleteAllRows(in tableName: String, vacuum: Bool, resetAutoincrement: Bool) throws
     func getRowCount(in tableName: String) throws -> Int
-    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues?) throws -> Int
-    func getRow(sql: String, valuesToBind: SQLValues?, valuesToGet: SQLValues) throws -> [SQLValues]
+    func getRowCountWithCondition(sql: String, params: [Any]?) throws -> Int
+    func getRow(sql: String, params: [Any]?, valuesToGet: SQLValues) throws -> [SQLValues]
     func getAllRows(in tableName: String, valuesToGet: SQLValues) throws -> [SQLValues]
     func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues
     func getLastRow(in tableName: String, valuesToGet: SQLValues) throws -> SQLValues
     func getLastInsertID() -> Int
     func vacuum() throws
     func resetAutoincrement(in tableName: String) throws
-    func query(sql: String, valuesToBind: SQLValues?) throws
+    func query(sql: String, params: [Any]?) throws
 }
 
 class SQLite: SQLiteType {
@@ -78,8 +78,7 @@ class SQLite: SQLiteType {
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
-    private let dateFormatter = DateFormatter()
-    
+    var dateFormatter = DateFormatter()
     var primaryKey = "id"
     
     init(path: String, recreateDB: Bool = false) throws {
@@ -149,78 +148,54 @@ class SQLite: SQLiteType {
         return queryStatement
     }
     
-    private func bindPlaceholders(sqlStatement: OpaquePointer?, valuesToBind: SQLValues?) throws {
-        guard let valuesToBind = valuesToBind else { return }
-            
-        func bindNULL(_ index: Int32) throws {
-            guard sqlite3_bind_null(sqlStatement, index) == SQLITE_OK
-            else {
-                throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-            }
+    private func bindPlaceholders(sqlStatement: OpaquePointer?, params: [Any]?) throws {
+        guard let params = params else { return }
+        
+        let paramsCount = sqlite3_bind_parameter_count(sqlStatement)
+        let count = params.count
+        if paramsCount != Int32(count) {
+            throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
         }
         
-        for (index,value) in valuesToBind.enumerated() {
+        for index in 0...(count-1) {
             
-            let index = Int32(index+1) // placeholder serial number, should start with 1
+            let index = index+1 // placeholder serial number, should start with 1
             
-            if value.value == nil {
-                try bindNULL(index)
-                continue
+            var statusCode: Int32 = 0
+            
+            // Detect placeholder data types
+            if let intValue = params[index - 1] as? Int {
+                statusCode = sqlite3_bind_int(sqlStatement, Int32(index), Int32(intValue))
+            } else if let boolValue = params[index - 1] as? Bool {
+                statusCode = sqlite3_bind_int(sqlStatement, Int32(index), Int32(boolValue ? 1 : 0 ))
+            } else if let stringValue = params[index - 1] as? NSString {
+                statusCode = sqlite3_bind_text(sqlStatement, Int32(index), stringValue.utf8String, -1, SQLITE_TRANSIENT)
+            } else if let doubleValue = params[index - 1] as? Double {
+                statusCode = sqlite3_bind_double(sqlStatement, Int32(index), doubleValue)
+            } else if let data = params[index - 1] as? Data {
+                data.withUnsafeBytes { bytes in
+                    statusCode = sqlite3_bind_blob(sqlStatement, Int32(index), bytes.baseAddress, Int32(data.count), SQLITE_TRANSIENT)
+                }
+            } else if let date = params[index - 1] as? Date {
+                let dateStr = dateFormatter.string(from: date)
+                statusCode = sqlite3_bind_text(sqlStatement, Int32(index), dateStr, -1, SQLITE_TRANSIENT)
+            } else {
+                statusCode = sqlite3_bind_null(sqlStatement, Int32(index))
             }
             
-            switch value.type {
-            case .INT:
-                guard let intValue = value.value as? Int,
-                          sqlite3_bind_int(sqlStatement, index, Int32(Int(intValue))) == SQLITE_OK
-                else {
-                    throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                }
-            case .BOOL:
-                guard let boolValue = value.value as? Bool,
-                        sqlite3_bind_int(sqlStatement, index, Int32(boolValue == true ? 1 : 0 )) == SQLITE_OK
-                else {
-                    throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                }
-            case .TEXT:
-                guard let stringValue = value.value as? NSString,
-                            sqlite3_bind_text(sqlStatement, index, stringValue.utf8String, -1, SQLITE_TRANSIENT) == SQLITE_OK
-                else {
-                    throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                }
-            case .REAL:
-                guard let doubleValue = value.value as? Double,
-                            sqlite3_bind_double(sqlStatement, index, doubleValue) == SQLITE_OK
-                else {
-                    throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                }
-            case .BLOB:
-                if let data = value.value as? Data {
-                    do {
-                        try data.withUnsafeBytes { bytes in
-                            guard sqlite3_bind_blob(sqlStatement, index, bytes.baseAddress, Int32(data.count), SQLITE_TRANSIENT) == SQLITE_OK
-                            else {
-                                throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                            }
-                        }
-                    } catch {
-                        throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                    }
-                } else {
-                    throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
-                }
-            case .NULL:
-                try bindNULL(index)
+            guard statusCode == SQLITE_OK else {
+                throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
             }
         }
     }
     
-    private func operation(sql: String, valuesToBind: SQLValues? = nil) throws {
+    private func operation(sql: String, params: [Any]? = nil) throws {
         let sqlStatement = try prepareStatement(sql: sql)
         defer {
             sqlite3_finalize(sqlStatement)
         }
         
-        try bindPlaceholders(sqlStatement: sqlStatement, valuesToBind: valuesToBind)
+        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
         
         guard sqlite3_step(sqlStatement) == SQLITE_DONE else {
             throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
@@ -236,7 +211,7 @@ class SQLite: SQLiteType {
     }
     
     func checkIfTableExists(_ tableName: String) throws -> Bool {
-        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='\(tableName)';", valuesToBind: nil) {
+        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='\(tableName)';") {
             let result = count == 1 ? true : false
             log("successfully checked if table \(tableName) exists: \(result)")
             return result
@@ -278,7 +253,7 @@ class SQLite: SQLiteType {
     }
     
     func checkIfIndexExists(in tableName: String, indexName: String) throws -> Bool {
-        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='index' AND tbl_name='\(tableName)' AND name='\(indexName)';", valuesToBind: nil) {
+        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='index' AND tbl_name='\(tableName)' AND name='\(indexName)';") {
             let result = count == 1 ? true : false
             log("successfully checked if index \(indexName) exists: \(result)")
             return result
@@ -307,37 +282,36 @@ class SQLite: SQLiteType {
     
     /// Can be used to insert one or several rows depending on the SQL statement
     /// - Returns: The id for the last inserted row
-    func insertRow(sql: String, valuesToBind: SQLValues? = nil) throws -> Int {
+    func insertRow(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("INSERT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, valuesToBind: valuesToBind)
+        try operation(sql: sql, params: params)
         log("successfully inserted row(s), sql: \(sql)")
         return getLastInsertID()
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
-    func updateRow(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func updateRow(sql: String, params: [Any]? = nil) throws {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("UPDATE ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, valuesToBind: valuesToBind)
+        try operation(sql: sql, params: params)
         log("successfully updated row(s), sql: \(sql)")
     }
     
     /// Can be used to delete one or several rows depending on the SQL statement
-    func deleteRow(sql: String, valuesToBind: SQLValues? = nil) throws {
+    func deleteRow(sql: String, params: [Any]? = nil) throws {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("DELETE ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, valuesToBind: valuesToBind)
+        try operation(sql: sql, params: params)
         log("successfully deleted row(s), sql: \(sql)")
     }
     
     func deleteByID(in tableName: String, id: Int) throws {
         let sql = "DELETE FROM \(tableName) WHERE \(primaryKey) = ?;"
-        let valuesToBind = SQLValues([(.INT, id)])
-        try operation(sql: sql, valuesToBind: valuesToBind)
+        try operation(sql: sql, params: [id])
         log("successfully deleted a row by id \(id) in \(tableName)")
     }
     
@@ -367,7 +341,7 @@ class SQLite: SQLiteType {
         return Int(count)
     }
     
-    func getRowCountWithCondition(sql: String, valuesToBind: SQLValues? = nil) throws -> Int {
+    func getRowCountWithCondition(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("SELECT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
@@ -377,7 +351,7 @@ class SQLite: SQLiteType {
             sqlite3_finalize(sqlStatement)
         }
         
-        try bindPlaceholders(sqlStatement: sqlStatement, valuesToBind: valuesToBind)
+        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
         
         guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
             throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
@@ -388,7 +362,7 @@ class SQLite: SQLiteType {
     }
     
     /// Can be used to read one or several rows depending on the SQL statement
-    func getRow(sql: String, valuesToBind: SQLValues? = nil, valuesToGet: SQLValues) throws -> [SQLValues] {
+    func getRow(sql: String, params: [Any]? = nil, valuesToGet: SQLValues) throws -> [SQLValues] {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("SELECT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
@@ -398,7 +372,7 @@ class SQLite: SQLiteType {
             sqlite3_finalize(sqlStatement)
         }
         
-        try bindPlaceholders(sqlStatement: sqlStatement, valuesToBind: valuesToBind)
+        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
         
         var allRows: [SQLValues] = []
         var rowValues: SQLValues = SQLValues([])
@@ -409,6 +383,7 @@ class SQLite: SQLiteType {
                 
                 let index = Int32(index) // column serial number, should start with 0
                 
+                // Check for data types of returned values
                 switch value.type {
                 case .INT, .BOOL:
                     let intValue = sqlite3_column_int(sqlStatement, index)
@@ -446,8 +421,7 @@ class SQLite: SQLiteType {
     
     func getByID(in tableName: String, id: Int, valuesToGet: SQLValues) throws -> SQLValues {
         let sql = "SELECT * FROM \(tableName) WHERE \(primaryKey) = ? LIMIT 1;"
-        let valueToBind = SQLValues([(.INT, id)])
-        let result = try getRow(sql: sql, valuesToBind: valueToBind, valuesToGet: valuesToGet)
+        let result = try getRow(sql: sql, params: [id], valuesToGet: valuesToGet)
         if result.count == 1 {
             log("successfully read a row by id \(id) in \(tableName)")
             return result[0]
@@ -458,7 +432,7 @@ class SQLite: SQLiteType {
     
     func getLastRow(in tableName: String, valuesToGet: SQLValues) throws -> SQLValues {
         let sql = "SELECT * FROM \(tableName) WHERE \(primaryKey) = (SELECT MAX(\(primaryKey)) FROM \(tableName));"
-        let result = try getRow(sql: sql, valuesToBind: nil, valuesToGet: valuesToGet)
+        let result = try getRow(sql: sql, valuesToGet: valuesToGet)
         if result.count == 1 {
             log("successfully read last row in \(tableName)")
             return result[0]
@@ -485,8 +459,8 @@ class SQLite: SQLiteType {
     }
     
     /// Any other query except reading
-    func query(sql: String, valuesToBind: SQLValues? = nil) throws {
-        try operation(sql: sql, valuesToBind: valuesToBind)
+    func query(sql: String, params: [Any]? = nil) throws {
+        try operation(sql: sql, params: params)
         log("successful query, sql: \(sql)")
     }
 }
