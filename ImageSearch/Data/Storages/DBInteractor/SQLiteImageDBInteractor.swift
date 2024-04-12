@@ -11,13 +11,15 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     
     let sqliteAdapter: SQLite?
     
-    let imagesTable = "Images"
-    let imagesColumns = SQLValues([
-        (.INT, nil), // id
-        (.TEXT, nil), // searchId
-        (.INT, nil), // sortId
-        (.TEXT, nil) // json
-    ])
+    let imagesTable = SQLTable(
+        name: "Images",
+        columnTypes: SQLValues([
+            (.INT, nil), // id
+            (.TEXT, nil), // searchId
+            (.INT, nil), // sortId
+            (.TEXT, nil) // json
+        ])
+    )
     
     init(with sqliteAdapter: SQLite?) {
         self.sqliteAdapter = sqliteAdapter
@@ -27,7 +29,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     private func createImageTable() {
         guard let sqliteAdapter = sqliteAdapter else { return }
         let sqlStatement = """
-            CREATE TABLE IF NOT EXISTS "\(imagesTable)"(
+            CREATE TABLE IF NOT EXISTS "\(imagesTable.name)"(
                 "id" INTEGER NOT NULL,
                 "searchId" CHAR(255) NOT NULL,
                 "sortId" INT NOT NULL,
@@ -55,7 +57,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         if let encodedData = try? encoder.encode(image) {
             if let jsonString = String(data: encodedData, encoding: .utf8) {
                 do {
-                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable) (searchId, sortId, json) VALUES (?, ?, ?);", params: [searchId, sortId, jsonString])
+                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable.name) (searchId, sortId, json) VALUES (?, ?, ?);", params: [searchId, sortId, jsonString])
                     completion(true)
                 } catch {
                     print("SQLite:", error.localizedDescription)
@@ -76,8 +78,8 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
         
         do {
-            let sql = "SELECT * FROM \(imagesTable) WHERE searchId = ? ORDER BY sortId ASC;"
-            let results = try sqliteAdapter.getRow(sql: sql, params: [searchId], valuesToGet: imagesColumns)
+            let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? ORDER BY sortId ASC;"
+            let results = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId])
             
             var images: [T] = []
             
@@ -104,7 +106,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     /* Note: another way (albeit more computationally heavy) to perform this check is as follows:
      func checkImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
         ...
-        let sql = "SELECT COUNT(*) FROM \(imagesTable) WHERE searchId = ?;"
+        let sql = "SELECT count(*) FROM \(imagesTable.name) WHERE searchId = ?;"
         let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, params: [searchId])
         completion(rowCount) // Returns 0 if images with the given searchId are not already cached
         ...
@@ -115,9 +117,9 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             completion(nil)
             return
         }
-        let sql = "SELECT * FROM \(imagesTable) WHERE searchId = ? LIMIT 1"
+        let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? LIMIT 1"
         do {
-            let rows = try sqliteAdapter.getRow(sql: sql, params: [searchId], valuesToGet: imagesColumns)
+            let rows = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId])
             completion(rows.count == 1 ? true : false)
         } catch {
             completion(nil)
