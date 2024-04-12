@@ -6,6 +6,7 @@
 //
 
 class SQLTable {
+    
     let name: String
     let columnTypes: SQLValues
     let primaryKey: String
