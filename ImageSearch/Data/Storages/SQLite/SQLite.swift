@@ -65,6 +65,8 @@ protocol SQLiteType {
     func getByID(from table: SQLTable, id: Int) throws -> SQLValues
     func getLastRow(from table: SQLTable) throws -> SQLValues
     func getLastInsertID() -> Int
+    func getChanges() -> Int
+    func getTotalChanges() -> Int
     func vacuum() throws
     func resetAutoincrement(in table: SQLTable) throws
     func query(sql: String, params: [Any]?) throws
@@ -495,6 +497,16 @@ class SQLite: SQLiteType {
     
     func getLastInsertID() -> Int {
         return Int(sqlite3_last_insert_rowid(dbPointer))
+    }
+    
+    /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
+    func getChanges() -> Int {
+        return Int(sqlite3_changes(dbPointer))
+    }
+    
+    /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
+    func getTotalChanges() -> Int {
+        return Int(sqlite3_total_changes(dbPointer))
     }
     
     /// Repacks the DB to take advantage of deleted data
