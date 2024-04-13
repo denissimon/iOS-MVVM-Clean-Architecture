@@ -25,8 +25,7 @@ enum SQLType {
     case TEXT // Includes TEXT, CHAR, CHARACTER, VARCHAR, CLOB, VARIANT, VARYING_CHARACTER, NATIONAL_VARYING_CHARACTER, NATIVE_CHARACTER, NCHAR, NVARCHAR
     case REAL // Includes REAL, NUMERIC, DECIMAL, FLOAT, DOUBLE, DOUBLE_PRECISION
     case BLOB // Includes BLOB, BINARY, VARBINARY
-    case NULL
-    // TODO: DATE, DATETIME, TIME, TIMESTAMP
+    case DATE // Includes DATE, DATETIME, TIME, TIMESTAMP
 }
 
 enum SQLOrder {
@@ -41,7 +40,7 @@ enum SQLOrder {
 /// case TEXT (includes TEXT, CHAR, CHARACTER, VARCHAR, CLOB, VARIANT, VARYING_CHARACTER, NATIONAL_VARYING_CHARACTER, NATIVE_CHARACTER, NCHAR, NVARCHAR)
 /// case REAL (includes REAL, NUMERIC, DECIMAL, FLOAT, DOUBLE, DOUBLE_PRECISION)
 /// case BLOB (includes BLOB, BINARY, VARBINARY)
-/// case NULL
+/// case DATE (includes DATE, DATETIME, TIME, TIMESTAMP)
 typealias SQLValues = [(type: SQLType, value: Any?)]
 
 protocol SQLiteType {
@@ -384,9 +383,12 @@ class SQLite: SQLiteType {
                 
                 // Check for data types of returned values
                 switch value.type {
-                case .INT, .BOOL:
+                case .INT:
+                    let intValue = sqlite3_column_int64(sqlStatement, index)
+                    rowValues.append((value.type, Int(intValue)))
+                case .BOOL:
                     let intValue = sqlite3_column_int(sqlStatement, index)
-                    rowValues.append((value.type, intValue))
+                    rowValues.append((value.type, intValue == 1 ? true : false))
                 case .TEXT:
                     if let queryResult = sqlite3_column_text(sqlStatement, index) {
                         let stringValue = String(cString: queryResult)
@@ -398,10 +400,29 @@ class SQLite: SQLiteType {
                     let doubleValue = sqlite3_column_double(sqlStatement, index)
                     rowValues.append((value.type, doubleValue))
                 case .BLOB:
-                    let dataValue = sqlite3_column_blob(sqlStatement, index)
-                    rowValues.append((value.type, dataValue))
-                default:
-                    rowValues.append((value.type, nil))
+                    if let queryResult = sqlite3_column_blob(sqlStatement, index) {
+                        let count = sqlite3_column_bytes(sqlStatement, index)
+                        let dataValue = Data(bytes: queryResult, count: Int(count))
+                        rowValues.append((value.type, dataValue))
+                    } else {
+                        rowValues.append((value.type, nil))
+                    }
+                case .DATE:
+                    // If it's in date format
+                    if let queryResult = sqlite3_column_text(sqlStatement, index) {
+                        var dateStrValue = String(cString: queryResult)
+                        if dateStrValue.count == 10 {
+                            dateStrValue += " 00:00:00"
+                        }
+                        if let dateValue = dateFormatter.date(from: dateStrValue) {
+                            rowValues.append((value.type, dateValue))
+                            continue
+                        }
+                    }
+                    // If it's in time interval format
+                    let timeInterval = sqlite3_column_double(sqlStatement, index)
+                    let dateValue = Date(timeIntervalSince1970: timeInterval)
+                    rowValues.append((value.type, dateValue))
                 }
             }
             allRows.append(rowValues)

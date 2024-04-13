@@ -48,3 +48,10 @@ extension UIWindow {
     }
 }
 
+extension Date {
+    func stripTime() -> Date {
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        let date = Calendar.current.date(from: dateComponents)
+        return date!
+    }
+}
