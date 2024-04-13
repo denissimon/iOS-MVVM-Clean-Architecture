@@ -15,12 +15,12 @@ class SQLiteTests: XCTestCase {
     
     static let testTable = SQLTable(
         name: "TestTable",
-        columnTypes: SQLValues([
-            (.INT, nil), // id
-            (.TEXT, nil), // searchId
-            (.INT, nil), // sortId
-            (.TEXT, nil) // json
-        ])
+        columns: [
+            ("id", .INT),
+            ("searchId", .TEXT),
+            ("sortId", .INT),
+            ("json", .TEXT)
+        ]
     )
     static let sqlCreateTestTable = """
         CREATE TABLE IF NOT EXISTS "\(SQLiteTests.testTable.name)"(
@@ -34,12 +34,12 @@ class SQLiteTests: XCTestCase {
     
     static let testTable2 = SQLTable(
         name: "TestTable2",
-        columnTypes: SQLValues([
-            (.INT, nil), // rowid
-            (.BLOB, nil), // jsonData
-            (.BOOL, nil), // isDeleted
-            (.DATE, nil) // updated
-        ]),
+        columns: [
+            ("rowid", .INT),
+            ("jsonData", .BLOB),
+            ("isDeleted", .BOOL),
+            ("updated", .DATE)
+        ],
         primaryKey: "rowid"
     )
     static let sqlCreateTestTable2 = """
@@ -54,15 +54,15 @@ class SQLiteTests: XCTestCase {
     
     static let testTable3 = SQLTable(
         name: "TestTable3",
-        columnTypes: SQLValues([
-            (.INT, nil), // id
-            (.INT, nil), // intColumn
-            (.BOOL, nil), // boolColumn
-            (.TEXT, nil), // textColumn
-            (.REAL, nil), // realColumn
-            (.BLOB, nil), // blobColumn
-            (.DATE, nil), // dateColumn
-        ])
+        columns: [
+            ("id", .INT),
+            ("intColumn", .INT),
+            ("boolColumn", .BOOL),
+            ("textColumn", .TEXT),
+            ("realColumn", .REAL),
+            ("blobColumn", .BLOB),
+            ("dateColumn", .DATE),
+        ]
     )
     static let sqlCreateTestTable3 = """
         CREATE TABLE IF NOT EXISTS "\(SQLiteTests.testTable3.name)"(
@@ -106,7 +106,7 @@ class SQLiteTests: XCTestCase {
     
     func testCreateTable_whenInvalidTableName() {
         try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
-        let someTable = SQLTable(name: "SomeTable", columnTypes: SQLValues())
+        let someTable = SQLTable(name: "SomeTable", columns: [])
         let checkIfTableExists = try? SQLiteTests.sqlite?.checkIfTableExists(someTable)
         XCTAssertNotNil(checkIfTableExists)
         XCTAssertFalse(checkIfTableExists!)
@@ -287,8 +287,12 @@ class SQLiteTests: XCTestCase {
         let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["jsonString".data(using: .utf8)!, insertDate])
         
         let updateDate = Date()
+        sqlStatement = "UPDATE \(SQLiteTests.testTable2.name) SET jsonData = NULL, isDeleted = ?, updated = ? WHERE \(SQLiteTests.testTable2.primaryKey) = ?"
+        try? SQLiteTests.sqlite?.updateRow(sql: sqlStatement, params: [true, updateDate, 1])
+        /* Another option to do the same:
         sqlStatement = "UPDATE \(SQLiteTests.testTable2.name) SET jsonData = ?, isDeleted = ?, updated = ? WHERE \(SQLiteTests.testTable2.primaryKey) = ?"
         try? SQLiteTests.sqlite?.updateRow(sql: sqlStatement, params: [nil, true, updateDate, 1])
+         */
         
         row = try? SQLiteTests.sqlite?.getByID(from: SQLiteTests.testTable2, id: 1)
         XCTAssertNotNil(row)
@@ -387,17 +391,19 @@ class SQLiteTests: XCTestCase {
         try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
         
         var sqlStatement = "INSERT INTO \(SQLiteTests.testTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
-        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
-        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 1, "jsonString_1"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString_1"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 2, "jsonString_2"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 1, "jsonString_3"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 2, "jsonString_4"])
         
         var rowCount = try? SQLiteTests.sqlite?.getRowCount(in: SQLiteTests.testTable)
         XCTAssertNotNil(rowCount)
-        XCTAssertEqual(rowCount!, 2)
+        XCTAssertEqual(rowCount!, 4)
         
         sqlStatement = "SELECT COUNT(*) FROM \(SQLiteTests.testTable.name) WHERE searchId = ?;"
         rowCount = try? SQLiteTests.sqlite?.getRowCountWithCondition(sql: sqlStatement, params: ["searchId_1"])
         XCTAssertNotNil(rowCount)
-        XCTAssertEqual(rowCount!, 1)
+        XCTAssertEqual(rowCount!, 2)
     }
     
     func testGetRowCountWithCondition_whenInvalidCondition() {
@@ -423,6 +429,7 @@ class SQLiteTests: XCTestCase {
         var sqlStatement = "INSERT INTO \(SQLiteTests.testTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
         let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString_1"])
         let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 2, "jsonString_2"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 1, "jsonString_3"])
         
         sqlStatement = "SELECT * FROM \(SQLiteTests.testTable.name) WHERE searchId = ? ORDER BY sortId ASC;"
         
@@ -444,6 +451,7 @@ class SQLiteTests: XCTestCase {
         var sqlStatement = "INSERT INTO \(SQLiteTests.testTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
         let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString_1"])
         let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 2, "jsonString_2"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 1, "jsonString_3"])
         
         sqlStatement = "SELECT * FROM \(SQLiteTests.testTable.name) WHERE searchId = ? ORDER BY sortId DESC;"
         
@@ -495,12 +503,12 @@ class SQLiteTests: XCTestCase {
         if let firstRow = rows!.first {
             XCTAssertEqual(firstRow.count, 7)
             XCTAssertEqual(firstRow[0].value as! Int, 1) // "id" INTEGER NOT NULL
-            XCTAssertEqual(firstRow[1].value as? Int, Optional(0)) // "intValue" INTEGER NULL
-            XCTAssertEqual(firstRow[2].value as? Bool, Optional(false)) // "boolValue" BOOLEAN NULL
+            XCTAssertEqual(firstRow[1].value as? Int, nil) // "intValue" INTEGER NULL
+            XCTAssertEqual(firstRow[2].value as? Bool, nil) // "boolValue" BOOLEAN NULL
             XCTAssertEqual(firstRow[3].value as? String, nil) // "textColumn" TEXT NULL
-            XCTAssertEqual(firstRow[4].value as? Double, Optional(0.0)) // "realColumn" DOUBLE NULL
+            XCTAssertEqual(firstRow[4].value as? Double, nil) // "realColumn" DOUBLE NULL
             XCTAssertEqual(firstRow[5].value as? Data, nil) // "blobColumn" BLOB NULL
-            XCTAssertEqual((firstRow[6].value as? Date)?.description, "1970-01-01 00:00:00 +0000") // "dateColumn" DATE NULL
+            XCTAssertEqual(firstRow[6].value as? Date, nil) // "dateColumn" DATE NULL
         } else {
             XCTFail()
         }
