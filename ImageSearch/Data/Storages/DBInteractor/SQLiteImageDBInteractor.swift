@@ -30,11 +30,11 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         guard let sqliteAdapter = sqliteAdapter else { return }
         let sqlStatement = """
             CREATE TABLE IF NOT EXISTS "\(imagesTable.name)"(
-                "id" INTEGER NOT NULL,
+                "\(imagesTable.primaryKey)" INTEGER NOT NULL,
                 "searchId" CHAR(255) NOT NULL,
                 "sortId" INT NOT NULL,
                 "json" TEXT NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT)
+                PRIMARY KEY("\(imagesTable.primaryKey)" AUTOINCREMENT)
             );
             """
         do {
@@ -57,7 +57,8 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         if let encodedData = try? encoder.encode(image) {
             if let jsonString = String(data: encodedData, encoding: .utf8) {
                 do {
-                    let _ = try sqliteAdapter.insertRow(sql: "INSERT INTO \(imagesTable.name) (searchId, sortId, json) VALUES (?, ?, ?);", params: [searchId, sortId, jsonString])
+                    let sql = "INSERT INTO \(imagesTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
+                    let _ = try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
                     completion(true)
                 } catch {
                     print("SQLite:", error.localizedDescription)
