@@ -233,6 +233,34 @@ class SQLiteTests: XCTestCase {
         XCTAssertEqual(rowCount!, 0)
     }
     
+    func testReplaceRow() {
+        try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
+        
+        var rowCount = try? SQLiteTests.sqlite?.getRowCount(in: SQLiteTests.testTable)
+        XCTAssertNotNil(rowCount)
+        XCTAssertEqual(rowCount!, 0)
+        
+        var sqlStatement = "INSERT INTO \(SQLiteTests.testTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
+        let lastInsertId = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
+        XCTAssertNotNil(lastInsertId)
+        
+        sqlStatement = "INSERT OR REPLACE INTO \(SQLiteTests.testTable.name) (\(SQLiteTests.testTable.primaryKey), searchId, sortId, json) VALUES (?, ?, ?, ?);"
+        let lastInsertId2 = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: [lastInsertId!, "searchId_1", 2, "jsonString_1"])
+        XCTAssertEqual(lastInsertId, lastInsertId2)
+        
+        rowCount = try? SQLiteTests.sqlite?.getRowCount(in: SQLiteTests.testTable)
+        XCTAssertNotNil(rowCount)
+        XCTAssertEqual(rowCount!, 1)
+        
+        let row = try? SQLiteTests.sqlite?.getByID(from: SQLiteTests.testTable, id: lastInsertId!)
+        XCTAssertNotNil(row)
+        XCTAssertEqual(row!.count, 4)
+        XCTAssertEqual(row![0].value as! Int, 1) // "id" INTEGER NOT NULL
+        XCTAssertEqual(row![1].value as! String, "searchId_1") // "searchId" CHAR(255) NOT NULL
+        XCTAssertEqual(row![2].value as! Int, 2) // "sortId" INT NOT NULL
+        XCTAssertEqual(row![3].value as! String, "jsonString_1") // "json" TEXT NOT NULL
+    }
+    
     func testUpdateRow() {
         // TestTable
         try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
