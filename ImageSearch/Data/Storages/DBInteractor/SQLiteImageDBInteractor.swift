@@ -13,12 +13,12 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     
     let imagesTable = SQLTable(
         name: "Images",
-        columnTypes: SQLValues([
-            (.INT, nil), // id
-            (.TEXT, nil), // searchId
-            (.INT, nil), // sortId
-            (.TEXT, nil) // json
-        ])
+        columns: [
+            ("id", .INT),
+            ("searchId", .TEXT),
+            ("sortId", .INT),
+            ("json", .TEXT)
+        ]
     )
     
     init(with sqliteAdapter: SQLite?) {
