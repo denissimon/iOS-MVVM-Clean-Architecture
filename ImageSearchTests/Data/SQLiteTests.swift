@@ -321,6 +321,36 @@ class SQLiteTests: XCTestCase {
         XCTAssertEqual(row![3].value as! String, "jsonString") // "json" TEXT NOT NULL
     }
     
+    func testUpdateAllRows() {
+        try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable2)
+        
+        var sqlStatement = "INSERT INTO \(SQLiteTests.testTable2.name) (jsonData, updated) VALUES (?, ?);"
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["jsonString".data(using: .utf8)!, Date()])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["jsonString_1".data(using: .utf8)!, Date()])
+        
+        sqlStatement = "UPDATE \(SQLiteTests.testTable2.name) SET isDeleted = ?, updated = ?"
+        try? SQLiteTests.sqlite?.updateRow(sql: sqlStatement, params: [true, Date()])
+        
+        sqlStatement = "SELECT * FROM \(SQLiteTests.testTable2.name)"
+        let rows = try? SQLiteTests.sqlite?.getAllRows(from: SQLiteTests.testTable2)
+        XCTAssertNotNil(rows)
+        XCTAssertEqual(rows!.count, 2)
+        
+        let firstRow = rows![0]
+        XCTAssertEqual(firstRow.count, 4)
+        XCTAssertEqual(firstRow[0].value as! Int, 1) // "rowid" INTEGER NOT NULL
+        XCTAssertEqual(String(data: (firstRow[1].value as! Data), encoding: .utf8), "jsonString")
+        XCTAssertEqual(firstRow[2].value as! Bool, true) // "isDeleted" BOOLEAN DEFAULT 0 NOT NULL
+        XCTAssertEqual((firstRow[3].value as! Date).stripTime(), Date().stripTime()) // "updated" DATE NOT NULL
+        
+        let secondRow = rows![1]
+        XCTAssertEqual(secondRow.count, 4)
+        XCTAssertEqual(secondRow[0].value as! Int, 2) // "rowid" INTEGER NOT NULL
+        XCTAssertEqual(String(data: (secondRow[1].value as! Data), encoding: .utf8), "jsonString_1")
+        XCTAssertEqual(secondRow[2].value as! Bool, true) // "isDeleted" BOOLEAN DEFAULT 0 NOT NULL
+        XCTAssertEqual((secondRow[3].value as! Date).stripTime(), Date().stripTime()) // "updated" DATE NOT NULL
+    }
+    
     func testDeleteRow() {
         try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
         
@@ -512,6 +542,27 @@ class SQLiteTests: XCTestCase {
         } else {
             XCTFail()
         }
+    }
+    
+    func testGetRow_whenSpecifyingSpecificColumns() {
+        try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
+        
+        var sqlStatement = "INSERT INTO \(SQLiteTests.testTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString_1"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId", 2, "jsonString_2"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 1, "jsonString_3"])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["searchId_1", 2, "jsonString_4"])
+        
+        sqlStatement = "SELECT id, sortId, json FROM \(SQLiteTests.testTable.name) WHERE searchId = ?;"
+        let rows = try? SQLiteTests.sqlite?.getRow(from: SQLiteTests.testTable, sql: sqlStatement, params: ["searchId"])
+        XCTAssertNotNil(rows)
+        XCTAssertEqual(rows!.count, 2)
+        
+        let firstRow = rows![0]
+        XCTAssertEqual(firstRow.count, 3)
+        XCTAssertEqual(firstRow[0].value as! Int, 1) // "id" INTEGER NOT NULL
+        XCTAssertEqual(firstRow[1].value as! Int, 1) // "sortId" INT NOT NULL
+        XCTAssertEqual(firstRow[2].value as! String, "jsonString_1") // "json" TEXT NOT NULL
     }
     
     func testGetRow_whenInvalidCondition() {
