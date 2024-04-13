@@ -461,11 +461,12 @@ class SQLite: SQLiteType {
         }
     }
     
+    /// Returns the id of the last row inserted
     func getLastInsertID() -> Int {
         return Int(sqlite3_last_insert_rowid(dbPointer))
     }
     
-    /// Repack the DB to take advantage of deleted data
+    /// Repacks the DB to take advantage of deleted data
     func vacuum() throws {
         let sql = "VACUUM;"
         try operation(sql: sql)
