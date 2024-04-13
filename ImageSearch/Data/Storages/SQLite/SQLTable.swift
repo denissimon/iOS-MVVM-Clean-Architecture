@@ -8,12 +8,12 @@
 class SQLTable {
     
     let name: String
-    let columnTypes: SQLValues
+    let columns: SQLTableColums
     let primaryKey: String
     
-    init(name: String, columnTypes: SQLValues, primaryKey: String = "id") {
+    init(name: String, columns: SQLTableColums, primaryKey: String = "id") {
         self.name = name
-        self.columnTypes = columnTypes
+        self.columns = columns
         self.primaryKey = primaryKey
     }
 }
