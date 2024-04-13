@@ -41,6 +41,7 @@ enum SQLOrder {
 /// case REAL (includes REAL, NUMERIC, DECIMAL, FLOAT, DOUBLE, DOUBLE_PRECISION)
 /// case BLOB (includes BLOB, BINARY, VARBINARY)
 /// case DATE (includes DATE, DATETIME, TIME, TIMESTAMP)
+typealias SQLTableColums = [(name: String, type: SQLType)]
 typealias SQLValues = [(type: SQLType, value: Any?)]
 
 protocol SQLiteType {
@@ -375,9 +376,13 @@ class SQLite: SQLiteType {
         var allRows: [SQLValues] = []
         var rowValues: SQLValues = SQLValues([])
         
+        guard let resultColumns = try? getResultColumns(table, sqlStatement: sqlStatement) else {
+            throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+        }
+        
         while sqlite3_step(sqlStatement) == SQLITE_ROW {
             rowValues = SQLValues([])
-            for (index, value) in table.columnTypes.enumerated() {
+            for (index, value) in resultColumns.enumerated() {
                 
                 let index = Int32(index) // column serial number, should start with 0
                 
@@ -434,6 +439,29 @@ class SQLite: SQLiteType {
         
         log("successfully read row(s), count: \(allRows.count), sql: \(sql)")
         return allRows
+    }
+    
+    private func getResultColumns(_ table: SQLTable, sqlStatement: OpaquePointer?) throws -> SQLTableColums {
+        var columnNamesToReturn: [String] = []
+        let columnCount = sqlite3_column_count(sqlStatement)
+        for index in 0..<columnCount {
+            if let columnName = sqlite3_column_name(sqlStatement, index) {
+                if let validatedColumnName = String(validatingUTF8: columnName) {
+                    columnNamesToReturn.append(validatedColumnName)
+                } else {
+                    throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+                }
+            } else {
+                throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+            }
+        }
+        var resultColumns: SQLTableColums = []
+        for (index, column) in table.columns.enumerated() {
+            if columnNamesToReturn.contains(column.name) {
+                resultColumns.append((column.name, table.columns[index].type))
+            }
+        }
+        return resultColumns
     }
     
     func getAllRows(from table: SQLTable) throws -> [SQLValues] {
