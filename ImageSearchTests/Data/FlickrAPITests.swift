@@ -96,7 +96,7 @@ class FlickrAPITests: XCTestCase {
         XCTAssertEqual(images![0].title, "Andrea  Modelo  Model")
     }
     
-    func testGetHotTags() async {
+    func testGetHotTags() {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
         let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
@@ -114,7 +114,7 @@ class FlickrAPITests: XCTestCase {
         }
     }
     
-    func testNetworkError_whenInvalidResponse() async {
+    func testNetworkError_whenInvalidResponse() {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceMock(responseData: "some_data".data(using: .utf8)!)
         let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
@@ -127,7 +127,7 @@ class FlickrAPITests: XCTestCase {
         }
     }
     
-    func testNetworkError_whenInvalidAPIKey() async {
+    func testNetworkError_whenInvalidAPIKey() {
         let promise = expectation(description: "testNetworkError")
         
         var endpoint = FlickrAPI.getHotTags()
@@ -150,7 +150,7 @@ class FlickrAPITests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
-    func testFetchFile() async {
+    func testFetchFile() {
         let promise = expectation(description: "testFetchFile")
         
         let networkService = NetworkService()
@@ -163,7 +163,7 @@ class FlickrAPITests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
-    func testFetchFile_whenInvalidURL() async {
+    func testFetchFile_whenInvalidURL() {
         let promise = expectation(description: "testFetchFile")
         
         let networkService = NetworkService()
@@ -176,3 +176,4 @@ class FlickrAPITests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
 }
+
