@@ -497,17 +497,23 @@ class SQLite: SQLiteType {
     }
     
     func getLastInsertID() -> Int {
-        return Int(sqlite3_last_insert_rowid(dbPointer))
+        let id = Int(sqlite3_last_insert_rowid(dbPointer))
+        log("last inserted id: \(id)")
+        return id
     }
     
     /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
     func getChanges() -> Int {
-        return Int(sqlite3_changes(dbPointer))
+        let changes = Int(sqlite3_changes(dbPointer))
+        log("number of changes: \(changes)")
+        return changes
     }
     
     /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
     func getTotalChanges() -> Int {
-        return Int(sqlite3_total_changes(dbPointer))
+        let totalChanges = Int(sqlite3_total_changes(dbPointer))
+        log("number of total changes: \(totalChanges)")
+        return totalChanges
     }
     
     /// Repacks the DB to take advantage of deleted data
