@@ -330,6 +330,9 @@ class SQLiteTests: XCTestCase {
         
         sqlStatement = "UPDATE \(SQLiteTests.testTable2.name) SET isDeleted = ?, updated = ?"
         try? SQLiteTests.sqlite?.updateRow(sql: sqlStatement, params: [true, Date()])
+        if let updateChanges = SQLiteTests.sqlite?.getChanges() {
+            XCTAssertEqual(updateChanges, 2)
+        }
         
         sqlStatement = "SELECT * FROM \(SQLiteTests.testTable2.name)"
         let rows = try? SQLiteTests.sqlite?.getAllRows(from: SQLiteTests.testTable2)
@@ -692,6 +695,25 @@ class SQLiteTests: XCTestCase {
         XCTAssertEqual(returnedLastId, lastInsertId!)
     }
     
+    func testGetChangesAndGetTotalChanges() {
+        try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable2)
+        
+        var sqlStatement = "INSERT INTO \(SQLiteTests.testTable2.name) (jsonData, updated) VALUES (?, ?);"
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["jsonString".data(using: .utf8)!, Date()])
+        let _ = try? SQLiteTests.sqlite?.insertRow(sql: sqlStatement, params: ["jsonString_1".data(using: .utf8)!, Date()])
+        
+        sqlStatement = "UPDATE \(SQLiteTests.testTable2.name) SET isDeleted = ?, updated = ?"
+        try? SQLiteTests.sqlite?.updateRow(sql: sqlStatement, params: [true, Date()])
+        
+        let updateChanges = SQLiteTests.sqlite?.getChanges()
+        XCTAssertNotNil(updateChanges)
+        XCTAssertEqual(updateChanges!, 2)
+        
+        let updateTotalChanges = SQLiteTests.sqlite?.getTotalChanges()
+        XCTAssertNotNil(updateTotalChanges)
+        XCTAssertTrue(updateTotalChanges! >= 4)
+    }
+    
     func testResetAutoincrement() {
         try? SQLiteTests.sqlite?.createTable(sql: SQLiteTests.sqlCreateTestTable)
         
@@ -754,3 +776,5 @@ class SQLiteTests: XCTestCase {
         XCTAssertEqual(lastInsertId!, 12)
     }
 }
+
+
