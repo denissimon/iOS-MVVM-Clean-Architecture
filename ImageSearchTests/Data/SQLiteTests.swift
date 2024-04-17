@@ -1,10 +1,3 @@
-//
-//  SQLiteTests.swift
-//  ImageSearchTests
-//
-//  Created by Denis Simon on 03/31/2024.
-//
-
 import XCTest
 @testable import ImageSearch
 

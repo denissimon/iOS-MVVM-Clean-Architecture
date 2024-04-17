@@ -1,10 +1,3 @@
-//
-//  ImageDetailsViewController.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 02/20/2020.
-//
-
 import UIKit
 
 class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {

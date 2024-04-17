@@ -1,10 +1,3 @@
-//
-//  DefaultImageService.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 01/28/2024.
-//
-
 import Foundation
 
 class DefaultImageService: ImageService {

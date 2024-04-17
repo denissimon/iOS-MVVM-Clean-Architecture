@@ -1,10 +1,3 @@
-//
-//  SQLiteImageDBInteractor.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 01/02/2024.
-//
-
 import Foundation
 
 class SQLiteImageDBInteractor: ImageDBInteractor {

@@ -1,10 +1,3 @@
-//
-//  ImageSearchViewModelTests.swift
-//  ImageSearchTests
-//
-//  Created by Denis Simon on 03/21/2024.
-//
-
 import XCTest
 @testable import ImageSearch
 

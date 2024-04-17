@@ -1,10 +1,3 @@
-//
-//  TagRepositoryTests.swift
-//  ImageSearchTests
-//
-//  Created by Denis Simon on 03/19/2024.
-//
-
 import XCTest
 @testable import ImageSearch
 

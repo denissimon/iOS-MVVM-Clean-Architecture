@@ -1,10 +1,3 @@
-//
-//  RequestFactory.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/19/2020.
-//
-
 import Foundation
 
 /// https://datatracker.ietf.org/doc/html/rfc7231#section-4.3

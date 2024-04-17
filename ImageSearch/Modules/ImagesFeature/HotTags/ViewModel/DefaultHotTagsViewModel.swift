@@ -1,10 +1,3 @@
-//
-//  DefaultHotTagsViewModel.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 04/11/2020.
-//
-
 import Foundation
 
 enum SegmentType {

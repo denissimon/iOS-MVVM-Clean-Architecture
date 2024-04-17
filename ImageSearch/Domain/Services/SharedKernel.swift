@@ -1,10 +1,3 @@
-//
-//  SharedKernel.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 01/28/2024.
-//
-
 import Foundation
 
 // Delegate the behavior of Image entity.

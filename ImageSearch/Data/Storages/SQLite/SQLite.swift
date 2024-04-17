@@ -1,10 +1,3 @@
-//
-//  SQLite.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 01/14/2024.
-//
-
 import Foundation
 import SQLite3
 

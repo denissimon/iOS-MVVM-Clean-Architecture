@@ -1,10 +1,3 @@
-//
-//  MainCoordinator.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/15/2023.
-//
-
 import UIKit
 
 protocol MainCoordinatorDIContainer {

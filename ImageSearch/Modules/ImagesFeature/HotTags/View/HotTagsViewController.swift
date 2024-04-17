@@ -1,10 +1,3 @@
-//
-//  HotTagsViewController.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 04/11/2020.
-//
-
 import UIKit
 
 struct HotTagsCoordinatorActions {

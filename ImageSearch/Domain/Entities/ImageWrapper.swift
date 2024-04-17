@@ -1,10 +1,3 @@
-//
-//  ImageWrapper.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/28/2023.
-//
-
 import UIKit
 
 class ImageWrapper: Codable {

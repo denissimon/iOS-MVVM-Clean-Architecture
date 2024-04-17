@@ -1,10 +1,3 @@
-//
-//  HTTPParams.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/19/2020.
-//
-
 import Foundation
 
 /// httpBody can be accepted as Data or Encodable

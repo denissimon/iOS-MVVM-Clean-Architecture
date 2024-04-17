@@ -1,10 +1,3 @@
-//
-//  ImageDBInteractor.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 01/02/2024.
-//
-
 import Foundation
 
 // Result<Type, Error> can be used as another way to return the result in saveImage, getImages and checkImagesAreCached

@@ -1,10 +1,3 @@
-//
-//  Storyboarded.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/16/2023.
-//
-
 import UIKit
 
 enum StoryboardName: String {

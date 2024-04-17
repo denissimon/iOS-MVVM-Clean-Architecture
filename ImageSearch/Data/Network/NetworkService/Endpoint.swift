@@ -1,10 +1,3 @@
-//
-//  Endpoint.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/19/2020.
-//
-
 import Foundation
 
 protocol EndpointType {

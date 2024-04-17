@@ -1,10 +1,3 @@
-//
-//  TagsDataSource.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 02/20/2020.
-//
-
 import UIKit
 
 class TagsDataSource: NSObject {

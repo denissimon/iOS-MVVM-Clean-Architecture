@@ -1,10 +1,3 @@
-//
-//  FlickrAPI.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 03/09/2020.
-//
-
 import Foundation
 
 struct FlickrAPI {

@@ -1,10 +1,3 @@
-//
-//  DefaultTagRepository.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 12/25/2023.
-//
-
 import Foundation
 
 class DefaultTagRepository: TagRepository {

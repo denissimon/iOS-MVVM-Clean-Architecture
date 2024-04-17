@@ -1,10 +1,3 @@
-//
-//  Alertable.swift
-//  ImageSearch
-//
-//  Created by Denis Simon on 02/06/2024.
-//
-
 import UIKit
 
 protocol Alertable {}
