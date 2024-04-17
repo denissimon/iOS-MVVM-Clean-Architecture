@@ -49,6 +49,7 @@
 		41500DB52BAC100E00ABD258 /* HotTagsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */; };
 		41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */; };
 		418BF6922BC89F1F0002F360 /* SQLTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418BF6912BC89F1F0002F360 /* SQLTable.swift */; };
+		418BF69A2BD04C490002F360 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 418BF69C2BD04C490002F360 /* Localizable.strings */; };
 		418F33B4243FEEF100193C74 /* ImageDetails.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B3243FEEF100193C74 /* ImageDetails.storyboard */; };
 		418F33BA244132A500193C74 /* HotTags.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTags.storyboard */; };
 		418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsViewController.swift */; };
@@ -130,6 +131,9 @@
 		41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewModelTests.swift; sourceTree = "<group>"; };
 		41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewModelTests.swift; sourceTree = "<group>"; };
 		418BF6912BC89F1F0002F360 /* SQLTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLTable.swift; sourceTree = "<group>"; };
+		418BF69B2BD04C490002F360 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		418BF69D2BD04D290002F360 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/ImageSearch.strings; sourceTree = "<group>"; };
+		418BF69F2BD04D2A0002F360 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		418F33B3243FEEF100193C74 /* ImageDetails.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageDetails.storyboard; sourceTree = "<group>"; };
 		418F33B9244132A500193C74 /* HotTags.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTags.storyboard; sourceTree = "<group>"; };
 		418F33BB244132E800193C74 /* HotTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewController.swift; sourceTree = "<group>"; };
@@ -199,7 +203,6 @@
 				414D91002B6A6295009F37CA /* Domain */,
 				4145C7DE2B377442001DD403 /* Data */,
 				4145C7CA2B2F2F36001DD403 /* Resources */,
-				4111D56C23FDAF0200B74B83 /* LaunchScreen.storyboard */,
 				4111D56F23FDAF0200B74B83 /* Info.plist */,
 			);
 			path = ImageSearch;
@@ -228,7 +231,9 @@
 		4145C7CA2B2F2F36001DD403 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4111D56C23FDAF0200B74B83 /* LaunchScreen.storyboard */,
 				4111D56A23FDAF0200B74B83 /* Assets.xcassets */,
+				418BF69C2BD04C490002F360 /* Localizable.strings */,
 				4145C7CB2B2F2F51001DD403 /* Toast.swift */,
 				4145C7D02B2F4303001DD403 /* UAObfuscatedString.swift */,
 			);
@@ -646,6 +651,7 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 4111D55523FDAEFF00B74B83;
 			productRefGroup = 4111D55F23FDAEFF00B74B83 /* Products */;
@@ -664,6 +670,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4111D56E23FDAF0200B74B83 /* LaunchScreen.storyboard in Resources */,
+				418BF69A2BD04C490002F360 /* Localizable.strings in Resources */,
 				418F33BA244132A500193C74 /* HotTags.storyboard in Resources */,
 				4111D56B23FDAF0200B74B83 /* Assets.xcassets in Resources */,
 				4111D56923FDAEFF00B74B83 /* ImageSearch.storyboard in Resources */,
@@ -769,6 +776,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				4111D56823FDAEFF00B74B83 /* Base */,
+				418BF69D2BD04D290002F360 /* es */,
 			);
 			name = ImageSearch.storyboard;
 			sourceTree = "<group>";
@@ -781,6 +789,15 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		418BF69C2BD04C490002F360 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				418BF69B2BD04C490002F360 /* en */,
+				418BF69F2BD04D2A0002F360 /* es */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -788,6 +805,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -848,6 +866,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
