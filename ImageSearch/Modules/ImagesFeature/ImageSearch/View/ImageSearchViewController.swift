@@ -84,7 +84,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             } else {
                 self.hideToastActivity()
                 self.searchBar.isUserInteractionEnabled = true
-                self.searchBar.placeholder = "Search"
+                self.searchBar.placeholder = NSLocalizedString("Search", comment: "")
             }
         }
         
@@ -104,10 +104,11 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func prepareUI() {
+        title = viewModel.screenTitle
         searchBar.isUserInteractionEnabled = false
-        self.searchBar.placeholder = "..."
-        self.searchBar.layer.borderColor = UIColor.lightGray.cgColor
-        self.searchBar.layer.borderWidth = 0.5
+        searchBar.placeholder = "..."
+        searchBar.layer.borderColor = UIColor.lightGray.cgColor
+        searchBar.layer.borderWidth = 0.5
         
         if #available(iOS 10.0, *) {
             collectionView.refreshControl = refreshControl

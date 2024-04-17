@@ -20,6 +20,7 @@ protocol HotTagsViewModelOutput {
     var data: Observable<[Tag]> { get }
     var showToast: Observable<String> { get }
     var activityIndicatorVisibility: Observable<Bool> { get }
+    var screenTitle: String { get }
 }
 
 typealias HotTagsViewModel = HotTagsViewModelInput & HotTagsViewModelOutput
@@ -32,6 +33,8 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     private var dataForWeekFlickrTags = [Tag]()
     private var selectedSegment: SegmentType = .week
+    
+    let screenTitle = NSLocalizedString("Hot Tags", comment: "")
     
     // Bindings
     let data: Observable<[Tag]> = Observable([])
@@ -55,7 +58,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = "Network error"
+            self.showToast.value = NSLocalizedString("Network error", comment: "")
         } else {
             self.showToast.value = msg
         }

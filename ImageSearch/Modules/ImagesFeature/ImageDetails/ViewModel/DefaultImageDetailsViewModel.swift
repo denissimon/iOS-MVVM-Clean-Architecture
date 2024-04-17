@@ -47,7 +47,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = "Network error"
+            self.showToast.value = NSLocalizedString("Network error", comment: "")
         } else {
             self.showToast.value = msg
         }
@@ -92,7 +92,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         if let bigImage = image.bigImage {
             shareImage.value = [bigImage]
         } else {
-            self.showToast.value = "No image to share"
+            self.showToast.value = NSLocalizedString("No image to share", comment: "")
         }
     }
 }

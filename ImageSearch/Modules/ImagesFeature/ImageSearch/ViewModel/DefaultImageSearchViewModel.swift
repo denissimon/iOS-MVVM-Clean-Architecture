@@ -25,6 +25,7 @@ protocol ImageSearchViewModelOutput {
     var activityIndicatorVisibility: Observable<Bool> { get }
     var collectionViewTopConstraint: Observable<Float> { get }
     var lastSearchQuery: ImageQuery? { get }
+    var screenTitle: String { get }
 }
 
 typealias ImageSearchViewModel = ImageSearchViewModelInput & ImageSearchViewModelOutput
@@ -35,6 +36,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private let imageCachingService: ImageCachingService
     
     var lastSearchQuery: ImageQuery?
+    
+    let screenTitle = NSLocalizedString("Image Search", comment: "")
     
     // Bindings
     let data: Observable<[ImageSearchResults]> = Observable([])
@@ -68,7 +71,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = "Network error"
+            self.showToast.value = NSLocalizedString("Network error", comment: "")
         } else {
             self.showToast.value = msg
         }
@@ -78,13 +81,13 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     func searchImage(for searchQuery: ImageQuery) {
         let trimmedString = searchQuery.query.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmedString.isEmpty {
-            showToast.value = "Empty search query"
+            showToast.value = NSLocalizedString("Empty search query", comment: "")
             resetSearchBar.value = nil
             return
         }
         
         guard let searchString = trimmedString.encodeURIComponent() else {
-            showToast.value = "Search query error"
+            showToast.value = NSLocalizedString("Search query error", comment: "")
             resetSearchBar.value = nil
             return
         }

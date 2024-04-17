@@ -7,6 +7,7 @@ struct HotTagsCoordinatorActions {
 class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     
     @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     private var viewModel: HotTagsViewModel!
     
@@ -24,6 +25,7 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        prepareUI()
         viewModel.getHotTags()
     }
     
@@ -52,6 +54,12 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
                 self.hideToastActivity()
             }
         }
+    }
+    
+    private func prepareUI() {
+        title = viewModel.screenTitle
+        segmentedControl.setTitle(NSLocalizedString("Week", comment: ""), forSegmentAt: 0)
+        segmentedControl.setTitle(NSLocalizedString("All Times", comment: ""), forSegmentAt: 1)
     }
     
     // MARK: - Actions

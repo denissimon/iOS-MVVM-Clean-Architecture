@@ -1,0 +1,18 @@
+
+/* Class = "UIBarButtonItem"; title = "⚡️⚡️⚡️"; ObjectID = "3pP-Lx-2Gr"; */
+"3pP-Lx-2Gr.title" = "⚡️⚡️⚡️";
+
+/* Class = "UILabel"; text = "search string"; ObjectID = "bj8-cd-inL"; */
+"bj8-cd-inL.text" = "search string";
+
+/* Class = "UISearchBar"; placeholder = "Search"; ObjectID = "dPW-xC-Edn"; */
+"dPW-xC-Edn.placeholder" = "Search";
+
+/* Class = "UISearchBar"; dPW-xC-Edn.scopeButtonTitles[0] = "Title"; ObjectID = "dPW-xC-Edn"; */
+"dPW-xC-Edn.scopeButtonTitles[0]" = "Title";
+
+/* Class = "UISearchBar"; dPW-xC-Edn.scopeButtonTitles[1] = "Title"; ObjectID = "dPW-xC-Edn"; */
+"dPW-xC-Edn.scopeButtonTitles[1]" = "Title";
+
+/* Class = "UINavigationItem"; title = "Image Search"; ObjectID = "qye-7D-P6K"; */
+"qye-7D-P6K.title" = "Image Search";

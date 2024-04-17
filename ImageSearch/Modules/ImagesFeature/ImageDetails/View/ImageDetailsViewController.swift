@@ -56,7 +56,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func prepareUI() {
-        self.title = viewModel.getTitle()
+        title = viewModel.getTitle()
         imageTitle.text = viewModel.image.title
     }
     

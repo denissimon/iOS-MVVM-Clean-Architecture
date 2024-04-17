@@ -1,0 +1,16 @@
+/* 
+  Localizable.strings
+  ImageSearch
+
+  Created by Denis Simon on 17.04.2024.
+*/
+
+"Image Search" = "Image Search";
+"Search" = "Search";
+"No image to share" = "No image to share";
+"Network error" = "Network error";
+"Empty search query" = "Empty search query";
+"Search query error" = "Search query error";
+"Hot Tags" = "Hot Tags";
+"Week" = "Week";
+"All Times" = "All Times";
