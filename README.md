@@ -16,6 +16,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 </table>
 
 ### Architecture concepts used here
+
 - [MVVM][MVVMLink]
 - [Flow coordinator][FlowCoordinatorLink] implemented with closure-based actions
 - [Dependency Injection][DIContainerLink], DIContainer
@@ -48,6 +49,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Image.swift
 
 ### Includes
+
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
@@ -95,6 +97,7 @@ HotTags module:
 - [SQLiteAdapter](https://github.com/denissimon/SQLiteAdapter) - a simple wrapper around SQLite3
 
 ### Requirements
-iOS version support: 15.0+
 
-For app versions <= 1.2, iOS version support: 10.0+
+iOS version support: 15.0+. For app versions <= 1.2, iOS version support: 10.0+
+
+Xcode 13.0+, Swift 5.5+
