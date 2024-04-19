@@ -97,7 +97,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    /* Note: another way (albeit more computationally heavy) to perform this check is as follows:
+    /* Another way (albeit more computationally heavy) to perform this check is as follows:
      func checkImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
         ...
         let sql = "SELECT count(*) FROM \(imagesTable.name) WHERE searchId = ?;"
