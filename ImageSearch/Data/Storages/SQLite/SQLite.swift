@@ -73,6 +73,8 @@ class SQLite: SQLiteType {
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
+    private let serialQueue = DispatchQueue(label: "SQLite Serial Queue")
+    
     var dateFormatter = DateFormatter()
     
     init(path: String, recreateDB: Bool = false) throws {
@@ -184,15 +186,18 @@ class SQLite: SQLiteType {
     }
     
     private func operation(sql: String, params: [Any]? = nil) throws {
-        let sqlStatement = try prepareStatement(sql: sql)
-        defer {
-            sqlite3_finalize(sqlStatement)
-        }
-        
-        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
-        
-        guard sqlite3_step(sqlStatement) == SQLITE_DONE else {
-            throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+        try serialQueue.sync {
+            let sqlStatement = try prepareStatement(sql: sql)
+            
+            defer {
+                sqlite3_finalize(sqlStatement)
+            }
+            
+            try bindPlaceholders(sqlStatement: sqlStatement, params: params)
+            
+            guard sqlite3_step(sqlStatement) == SQLITE_DONE else {
+                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+            }
         }
     }
     
@@ -322,16 +327,19 @@ class SQLite: SQLiteType {
     }
     
     func getRowCount(in table: SQLTable) throws -> Int {
-        let sql = "SELECT count(*) FROM \(table.name);"
-        let sqlStatement = try prepareStatement(sql: sql)
-        defer {
-            sqlite3_finalize(sqlStatement)
+        var count: Int32 = 0
+        try serialQueue.sync {
+            let sql = "SELECT count(*) FROM \(table.name);"
+            let sqlStatement = try prepareStatement(sql: sql)
+            defer {
+                sqlite3_finalize(sqlStatement)
+            }
+            guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
+                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+            }
+            count = sqlite3_column_int(sqlStatement, 0)
+            log("successfully got a row count in \(table.name): \(count)")
         }
-        guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
-            throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
-        }
-        let count = sqlite3_column_int(sqlStatement, 0)
-        log("successfully got a row count in \(table.name): \(count)")
         return Int(count)
     }
     
@@ -339,19 +347,21 @@ class SQLite: SQLiteType {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("SELECT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        
-        let sqlStatement = try prepareStatement(sql: sql)
-        defer {
-            sqlite3_finalize(sqlStatement)
+        var count: Int32 = 0
+        try serialQueue.sync {
+            let sqlStatement = try prepareStatement(sql: sql)
+            defer {
+                sqlite3_finalize(sqlStatement)
+            }
+            
+            try bindPlaceholders(sqlStatement: sqlStatement, params: params)
+            
+            guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
+                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+            }
+            count = sqlite3_column_int(sqlStatement, 0)
+            log("successfully got a row count with condition: \(count), sql: \(sql)")
         }
-        
-        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
-        
-        guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
-            throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
-        }
-        let count = sqlite3_column_int(sqlStatement, 0)
-        log("successfully got a row count with condition: \(count), sql: \(sql)")
         return Int(count)
     }
     
@@ -361,75 +371,78 @@ class SQLite: SQLiteType {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
         
-        let sqlStatement = try prepareStatement(sql: sql)
-        defer {
-            sqlite3_finalize(sqlStatement)
-        }
-        
-        try bindPlaceholders(sqlStatement: sqlStatement, params: params)
-        
         var allRows: [SQLValues] = []
-        var rowValues: SQLValues = SQLValues([])
         
-        guard let resultColumns = try? getResultColumns(table, sqlStatement: sqlStatement) else {
-            throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
-        }
-        
-        while sqlite3_step(sqlStatement) == SQLITE_ROW {
-            rowValues = SQLValues([])
-            for (index, value) in resultColumns.enumerated() {
-                
-                let index = Int32(index) // column serial number, should start with 0
-                
-                // Check for data types of returned values
-                guard sqlite3_column_type(sqlStatement, index) != SQLITE_NULL else {
-                    rowValues.append((value.type, nil))
-                    continue
-                }
-                switch value.type {
-                case .INT:
-                    let intValue = sqlite3_column_int64(sqlStatement, index)
-                    rowValues.append((value.type, Int(intValue)))
-                case .BOOL:
-                    let intValue = sqlite3_column_int(sqlStatement, index)
-                    rowValues.append((value.type, intValue == 1 ? true : false))
-                case .TEXT:
-                    if let queryResult = sqlite3_column_text(sqlStatement, index) {
-                        let stringValue = String(cString: queryResult)
-                        rowValues.append((value.type, stringValue))
-                    } else {
-                        rowValues.append((value.type, nil))
-                    }
-                case .REAL:
-                    let doubleValue = sqlite3_column_double(sqlStatement, index)
-                    rowValues.append((value.type, doubleValue))
-                case .BLOB:
-                    if let queryResult = sqlite3_column_blob(sqlStatement, index) {
-                        let count = sqlite3_column_bytes(sqlStatement, index)
-                        let dataValue = Data(bytes: queryResult, count: Int(count))
-                        rowValues.append((value.type, dataValue))
-                    } else {
-                        rowValues.append((value.type, nil))
-                    }
-                case .DATE:
-                    // If it's in date format
-                    if let queryResult = sqlite3_column_text(sqlStatement, index) {
-                        var dateStrValue = String(cString: queryResult)
-                        if dateStrValue.count == 10 {
-                            dateStrValue += " 00:00:00"
-                        }
-                        if let dateValue = dateFormatter.date(from: dateStrValue) {
-                            rowValues.append((value.type, dateValue))
-                            continue
-                        }
-                    }
-                    // If it's in time interval format
-                    let timeInterval = sqlite3_column_double(sqlStatement, index)
-                    let dateValue = Date(timeIntervalSince1970: timeInterval)
-                    rowValues.append((value.type, dateValue))
-                }
+        try serialQueue.sync {
+            let sqlStatement = try prepareStatement(sql: sql)
+            defer {
+                sqlite3_finalize(sqlStatement)
             }
-            allRows.append(rowValues)
+            
+            try bindPlaceholders(sqlStatement: sqlStatement, params: params)
+            
+            var rowValues: SQLValues = SQLValues([])
+            
+            guard let resultColumns = try? getResultColumns(table, sqlStatement: sqlStatement) else {
+                throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+            }
+            
+            while sqlite3_step(sqlStatement) == SQLITE_ROW {
+                rowValues = SQLValues([])
+                for (index, value) in resultColumns.enumerated() {
+                    
+                    let index = Int32(index) // column serial number, should start with 0
+                    
+                    // Check for data types of returned values
+                    guard sqlite3_column_type(sqlStatement, index) != SQLITE_NULL else {
+                        rowValues.append((value.type, nil))
+                        continue
+                    }
+                    switch value.type {
+                    case .INT:
+                        let intValue = sqlite3_column_int64(sqlStatement, index)
+                        rowValues.append((value.type, Int(intValue)))
+                    case .BOOL:
+                        let intValue = sqlite3_column_int(sqlStatement, index)
+                        rowValues.append((value.type, intValue == 1 ? true : false))
+                    case .TEXT:
+                        if let queryResult = sqlite3_column_text(sqlStatement, index) {
+                            let stringValue = String(cString: queryResult)
+                            rowValues.append((value.type, stringValue))
+                        } else {
+                            rowValues.append((value.type, nil))
+                        }
+                    case .REAL:
+                        let doubleValue = sqlite3_column_double(sqlStatement, index)
+                        rowValues.append((value.type, doubleValue))
+                    case .BLOB:
+                        if let queryResult = sqlite3_column_blob(sqlStatement, index) {
+                            let count = sqlite3_column_bytes(sqlStatement, index)
+                            let dataValue = Data(bytes: queryResult, count: Int(count))
+                            rowValues.append((value.type, dataValue))
+                        } else {
+                            rowValues.append((value.type, nil))
+                        }
+                    case .DATE:
+                        // If it's in date format
+                        if let queryResult = sqlite3_column_text(sqlStatement, index) {
+                            var dateStrValue = String(cString: queryResult)
+                            if dateStrValue.count == 10 {
+                                dateStrValue += " 00:00:00"
+                            }
+                            if let dateValue = dateFormatter.date(from: dateStrValue) {
+                                rowValues.append((value.type, dateValue))
+                                continue
+                            }
+                        }
+                        // If it's in time interval format
+                        let timeInterval = sqlite3_column_double(sqlStatement, index)
+                        let dateValue = Date(timeIntervalSince1970: timeInterval)
+                        rowValues.append((value.type, dateValue))
+                    }
+                }
+                allRows.append(rowValues)
+            }
         }
         
         log("successfully read row(s), count: \(allRows.count), sql: \(sql)")
@@ -490,21 +503,30 @@ class SQLite: SQLiteType {
     }
     
     func getLastInsertID() -> Int {
-        let id = Int(sqlite3_last_insert_rowid(dbPointer))
+        var id = 0
+        serialQueue.sync {
+            id = Int(sqlite3_last_insert_rowid(dbPointer))
+        }
         log("last inserted id: \(id)")
         return id
     }
     
     /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
     func getChanges() -> Int {
-        let changes = Int(sqlite3_changes(dbPointer))
+        var changes = 0
+        serialQueue.sync {
+            changes = Int(sqlite3_changes(dbPointer))
+        }
         log("number of changes: \(changes)")
         return changes
     }
     
     /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
     func getTotalChanges() -> Int {
-        let totalChanges = Int(sqlite3_total_changes(dbPointer))
+        var totalChanges = 0
+        serialQueue.sync {
+            totalChanges = Int(sqlite3_total_changes(dbPointer))
+        }
         log("number of total changes: \(totalChanges)")
         return totalChanges
     }
