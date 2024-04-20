@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ImageCachingService {
+protocol ImageCachingService: Actor {
     var checkingInProgress: Bool { get }
     var searchIdsToGetFromCache: Set<String> { get }
     var didProcess: Event<[ImageSearchResults]> { get }

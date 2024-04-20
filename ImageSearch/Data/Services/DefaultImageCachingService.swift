@@ -1,6 +1,6 @@
 import Foundation
 
-class DefaultImageCachingService: ImageCachingService {
+actor DefaultImageCachingService: ImageCachingService {
     
     private let imageRepository: ImageRepository
     
@@ -10,18 +10,18 @@ class DefaultImageCachingService: ImageCachingService {
     // To prevent images with the same searchId from being read again from the cache
     var searchIdsToGetFromCache: Set<String> = []
     
-    var didProcess: Event<[ImageSearchResults]> = Event()
+    let didProcess: Event<[ImageSearchResults]> = Event()
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
-        deleteAllImages()
+        Task.detached {
+            await self.deleteAllImages()
+        }
     }
     
     // Clear the Image table at the app's start
-    private func deleteAllImages() {
-        Task.detached {
-            await self.imageRepository.deleteAllImages()
-        }
+    private func deleteAllImages() async {
+        await self.imageRepository.deleteAllImages()
     }
     
     func cacheIfNecessary(_ data: [ImageSearchResults]) async {
@@ -74,8 +74,7 @@ class DefaultImageCachingService: ImageCachingService {
     func getCachedImages(searchId: String) async -> [Image]? {
         if !searchIdsToGetFromCache.contains(searchId) {
             searchIdsToGetFromCache.insert(searchId)
-            let images = await self.imageRepository.getImages(searchId: searchId)
-            return images
+            return await self.imageRepository.getImages(searchId: searchId)
         } else {
             return nil
         }

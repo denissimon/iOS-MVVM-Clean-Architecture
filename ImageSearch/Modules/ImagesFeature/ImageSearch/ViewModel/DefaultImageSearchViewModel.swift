@@ -60,8 +60,10 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     private func setup() {
-        imageCachingService.didProcess.subscribe(self) { result in
-            self.data.value = result
+        Task {
+            await imageCachingService.didProcess.subscribe(self) { result in
+                self.data.value = result
+            }
         }
     }
     
@@ -164,9 +166,10 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func updateSection(_ searchId: String) {
-        guard !imageCachingService.checkingInProgress else { return }
-        guard !imageCachingService.searchIdsToGetFromCache.contains(searchId) else { return }
         Task.detached {
+            guard await !self.imageCachingService.checkingInProgress else { return }
+            guard await !self.imageCachingService.searchIdsToGetFromCache.contains(searchId) else { return }
+            
             if let images = await self.imageCachingService.getCachedImages(searchId: searchId) {
                 if images.isEmpty { return }
                 
