@@ -7,6 +7,8 @@ class TagRepositoryTests: XCTestCase {
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2")]),
         stat: "ok")
     
+    static let syncQueue = DispatchQueue(label: "TagRepositoryTests")
+    
     class TagRepositoryMock: TagRepository {
         
         let result: Result<Tags, NetworkError>
@@ -17,7 +19,9 @@ class TagRepositoryTests: XCTestCase {
         }
         
         func getHotTags() async -> TagsResult {
-            apiMethodsCallsCount += 1
+            TagRepositoryTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return result
         }
     }
@@ -31,7 +35,9 @@ class TagRepositoryTests: XCTestCase {
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
-        XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+        TagRepositoryTests.syncQueue.sync {
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+        }
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
@@ -42,6 +48,8 @@ class TagRepositoryTests: XCTestCase {
         let hotTags = try? tagsResult.get().hottags.tag
         
         XCTAssertNil(hotTags)
-        XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+        TagRepositoryTests.syncQueue.sync {
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+        }
     }
 }

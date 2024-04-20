@@ -9,6 +9,8 @@ class HotTagsViewModelTests: XCTestCase {
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2"), Tag(name: "tag3")]),
         stat: "ok")
     
+    static let syncQueue = DispatchQueue(label: "HotTagsViewModelTests")
+    
     class TagRepositoryMock: TagRepository {
         
         let result: Result<Tags, NetworkError>
@@ -19,25 +21,35 @@ class HotTagsViewModelTests: XCTestCase {
         }
         
         func getHotTags() async -> TagsResult {
-            apiMethodsCallsCount += 1
+            HotTagsViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return result
         }
     }
     
     override func tearDown() {
         super.tearDown()
-        observablesTriggerCount = 0
+        HotTagsViewModelTests.syncQueue.sync {
+            self.observablesTriggerCount = 0
+        }
     }
     
     private func bind(_ hotTagsViewModel: HotTagsViewModel) {
         hotTagsViewModel.data.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            HotTagsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         hotTagsViewModel.showToast.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            HotTagsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         hotTagsViewModel.activityIndicatorVisibility.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            HotTagsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
     }
     
@@ -57,7 +69,9 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertEqual(hotTagsViewModel.data.value.count, 3)
         XCTAssertEqual(hotTagsViewModel.showToast.value, "")
-        XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
+        HotTagsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
+        }
     }
     
     func testGetHotTags_whenResultIsFailure() async throws {
@@ -76,7 +90,9 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         XCTAssertNotEqual(hotTagsViewModel.showToast.value, "")
-        XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, showToast, activityIndicatorVisibility, data
+        HotTagsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, showToast, activityIndicatorVisibility, data
+        }
     }
     
     func testOnSelectedSegmentChange_whenAllTimesSelected() {
@@ -93,7 +109,9 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertFalse(hotTagsViewModel.data.value.isEmpty)
         XCTAssertEqual(hotTagsViewModel.data.value[5].name, "nature")
-        XCTAssertEqual(self.observablesTriggerCount, 1) // data
+        HotTagsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 1) // data
+        }
     }
     
     func testOnSelectedSegmentChange_whenWeekSelected() async throws {
@@ -121,6 +139,8 @@ class HotTagsViewModelTests: XCTestCase {
         hotTagsViewModel.onSelectedSegmentChange(0)
         
         XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
-        XCTAssertEqual(self.observablesTriggerCount, 10) // data and activityIndicatorVisibility several times
+        HotTagsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 10) // data and activityIndicatorVisibility several times
+        }
     }
 }

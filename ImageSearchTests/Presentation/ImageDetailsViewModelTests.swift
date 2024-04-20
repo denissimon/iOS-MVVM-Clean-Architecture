@@ -14,6 +14,8 @@ class ImageDetailsViewModelTests: XCTestCase {
         return testImage
     }
     
+    static let syncQueue = DispatchQueue(label: "ImageDetailsViewModelTests")
+    
     class ImageRepositoryMock: ImageRepository {
         
         var apiMethodsCallsCount = 0
@@ -22,39 +24,53 @@ class ImageDetailsViewModelTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
-            apiMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return .success(Data())
         }
         
         func prepareImages(_ imageData: Data?) async -> [Image]? {
-            apiMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
-            apiMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            dbMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func getImages(searchId: String) async -> [Image]? {
-            dbMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            dbMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func deleteAllImages() async {
-            dbMethodsCallsCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
         }
     }
     
@@ -67,25 +83,35 @@ class ImageDetailsViewModelTests: XCTestCase {
         imageDetailsViewModel = DefaultImageDetailsViewModel(imageService: imageService, image: ImageDetailsViewModelTests.testImageStub, imageQuery: ImageQuery(query: "random"))
         
         imageDetailsViewModel.data.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         
         imageDetailsViewModel.showToast.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         
         imageDetailsViewModel.shareImage.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         
         imageDetailsViewModel.activityIndicatorVisibility.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageDetailsViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
     }
 
     override func tearDown() {
         super.tearDown()
-        imageDetailsViewModel = nil
+        ImageDetailsViewModelTests.syncQueue.sync {
+            imageDetailsViewModel = nil
+        }
     }
     
     func testLoadBigImage() async throws {
@@ -99,14 +125,18 @@ class ImageDetailsViewModelTests: XCTestCase {
         XCTAssertNotNil(self.imageDetailsViewModel.image.bigImage)
         XCTAssertNotNil(self.imageDetailsViewModel.data.value)
         XCTAssertNotNil(self.imageDetailsViewModel.data.value?.image)
-        XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, data, activityIndicatorVisibility
+        ImageDetailsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, data, activityIndicatorVisibility
+        }
     }
     
     func testGetTitle() {
         let title = imageDetailsViewModel.getTitle()
         
         XCTAssertEqual(title, "random")
-        XCTAssertEqual(self.observablesTriggerCount, 0)
+        ImageDetailsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 0)
+        }
     }
     
     func testSharedImage() async throws {
@@ -121,6 +151,8 @@ class ImageDetailsViewModelTests: XCTestCase {
         self.imageDetailsViewModel.onShareButton()
         XCTAssertFalse(self.imageDetailsViewModel.shareImage.value.isEmpty)
         
-        XCTAssertEqual(self.observablesTriggerCount, 5) // showToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
+        ImageDetailsViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 5) // showToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
+        }
     }
 }

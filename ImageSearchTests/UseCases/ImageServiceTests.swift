@@ -15,6 +15,8 @@ class ImageServiceTests: XCTestCase {
         return testImage
     }
     
+    static let syncQueue = DispatchQueue(label: "ImageServiceTests")
+    
     class ImageRepositoryMock: ImageRepository {
         
         let result: Result<Data?, NetworkError>?
@@ -28,43 +30,57 @@ class ImageServiceTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
-            apiMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return result!
         }
         
         func prepareImages(_ imageData: Data?) async -> [Image]? {
-            apiMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
-            apiMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            dbMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func getImages(searchId: String) async -> [Image]? {
-            dbMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            dbMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             return nil
         }
         
         func deleteAllImages() async {
-            dbMethodsCallsCount += 1
+            ImageServiceTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
         }
     }
     
-    func testSearchImagesUseCase_whenResultIsSuccess() async throws {
+    func testSearchImagesUseCase_whenResultIsSuccess() async {
         guard let imagesData = try? JSONEncoder().encode(ImageServiceTests.imagesStub) else {
             XCTFail()
             return
@@ -78,11 +94,13 @@ class ImageServiceTests: XCTestCase {
         XCTAssertNotNil(images)
         XCTAssertEqual(images!.count, 3)
         XCTAssertTrue(images!.contains(ImageServiceTests.testImageStub))
-        XCTAssertEqual(imageRepository.apiMethodsCallsCount, 5) // searchImages(), prepareImages(), and getImage() 3 times
-        XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        ImageServiceTests.syncQueue.sync {
+            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 5) // searchImages(), prepareImages(), and getImage() 3 times
+            XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        }
     }
     
-    func testSearchImagesUseCase_whenResultIsFailure() async throws {
+    func testSearchImagesUseCase_whenResultIsFailure() async {
         let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, statusCode: nil, data: nil)))
         let imageService = DefaultImageService(imageRepository: imageRepository)
         
@@ -90,8 +108,10 @@ class ImageServiceTests: XCTestCase {
         let images = try? await imageService.searchImages(imageQuery)
         
         XCTAssertNil(images)
-        XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // searchImages()
-        XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        ImageServiceTests.syncQueue.sync {
+            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // searchImages()
+            XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        }
     }
     
     func testGetBigImageUseCase() async {
@@ -105,7 +125,9 @@ class ImageServiceTests: XCTestCase {
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
             XCTAssertEqual(bigImageData, expectedImageData)
         }
-        XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
-        XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        ImageServiceTests.syncQueue.sync {
+            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
+            XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
+        }
     }
 }

@@ -30,6 +30,8 @@ class ImageSearchViewModelTests: XCTestCase {
         (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2)
     ]
     
+    static let syncQueue = DispatchQueue(label: "ImageSearchViewModelTests")
+    
     class ImageRepositoryMock: ImageRepository {
         
         let result: Result<Data?, NetworkError>?
@@ -47,41 +49,56 @@ class ImageSearchViewModelTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
-            apiMethodsCallsCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return result!
         }
         
         func prepareImages(_ imageData: Data?) async -> [Image]? {
-            apiMethodsCallsCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
-            apiMethodsCallsCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                apiMethodsCallsCount += 1
+            }
             return UIImage(systemName: "heart.fill")?.pngData()
         }
         
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            dbMethodsCallsCount += 1
-            cachedImages.append((image, searchId, sortId))
+            ImageSearchViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+                cachedImages.append((image, searchId, sortId))
+            }
             return nil
         }
         
         func getImages(searchId: String) async -> [Image]? {
-            dbMethodsCallsCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             var images: [Image] = []
             for image in cachedImages {
                 if image.searchId == searchId {
-                    images.append(image.image)
+                    ImageSearchViewModelTests.syncQueue.sync {
+                        images.append(image.image)
+                    }
                 }
             }
+            ImageSearchViewModelTests.syncQueue.sync {}
             return images
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            dbMethodsCallsCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+            }
             for image in cachedImages {
                 if image.searchId == searchId {
                     return true
@@ -96,25 +113,39 @@ class ImageSearchViewModelTests: XCTestCase {
     
     private func bind(_ imageSearchViewModel: ImageSearchViewModel) {
         imageSearchViewModel.data.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.sectionData.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.scrollTop.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.showToast.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.resetSearchBar.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.activityIndicatorVisibility.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
         imageSearchViewModel.collectionViewTopConstraint.bind(self) { [weak self] _ in
-            self?.observablesTriggerCount += 1
+            ImageSearchViewModelTests.syncQueue.sync {
+                self?.observablesTriggerCount += 1
+            }
         }
     }
     
@@ -138,7 +169,9 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertEqual(imageSearchViewModel.showToast.value, "Empty search query")
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
-        XCTAssertEqual(self.observablesTriggerCount, 4) // showToast, resetSearchBar, showToast, resetSearchBar
+        ImageSearchViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 4) // showToast, resetSearchBar, showToast, resetSearchBar
+        }
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsSuccess() async throws {
@@ -167,7 +200,9 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertEqual(imageSearchViewModel.data.value[0].searchResults[0].thumbnail?.image?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
         }
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery)
-        XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+        ImageSearchViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+        }
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
@@ -187,7 +222,9 @@ class ImageSearchViewModelTests: XCTestCase {
         
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastSearchQuery)
-        XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, showToast, activityIndicatorVisibility
+        ImageSearchViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, showToast, activityIndicatorVisibility
+        }
     }
     
     func testSearchImage_whenSearchIsRunTwice() async throws {
@@ -220,7 +257,9 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertTrue(imageSearchViewModel.data.value[0].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertTrue(imageSearchViewModel.data.value[1].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery1)
-        XCTAssertEqual(self.observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+        ImageSearchViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+        }
     }
     
     func testUpdateSection() async throws {
@@ -270,6 +309,8 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertNotNil(image.thumbnail)
         }
         
-        XCTAssertEqual(self.observablesTriggerCount, 3) // data, sectionData, sectionData
+        ImageSearchViewModelTests.syncQueue.sync {
+            XCTAssertEqual(self.observablesTriggerCount, 3) // data, sectionData, sectionData
+        }
     }
 }
