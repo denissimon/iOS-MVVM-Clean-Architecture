@@ -53,6 +53,7 @@ actor DefaultImageCachingService: ImageCachingService {
                         return search
                     }
                     for (index, image) in search.searchResults.enumerated(){
+                        let image = image as! Image
                         search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .big) // We don't necessarily need to cache big images in the local DB since they are already cached for a while by iOS
                         if !imagesAreCached { // cache if image is not already cached
                             let _ = await self.imageRepository.saveImage(image, searchId: search.id, sortId: index+1)
@@ -74,9 +75,10 @@ actor DefaultImageCachingService: ImageCachingService {
     func getCachedImages(searchId: String) async -> [Image]? {
         if !searchIdsToGetFromCache.contains(searchId) {
             searchIdsToGetFromCache.insert(searchId)
-            return await self.imageRepository.getImages(searchId: searchId)
-        } else {
-            return nil
+            if let image = await self.imageRepository.getImages(searchId: searchId) as? [Image] {
+                return image
+            }
         }
+        return nil
     }
 }

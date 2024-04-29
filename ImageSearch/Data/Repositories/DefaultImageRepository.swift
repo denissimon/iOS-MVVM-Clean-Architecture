@@ -69,7 +69,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    private func getImages(searchId: String, completionHandler: @escaping ([Image]?) -> Void) {
+    private func getImages(searchId: String, completionHandler: @escaping ([ImageType]?) -> Void) {
         imageDBInteractor.getImages(searchId: searchId, type: Image.self) { result in
             completionHandler(result)
         }
@@ -117,7 +117,7 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    func getImages(searchId: String) async -> [Image]? {
+    func getImages(searchId: String) async -> [ImageType]? {
         await withCheckedContinuation { continuation in
             getImages(searchId: searchId) { result in
                 continuation.resume(returning: result)

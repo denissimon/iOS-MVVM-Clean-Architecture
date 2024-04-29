@@ -2,14 +2,14 @@ import UIKit
 
 class TagsDataSource: NSObject {
     
-    private(set) var data = [Tag]()
+    private(set) var data = [TagListItemVM]()
     
-    init(with data: [Tag]) {
+    init(with data: [TagListItemVM]) {
         super.init()
         self.data = data
     }
     
-    func updateData(_ data: [Tag]) {
+    func updateData(_ data: [TagListItemVM]) {
         self.data = data
     }
 }

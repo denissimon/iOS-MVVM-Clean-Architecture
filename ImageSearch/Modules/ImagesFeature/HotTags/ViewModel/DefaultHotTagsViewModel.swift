@@ -17,7 +17,7 @@ protocol HotTagsViewModelInput {
 }
 
 protocol HotTagsViewModelOutput {
-    var data: Observable<[Tag]> { get }
+    var data: Observable<[TagListItemVM]> { get }
     var showToast: Observable<String> { get }
     var activityIndicatorVisibility: Observable<Bool> { get }
     var screenTitle: String { get }
@@ -37,7 +37,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     let screenTitle = NSLocalizedString("Hot Tags", comment: "")
     
     // Bindings
-    let data: Observable<[Tag]> = Observable([])
+    let data: Observable<[TagListItemVM]> = Observable([])
     let showToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
@@ -80,7 +80,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             
             switch result {
             case .success(let tags):
-                if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.hottags.tag) {
+                if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag]) {
                     allHotFlickrTags = receivedHotTags
                 }
                 self?.dataForWeekFlickrTags = allHotFlickrTags

@@ -1,7 +1,7 @@
 import UIKit
 
 struct ImageSearchCoordinatorActions {
-    let showImageDetails: (Image, ImageQuery) -> ()
+    let showImageDetails: (ImageListItemVM, ImageQuery) -> ()
     let showHotTags: (Event<ImageQuery>) -> ()
 }
 

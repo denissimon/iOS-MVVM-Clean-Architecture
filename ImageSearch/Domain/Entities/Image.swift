@@ -2,6 +2,17 @@
 
 import Foundation
 
+protocol ImageType: AnyObject {
+    var thumbnail: ImageWrapper? { get set }
+    var bigImage: ImageWrapper? { get set }
+    var title: String { get }
+}
+
+protocol ImageListItemVM: AnyObject {
+    var thumbnail: ImageWrapper? { get }
+    var bigImage: ImageWrapper? { get }
+}
+    
 struct FlickrImageParameters: Codable {
     let imageID: String
     let farm: Int
@@ -9,7 +20,7 @@ struct FlickrImageParameters: Codable {
     let secret: String
 }
 
-class Image: Codable {
+class Image: Codable, ImageType, ImageListItemVM {
     
     var thumbnail: ImageWrapper?
     var bigImage: ImageWrapper?

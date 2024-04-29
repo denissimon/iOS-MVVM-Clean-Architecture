@@ -1,7 +1,7 @@
 import Foundation
 
 protocol TagRepository {
-    typealias TagsResult = Result<Tags, NetworkError>
+    typealias TagsResult = Result<TagsType, NetworkError>
     
     func getHotTags() async -> TagsResult
 }

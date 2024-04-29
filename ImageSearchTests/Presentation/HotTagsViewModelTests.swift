@@ -13,10 +13,10 @@ class HotTagsViewModelTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<Tags, NetworkError>
+        let result: Result<TagsType, NetworkError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<Tags, NetworkError>) {
+        init(result: Result<TagsType, NetworkError>) {
             self.result = result
         }
         

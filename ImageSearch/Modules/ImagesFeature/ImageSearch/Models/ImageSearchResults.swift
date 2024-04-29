@@ -3,9 +3,9 @@ import Foundation
 class ImageSearchResults {
     let id: String
     let searchQuery: ImageQuery
-    var searchResults: [Image]
+    var searchResults: [ImageListItemVM]
     
-    init(id: String, searchQuery: ImageQuery, searchResults: [Image]) {
+    init(id: String, searchQuery: ImageQuery, searchResults: [ImageListItemVM]) {
         self.id = id
         self.searchQuery = searchQuery
         self.searchResults = searchResults

@@ -11,10 +11,10 @@ class TagRepositoryTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<Tags, NetworkError>
+        let result: Result<TagsType, NetworkError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<Tags, NetworkError>) {
+        init(result: Result<TagsType, NetworkError>) {
             self.result = result
         }
         
@@ -31,7 +31,7 @@ class TagRepositoryTests: XCTestCase {
         
         let tagsResult = await tagRepository.getHotTags()
         
-        let hotTags = try? tagsResult.get().hottags.tag
+        let hotTags = try? tagsResult.get().tags
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
@@ -45,7 +45,7 @@ class TagRepositoryTests: XCTestCase {
         
         let tagsResult = await tagRepository.getHotTags()
         
-        let hotTags = try? tagsResult.get().hottags.tag
+        let hotTags = try? tagsResult.get().tags
         
         XCTAssertNil(hotTags)
         TagRepositoryTests.syncQueue.sync {

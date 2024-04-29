@@ -1,6 +1,10 @@
 import Foundation
 
-struct Tags: Decodable {
+protocol TagsType {
+    var tags: [TagType] { get }
+}
+
+struct Tags: Decodable, TagsType {
     
     struct HotTags: Decodable {
         let tag: [Tag]
@@ -12,5 +16,11 @@ struct Tags: Decodable {
     enum CodingKeys: String, CodingKey {
         case hottags
         case stat
+    }
+}
+
+extension Tags {
+    var tags: [TagType] {
+        hottags.tag
     }
 }

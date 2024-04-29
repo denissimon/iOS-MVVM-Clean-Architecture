@@ -53,7 +53,7 @@ class ImageDetailsViewModelTests: XCTestCase {
             return nil
         }
         
-        func getImages(searchId: String) async -> [Image]? {
+        func getImages(searchId: String) async -> [ImageType]? {
             ImageDetailsViewModelTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
             }
