@@ -30,6 +30,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [Shared Kernel][SharedKernelLink], delegating entity behavior
 - Separate data sources for [UITableView][UITableViewDataSourceLink] and [UICollectionView][UICollectionViewDataSourceLink]
 - [Codable][CodableLink]
+- [Alternative DTO approach][AlternativeDTOApproachLink]
 
 [MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Modules/ImagesFeature/ImageSearch
 [FlowCoordinatorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Coordinator
@@ -47,6 +48,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [UITableViewDataSourceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/View/TagsDataSource.swift
 [UICollectionViewDataSourceLink]:  https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/ImageSearch/View/ImagesDataSource.swift
 [CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Image.swift
+[AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
 ### Includes
 
