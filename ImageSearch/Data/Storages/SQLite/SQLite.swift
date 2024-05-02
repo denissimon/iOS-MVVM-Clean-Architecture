@@ -56,6 +56,7 @@ protocol SQLiteType {
     func getRow(from table: SQLTable, sql: String, params: [Any]?) throws -> [SQLValues]
     func getAllRows(from table: SQLTable) throws -> [SQLValues]
     func getByID(from table: SQLTable, id: Int) throws -> SQLValues
+    func getFirstRow(from table: SQLTable) throws -> SQLValues
     func getLastRow(from table: SQLTable) throws -> SQLValues
     func getLastInsertID() -> Int
     func getChanges() -> Int
@@ -491,11 +492,22 @@ class SQLite: SQLiteType {
         }
     }
     
+    public func getFirstRow(from table: SQLTable) throws -> SQLValues {
+        let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MIN(\(table.primaryKey)) FROM \(table.name));"
+        let result = try getRow(from: table, sql: sql)
+        if result.count == 1 {
+            log("successfully read the first row in \(table.name)")
+            return result[0]
+        } else {
+            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
+        }
+    }
+    
     func getLastRow(from table: SQLTable) throws -> SQLValues {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MAX(\(table.primaryKey)) FROM \(table.name));"
         let result = try getRow(from: table, sql: sql)
         if result.count == 1 {
-            log("successfully read last row in \(table.name)")
+            log("successfully read the last row in \(table.name)")
             return result[0]
         } else {
             throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
