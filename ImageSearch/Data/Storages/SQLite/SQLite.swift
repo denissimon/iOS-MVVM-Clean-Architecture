@@ -38,6 +38,9 @@ typealias SQLTableColums = [(name: String, type: SQLType)]
 typealias SQLValues = [(type: SQLType, value: Any?)]
 
 protocol SQLiteType {
+    var lastInsertID: Int { get }
+    var changes: Int { get }
+    var totalChanges: Int { get }
     func createTable(sql: String) throws
     func checkIfTableExists(_ table: SQLTable) throws -> Bool
     func dropTable(_ table: SQLTable, vacuum: Bool) throws
@@ -58,9 +61,6 @@ protocol SQLiteType {
     func getByID(from table: SQLTable, id: Int) throws -> SQLValues
     func getFirstRow(from table: SQLTable) throws -> SQLValues
     func getLastRow(from table: SQLTable) throws -> SQLValues
-    func getLastInsertID() -> Int
-    func getChanges() -> Int
-    func getTotalChanges() -> Int
     func vacuum() throws
     func query(sql: String, params: [Any]?) throws
 }
@@ -73,9 +73,38 @@ class SQLite: SQLiteType {
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
-    private let serialQueue = DispatchQueue(label: "SQLite Serial Queue")
+    private let queue = DispatchQueue(label: "SQLite Queue")
     
     var dateFormatter = DateFormatter()
+    
+    var lastInsertID: Int {
+        var id = 0
+        queue.sync {
+            id = Int(sqlite3_last_insert_rowid(dbPointer))
+        }
+        log("last inserted id: \(id)")
+        return id
+    }
+    
+    /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
+    var changes: Int {
+        var changes = 0
+        queue.sync {
+            changes = Int(sqlite3_changes(dbPointer))
+        }
+        log("number of changes: \(changes)")
+        return changes
+    }
+    
+    /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
+    var totalChanges: Int {
+        var totalChanges = 0
+        queue.sync {
+            totalChanges = Int(sqlite3_total_changes(dbPointer))
+        }
+        log("number of total changes: \(totalChanges)")
+        return totalChanges
+    }
     
     init(path: String, recreateDB: Bool = false) throws {
         if recreateDB {
@@ -186,7 +215,7 @@ class SQLite: SQLiteType {
     }
     
     private func operation(sql: String, params: [Any]? = nil) throws {
-        try serialQueue.sync {
+        try queue.sync {
             let sqlStatement = try prepareStatement(sql: sql)
             
             defer {
@@ -292,7 +321,7 @@ class SQLite: SQLiteType {
         }
         try operation(sql: sql, params: params)
         log("successfully inserted row(s), sql: \(sql)")
-        return getLastInsertID()
+        return self.lastInsertID
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
@@ -333,7 +362,7 @@ class SQLite: SQLiteType {
     
     func getRowCount(in table: SQLTable) throws -> Int {
         var count: Int32 = 0
-        try serialQueue.sync {
+        try queue.sync {
             let sql = "SELECT count(*) FROM \(table.name);"
             let sqlStatement = try prepareStatement(sql: sql)
             defer {
@@ -353,7 +382,7 @@ class SQLite: SQLiteType {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
         var count: Int32 = 0
-        try serialQueue.sync {
+        try queue.sync {
             let sqlStatement = try prepareStatement(sql: sql)
             defer {
                 sqlite3_finalize(sqlStatement)
@@ -378,7 +407,7 @@ class SQLite: SQLiteType {
         
         var allRows: [SQLValues] = []
         
-        try serialQueue.sync {
+        try queue.sync {
             let sqlStatement = try prepareStatement(sql: sql)
             defer {
                 sqlite3_finalize(sqlStatement)
@@ -492,11 +521,11 @@ class SQLite: SQLiteType {
             log("successfully read a row by id \(id) in \(table.name)")
             return result[0]
         } else {
-            throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
         }
     }
     
-    public func getFirstRow(from table: SQLTable) throws -> SQLValues {
+    func getFirstRow(from table: SQLTable) throws -> SQLValues {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MIN(\(table.primaryKey)) FROM \(table.name));"
         let result = try getRow(from: table, sql: sql)
         if result.count == 1 {
@@ -514,37 +543,8 @@ class SQLite: SQLiteType {
             log("successfully read the last row in \(table.name)")
             return result[0]
         } else {
-            throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
         }
-    }
-    
-    func getLastInsertID() -> Int {
-        var id = 0
-        serialQueue.sync {
-            id = Int(sqlite3_last_insert_rowid(dbPointer))
-        }
-        log("last inserted id: \(id)")
-        return id
-    }
-    
-    /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
-    func getChanges() -> Int {
-        var changes = 0
-        serialQueue.sync {
-            changes = Int(sqlite3_changes(dbPointer))
-        }
-        log("number of changes: \(changes)")
-        return changes
-    }
-    
-    /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
-    func getTotalChanges() -> Int {
-        var totalChanges = 0
-        serialQueue.sync {
-            totalChanges = Int(sqlite3_total_changes(dbPointer))
-        }
-        log("number of total changes: \(totalChanges)")
-        return totalChanges
     }
     
     /// Repacks the DB to take advantage of deleted data
