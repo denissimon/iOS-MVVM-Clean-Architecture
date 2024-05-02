@@ -62,7 +62,6 @@ protocol SQLiteType {
     func getChanges() -> Int
     func getTotalChanges() -> Int
     func vacuum() throws
-    func resetAutoincrement(in table: SQLTable) throws
     func query(sql: String, params: [Any]?) throws
 }
 
@@ -200,6 +199,11 @@ class SQLite: SQLiteType {
                 throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
             }
         }
+    }
+    
+    private func resetAutoincrement(in table: SQLTable) throws {
+        let sql = "UPDATE sqlite_sequence SET SEQ=0 WHERE name='\(table.name)';"
+        try operation(sql: sql)
     }
     
     func createTable(sql: String) throws {
@@ -548,12 +552,6 @@ class SQLite: SQLiteType {
         let sql = "VACUUM;"
         try operation(sql: sql)
         log("VACUUM")
-    }
-    
-    func resetAutoincrement(in table: SQLTable) throws {
-        let sql = "UPDATE sqlite_sequence SET SEQ=0 WHERE name='\(table.name)';"
-        try operation(sql: sql)
-        log("successfully reseted autoincrement in \(table.name)")
     }
     
     /// Any other query except reading
