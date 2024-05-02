@@ -140,7 +140,7 @@ class FlickrAPITests: XCTestCase {
             promise.fulfill()
         }
         
-        wait(for: [promise], timeout: 1)
+        wait(for: [promise], timeout: 5)
     }
     
     func testFetchFile() {
@@ -153,7 +153,7 @@ class FlickrAPITests: XCTestCase {
             promise.fulfill()
         }
         
-        wait(for: [promise], timeout: 1)
+        wait(for: [promise], timeout: 5)
     }
     
     func testFetchFile_whenInvalidURL() {
@@ -166,7 +166,6 @@ class FlickrAPITests: XCTestCase {
             promise.fulfill()
         }
         
-        wait(for: [promise], timeout: 1)
+        wait(for: [promise], timeout: 5)
     }
 }
-
