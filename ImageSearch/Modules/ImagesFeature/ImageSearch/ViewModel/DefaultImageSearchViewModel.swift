@@ -133,8 +133,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     private func memorySafetyCheck() {
         if AppConfiguration.MemorySafety.enabled {
-            Task.detached {
-                await self.imageCachingService.cacheIfNecessary(self.data.value)
+            Task {
+                await imageCachingService.cacheIfNecessary(self.data.value)
             }
         }
     }
