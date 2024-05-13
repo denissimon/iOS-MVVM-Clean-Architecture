@@ -31,13 +31,10 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             );
             """
         do {
-            try sqliteAdapter.beginTransaction()
             try sqliteAdapter.createTable(sql: sqlStatement) // create table if not exists
-            try sqliteAdapter.dropIndex(in: imagesTable, forColumn: "searchId") // drop index if exists
-            try sqliteAdapter.addIndex(to: imagesTable, forColumn: "searchId")
-            try sqliteAdapter.endTransaction()
+            try sqliteAdapter.addIndex(to: imagesTable, forColumn: "searchId") // add index if not exists
         } catch {
-            print("SQLite:", error.localizedDescription)
+            print("SQLite:", error)
         }
     }
     
@@ -54,7 +51,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
                     let _ = try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
                     completion(true)
                 } catch {
-                    print("SQLite:", error.localizedDescription)
+                    print("SQLite:", error)
                     completion(nil)
                 }
             } else {
@@ -72,10 +69,13 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
         
         do {
-            let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? ORDER BY sortId ASC;"
-            let results = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId])
-            
             var images: [T] = []
+            
+            let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? ORDER BY sortId ASC;"
+            guard let results = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId]) else {
+                completion(images)
+                return
+            }
             
             for row in results {
                 let json = row[3] // 'json' column
@@ -92,7 +92,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             }
             completion(images)
         } catch {
-            print("SQLite:", error.localizedDescription)
+            print("SQLite:", error)
             completion(nil)
         }
     }
@@ -113,9 +113,13 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
         let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? LIMIT 1"
         do {
-            let rows = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId])
-            completion(rows.count == 1 ? true : false)
+            if let _ = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId]) {
+                completion(true)
+            } else {
+                completion(false)
+            }
         } catch {
+            print("SQLite:", error)
             completion(nil)
         }
     }
@@ -125,7 +129,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         do {
             try sqliteAdapter.deleteAllRows(in: imagesTable)
         } catch {
-            print("SQLite:", error.localizedDescription)
+            print("SQLite:", error)
         }
     }
 }
