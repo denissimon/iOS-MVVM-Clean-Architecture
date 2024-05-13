@@ -32,7 +32,7 @@ class Image: Codable, ImageType, ImageListItemVM {
         self.flickr = flickr
     }
     
-    convenience init?(flickrParams: [String : AnyObject]) {
+    convenience init?(flickrParams: [String: AnyObject]) {
         guard let imageID = flickrParams["id"] as? String,
               let farm = flickrParams["farm"] as? Int,
               let server = flickrParams["server"] as? String,
