@@ -49,20 +49,20 @@ protocol SQLiteType {
     func dropIndex(in table: SQLTable, forColumn columnName: String) throws
     func beginTransaction() throws
     func endTransaction() throws
-    func insertRow(sql: String, params: [Any]?) throws -> Int
-    func updateRow(sql: String, params: [Any]?) throws
-    func deleteRow(sql: String, params: [Any]?) throws
-    func deleteByID(in table: SQLTable, id: Int) throws
-    func deleteAllRows(in table: SQLTable, vacuum: Bool, resetAutoincrement: Bool) throws
+    func insertRow(sql: String, params: [Any]?) throws -> (Int, Int)
+    func updateRow(sql: String, params: [Any]?) throws -> Int
+    func deleteRow(sql: String, params: [Any]?) throws -> Int
+    func deleteByID(in table: SQLTable, id: Int) throws -> Int
+    func deleteAllRows(in table: SQLTable, vacuum: Bool, resetAutoincrement: Bool) throws -> Int
     func getRowCount(in table: SQLTable) throws -> Int
     func getRowCountWithCondition(sql: String, params: [Any]?) throws -> Int
-    func getRow(from table: SQLTable, sql: String, params: [Any]?) throws -> [SQLValues]
-    func getAllRows(from table: SQLTable) throws -> [SQLValues]
-    func getByID(from table: SQLTable, id: Int) throws -> SQLValues
-    func getFirstRow(from table: SQLTable) throws -> SQLValues
-    func getLastRow(from table: SQLTable) throws -> SQLValues
+    func getRow(from table: SQLTable, sql: String, params: [Any]?) throws -> [SQLValues]?
+    func getAllRows(from table: SQLTable) throws -> [SQLValues]?
+    func getByID(from table: SQLTable, id: Int) throws -> SQLValues?
+    func getFirstRow(from table: SQLTable) throws -> SQLValues?
+    func getLastRow(from table: SQLTable) throws -> SQLValues?
     func vacuum() throws
-    func query(sql: String, params: [Any]?) throws
+    func query(sql: String, params: [Any]?) throws -> Int
 }
 
 class SQLite: SQLiteType {
@@ -86,23 +86,23 @@ class SQLite: SQLiteType {
         return id
     }
     
-    /// Returns number of rows changed by last INSERT, UPDATE or DELETE statement
+    /// - Returns: the number of rows changed by the most recently completed INSERT, DELETE or UPDATE statement
     var changes: Int {
         var changes = 0
         queue.sync {
             changes = Int(sqlite3_changes(dbPointer))
         }
-        log("number of changes: \(changes)")
+        log("changes: \(changes)")
         return changes
     }
     
-    /// Returns number of rows changed by INSERT, UPDATE or DELETE statements since the DB was opened
+    /// - Returns: the number of rows changed by INSERT, DELETE or UPDATE statements since the current DB was opened
     var totalChanges: Int {
         var totalChanges = 0
         queue.sync {
             totalChanges = Int(sqlite3_total_changes(dbPointer))
         }
-        log("number of total changes: \(totalChanges)")
+        log("total changes: \(totalChanges)")
         return totalChanges
     }
     
@@ -147,7 +147,7 @@ class SQLite: SQLiteType {
         do {
             try fileManager.removeItem(atPath: path)
         } catch {
-            throw SQLiteError.Other("SQLite file has not been deleted")
+            throw SQLiteError.OpenDB("SQLite file has not been deleted")
         }
     }
     
@@ -214,7 +214,8 @@ class SQLite: SQLiteType {
         }
     }
     
-    private func operation(sql: String, params: [Any]? = nil) throws {
+    @discardableResult
+    private func operation(sql: String, params: [Any]? = nil) throws -> Int {
         try queue.sync {
             let sqlStatement = try prepareStatement(sql: sql)
             
@@ -227,6 +228,8 @@ class SQLite: SQLiteType {
             guard sqlite3_step(sqlStatement) == SQLITE_DONE else {
                 throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
             }
+            
+            return Int(sqlite3_changes(dbPointer))
         }
     }
     
@@ -244,12 +247,10 @@ class SQLite: SQLiteType {
     }
     
     func checkIfTableExists(_ table: SQLTable) throws -> Bool {
-        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='\(table.name)';") {
-            let result = count == 1 ? true : false
-            log("successfully checked if table \(table.name) exists: \(result)")
-            return result
-        }
-        throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
+        let count = try getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='\(table.name)';")
+        let result = count == 1 ? true : false
+        log("successfully checked if table \(table.name) exists: \(result)")
+        return result
     }
     
     func dropTable(_ table: SQLTable, vacuum: Bool = true) throws {
@@ -267,9 +268,9 @@ class SQLite: SQLiteType {
         
         var sql = ""
         if !unique {
-            sql = "CREATE INDEX \"\(indexName)\" ON \"\(table.name)\" (\"\(columnName)\""
+            sql = "CREATE INDEX IF NOT EXISTS \"\(indexName)\" ON \"\(table.name)\" (\"\(columnName)\""
         } else {
-            sql = "CREATE UNIQUE INDEX \"\(indexName))\" ON \"\(table.name)\" (\"\(columnName)\""
+            sql = "CREATE UNIQUE INDEX IF NOT EXISTS \"\(indexName))\" ON \"\(table.name)\" (\"\(columnName)\""
         }
         
         switch order {
@@ -286,12 +287,10 @@ class SQLite: SQLiteType {
     }
     
     func checkIfIndexExists(in table: SQLTable, indexName: String) throws -> Bool {
-        if let count = try? getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='index' AND tbl_name='\(table.name)' AND name='\(indexName)';") {
-            let result = count == 1 ? true : false
-            log("successfully checked if index \(indexName) exists: \(result)")
-            return result
-        }
-        throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
+        let count = try getRowCountWithCondition(sql: "SELECT count(*) FROM sqlite_master WHERE type='index' AND tbl_name='\(table.name)' AND name='\(indexName)';")
+        let result = count == 1 ? true : false
+        log("successfully checked if index \(indexName) exists: \(result)")
+        return result
     }
     
     func dropIndex(in table: SQLTable, forColumn columnName: String) throws {
@@ -314,50 +313,83 @@ class SQLite: SQLiteType {
     }
     
     /// Can be used to insert one or several rows depending on the SQL statement
-    /// - Returns: The id for the last inserted row
-    func insertRow(sql: String, params: [Any]? = nil) throws -> Int {
+    /// - Returns: (the number of inserted rows, id for the last inserted row)
+    @discardableResult
+    func insertRow(sql: String, params: [Any]? = nil) throws -> (Int, Int) {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("INSERT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, params: params)
-        log("successfully inserted row(s), sql: \(sql)")
-        return self.lastInsertID
+        let changes = try operation(sql: sql, params: params)
+        if changes > 0 {
+            log("successfully inserted row(s), sql: \(sql)")
+        } else {
+            log("no rows were inserted, sql: \(sql)")
+        }
+        return (changes, lastInsertID)
     }
     
     /// Can be used to update one or several rows depending on the SQL statement
-    func updateRow(sql: String, params: [Any]? = nil) throws {
+    /// - Returns: the number of updated rows
+    @discardableResult
+    func updateRow(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("UPDATE ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, params: params)
-        log("successfully updated row(s), sql: \(sql)")
+        let changes = try operation(sql: sql, params: params)
+        if changes > 0 {
+            log("successfully updated row(s), sql: \(sql)")
+        } else {
+            log("no rows were updated, sql: \(sql)")
+        }
+        return changes
     }
     
     /// Can be used to delete one or several rows depending on the SQL statement
-    func deleteRow(sql: String, params: [Any]? = nil) throws {
+    /// - Returns: the number of deleted rows
+    @discardableResult
+    func deleteRow(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("DELETE ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
-        try operation(sql: sql, params: params)
-        log("successfully deleted row(s), sql: \(sql)")
+        let changes = try operation(sql: sql, params: params)
+        if changes > 0 {
+            log("successfully deleted row(s), sql: \(sql)")
+        } else {
+            log("no rows were deleted, sql: \(sql)")
+        }
+        return changes
     }
     
-    func deleteByID(in table: SQLTable, id: Int) throws {
+    /// - Returns: 1 if the row with the specified id was deleted, otherwise returns 0
+    @discardableResult
+    func deleteByID(in table: SQLTable, id: Int) throws -> Int {
         let sql = "DELETE FROM \(table.name) WHERE \(table.primaryKey) = ?;"
-        try operation(sql: sql, params: [id])
-        log("successfully deleted a row by id \(id) in \(table.name)")
+        let changes = try operation(sql: sql, params: [id])
+        if changes == 1 {
+            log("successfully deleted the row with id \(id) in \(table.name)")
+        } else {
+            log("row with id \(id) was not deleted in \(table.name)")
+        }
+        return changes
     }
     
-    func deleteAllRows(in table: SQLTable, vacuum: Bool = true, resetAutoincrement: Bool = true) throws {
+    /// - Returns: the number of deleted rows
+    @discardableResult
+    func deleteAllRows(in table: SQLTable, vacuum: Bool = true, resetAutoincrement: Bool = true) throws -> Int {
         let sql = "DELETE FROM \(table.name);"
-        try operation(sql: sql)
-        log("successfully deleted all rows in \(table.name)")
+        let changes = try operation(sql: sql)
+        if changes > 0 {
+            log("successfully deleted all rows in \(table.name)")
+        } else {
+            log("no rows were deleted in \(table.name)")
+        }
         if vacuum {
             try self.vacuum()
         }
         if resetAutoincrement {
             try self.resetAutoincrement(in: table)
         }
+        return changes
     }
     
     func getRowCount(in table: SQLTable) throws -> Int {
@@ -400,7 +432,8 @@ class SQLite: SQLiteType {
     }
     
     /// Can be used to read one or several rows depending on the SQL statement
-    func getRow(from table: SQLTable, sql: String, params: [Any]? = nil) throws -> [SQLValues] {
+    /// - Returns: [SQLValues] if one or more rows were selected, otherwise returns nil
+    func getRow(from table: SQLTable, sql: String, params: [Any]? = nil) throws -> [SQLValues]? {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("SELECT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
         }
@@ -479,8 +512,13 @@ class SQLite: SQLiteType {
             }
         }
         
-        log("successfully read row(s), count: \(allRows.count), sql: \(sql)")
-        return allRows
+        if allRows.count > 0 {
+            log("successfully read row(s), count: \(allRows.count), sql: \(sql)")
+            return allRows
+        } else {
+            log("no rows selected, sql: \(sql)")
+            return nil
+        }
     }
     
     /// Checks the structure of the result table and synchronizes it in SQLTableColums
@@ -507,44 +545,44 @@ class SQLite: SQLiteType {
         return resultColumns
     }
     
-    func getAllRows(from table: SQLTable) throws -> [SQLValues] {
+    /// - Returns: [SQLValues] if one or more rows were selected, otherwise returns nil
+    func getAllRows(from table: SQLTable) throws -> [SQLValues]? {
         let sql = "SELECT * FROM \(table.name);"
-        let result = try getRow(from: table, sql: sql)
-        log("successfully read all rows in \(table.name), count: \(result.count)")
-        return result
+        if let result = try getRow(from: table, sql: sql) {
+            log("successfully read all rows in \(table.name), count: \(result.count)")
+            return result
+        }
+        return nil
     }
     
-    func getByID(from table: SQLTable, id: Int) throws -> SQLValues {
+    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    func getByID(from table: SQLTable, id: Int) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = ? LIMIT 1;"
-        let result = try getRow(from: table, sql: sql, params: [id])
-        if result.count == 1 {
+        if let result = try getRow(from: table, sql: sql, params: [id]) {
             log("successfully read a row by id \(id) in \(table.name)")
             return result[0]
-        } else {
-            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
         }
+        return nil
     }
     
-    func getFirstRow(from table: SQLTable) throws -> SQLValues {
+    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    func getFirstRow(from table: SQLTable) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MIN(\(table.primaryKey)) FROM \(table.name));"
-        let result = try getRow(from: table, sql: sql)
-        if result.count == 1 {
+        if let result = try getRow(from: table, sql: sql) {
             log("successfully read the first row in \(table.name)")
             return result[0]
-        } else {
-            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
         }
+        return nil
     }
     
-    func getLastRow(from table: SQLTable) throws -> SQLValues {
+    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    func getLastRow(from table: SQLTable) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MAX(\(table.primaryKey)) FROM \(table.name));"
-        let result = try getRow(from: table, sql: sql)
-        if result.count == 1 {
+        if let result = try getRow(from: table, sql: sql) {
             log("successfully read the last row in \(table.name)")
             return result[0]
-        } else {
-            throw SQLiteError.Other(getErrorMessage(dbPointer: dbPointer))
         }
+        return nil
     }
     
     /// Repacks the DB to take advantage of deleted data
@@ -555,8 +593,11 @@ class SQLite: SQLiteType {
     }
     
     /// Any other query except reading
-    func query(sql: String, params: [Any]? = nil) throws {
-        try operation(sql: sql, params: params)
+    /// - Returns: the number of  rows changed
+    @discardableResult
+    func query(sql: String, params: [Any]? = nil) throws -> Int {
+        let changes = try operation(sql: sql, params: params)
         log("successful query, sql: \(sql)")
+        return changes
     }
 }
