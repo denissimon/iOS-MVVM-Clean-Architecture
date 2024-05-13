@@ -14,8 +14,8 @@ actor DefaultImageCachingService: ImageCachingService {
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
-        Task.detached {
-            await self.deleteAllImages()
+        Task {
+            await deleteAllImages()
         }
     }
     
