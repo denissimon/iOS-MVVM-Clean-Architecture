@@ -4,7 +4,7 @@ struct FlickrAPI {
     
     static let baseURL = AppConfiguration.ProductionServer.flickrBaseURL
     
-    static let defaultParams = HTTPParams(httpBody: nil, cachePolicy: nil, timeoutInterval: 10.0, headerValues:[
+    static let defaultParams = HTTPParams(timeoutInterval: 10.0, headerValues:[
         (value: ContentType.applicationJson.rawValue, forHTTPHeaderField: HTTPHeader.accept.rawValue),
         (value: ContentType.applicationFormUrlencoded.rawValue, forHTTPHeaderField: HTTPHeader.contentType.rawValue)])
     
