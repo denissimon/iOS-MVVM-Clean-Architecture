@@ -14,7 +14,7 @@ class DefaultTagRepository: TagRepository {
             switch result {
             case .success(let tags):
                 if tags.stat != "ok" {
-                    completionHandler(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+                    completionHandler(.failure(NetworkError()))
                     return
                 }
                 completionHandler(.success(tags))

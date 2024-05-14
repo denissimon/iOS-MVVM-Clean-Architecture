@@ -206,7 +206,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
-        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+        let imageRepository = ImageRepositoryMock(result: .failure(NetworkError()))
         let imageService = DefaultImageService(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
