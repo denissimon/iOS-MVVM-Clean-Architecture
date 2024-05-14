@@ -40,7 +40,7 @@ class NetworkService: NetworkServiceType {
         #endif
     }
     
-    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
     func request(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
@@ -69,7 +69,7 @@ class NetworkService: NetworkServiceType {
             dataTask.resume()
             return dataTask
         case true:
-            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+            guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 completion(.failure(NetworkError()))
                 return nil
             }
@@ -91,7 +91,7 @@ class NetworkService: NetworkServiceType {
         }
     }
     
-    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
@@ -124,7 +124,7 @@ class NetworkService: NetworkServiceType {
             dataTask.resume()
             return dataTask
         case true:
-            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+            guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 completion(.failure(NetworkError()))
                 return nil
             }
@@ -196,7 +196,7 @@ class NetworkService: NetworkServiceType {
         return downloadTask
     }
     
-    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
     func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
@@ -227,7 +227,7 @@ class NetworkService: NetworkServiceType {
             dataTask.resume()
             return dataTask
         case true:
-            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+            guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 completion(.failure(NetworkError()))
                 return nil
             }
@@ -251,7 +251,7 @@ class NetworkService: NetworkServiceType {
         }
     }
     
-    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
     func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
@@ -286,7 +286,7 @@ class NetworkService: NetworkServiceType {
             dataTask.resume()
             return dataTask
         case true:
-            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+            guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 completion(.failure(NetworkError()))
                 return nil
             }
