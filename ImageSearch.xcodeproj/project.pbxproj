@@ -47,6 +47,7 @@
 		41500DB32BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB22BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift */; };
 		41500DB52BAC100E00ABD258 /* HotTagsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */; };
 		41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */; };
+		417C1CCC2BF3CCAD005E2232 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417C1CCB2BF3CCAD005E2232 /* NetworkServiceTests.swift */; };
 		417D76E92BE0156C005D9C1E /* ImageSearch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 417D76E82BE0156C005D9C1E /* ImageSearch.storyboard */; };
 		418BF6922BC89F1F0002F360 /* SQLTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418BF6912BC89F1F0002F360 /* SQLTable.swift */; };
 		418BF69A2BD04C490002F360 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 418BF69C2BD04C490002F360 /* Localizable.strings */; };
@@ -129,6 +130,7 @@
 		41500DB22BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewModelTests.swift; sourceTree = "<group>"; };
 		41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewModelTests.swift; sourceTree = "<group>"; };
 		41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewModelTests.swift; sourceTree = "<group>"; };
+		417C1CCB2BF3CCAD005E2232 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		417D76E82BE0156C005D9C1E /* ImageSearch.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageSearch.storyboard; sourceTree = "<group>"; };
 		418BF6912BC89F1F0002F360 /* SQLTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLTable.swift; sourceTree = "<group>"; };
 		418BF69B2BD04C490002F360 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 			isa = PBXGroup;
 			children = (
 				41F1659E2BBAC6FF00F869DC /* FlickrAPITests.swift */,
+				417C1CCB2BF3CCAD005E2232 /* NetworkServiceTests.swift */,
 				41F165AA2BC4AFED00F869DC /* SQLiteTests.swift */,
 			);
 			path = Data;
@@ -748,6 +751,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				417C1CCC2BF3CCAD005E2232 /* NetworkServiceTests.swift in Sources */,
 				41500DB32BAB6D4100ABD258 /* ImageDetailsViewModelTests.swift in Sources */,
 				41500DAF2BA9773F00ABD258 /* ImageCachingServiceTests.swift in Sources */,
 				41F165AB2BC4AFED00F869DC /* SQLiteTests.swift in Sources */,
