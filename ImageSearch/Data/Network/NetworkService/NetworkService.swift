@@ -177,7 +177,7 @@ class NetworkService: NetworkServiceType {
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            guard let tempLocalUrl = tempLocalUrl, error == nil else {
+            guard let tempLocalUrl = tempLocalUrl, error == nil, statusCode != 404 else {
                 completion(.failure(NetworkError(error: error, statusCode: statusCode)))
                 return
             }
@@ -345,7 +345,7 @@ class NetworkService: NetworkServiceType {
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            guard let tempLocalUrl = tempLocalUrl, error == nil else {
+            guard let tempLocalUrl = tempLocalUrl, error == nil, statusCode != 404 else {
                 completion(.failure(NetworkError(error: error, statusCode: statusCode)))
                 return
             }
