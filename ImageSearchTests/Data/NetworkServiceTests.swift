@@ -84,7 +84,7 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestGet")
         
         let networkService = NetworkServiceTests.networkService
-        let networkTask = networkService.request(JSONPlaceholderAPI.getPost(id: 10)) { result in
+        let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 10)) { result in
             if let resultData = try? result.get() {
                 XCTAssertEqual(resultData.count, 217)
             }
