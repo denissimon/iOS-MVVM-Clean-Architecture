@@ -9,84 +9,147 @@ struct NetworkError: Error {
 protocol NetworkServiceType {
     var urlSession: URLSession { get }
     
-    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
-    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
+    func request(_ endpoint: EndpointType, uploadTask: Bool, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
+    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
     func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable?
+    func downloadFile(url: URL, to localUrl: URL, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable?
     
-    func requestWithStatusCode(_ endpoint: EndpointType, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
-    func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
     func fetchFileWithStatusCode(url: URL, completion: @escaping ((result: Data?, statusCode: Int?)) -> Void) -> NetworkCancellable?
+    func downloadFileWithStatusCode(url: URL, to localUrl: URL, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
 }
 
 class NetworkService: NetworkServiceType {
-       
+    
     let urlSession: URLSession
     
     init(urlSession: URLSession = URLSession.shared) {
         self.urlSession = urlSession
     }
     
-    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
-        
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
-            completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
-            return nil
-        }
-        
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService request \(endpoint.method.rawValue), url: \(url)")
-        
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-            if error == nil {
-                completion(.success(data))
-                return
-            }
-            let response = response as? HTTPURLResponse
-            let statusCode = response?.statusCode
-            completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
-        }
-        
-        dataTask.resume()
-        
-        return dataTask
+    private func log(_ str: String) {
+        #if DEBUG
+        print(str)
+        #endif
     }
     
-    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    func request(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
             return nil
         }
         
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService request<T: Decodable> \(endpoint.method.rawValue), url: \(url)")
+        var request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        var msg = "\nNetworkService request \(endpoint.method.rawValue)"
+        if uploadTask { msg += ", uploadTask"}
+        msg += ", url: \(url)"
         
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-            let response = response as? HTTPURLResponse
-            let statusCode = response?.statusCode
-            
-            if error == nil {
-                guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
-                    completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+        switch uploadTask {
+        case false:
+            log(msg)
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                if error == nil {
+                    completion(.success(data))
                     return
                 }
-                completion(.success(decoded))
-                return
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
             }
             
-            completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            dataTask.resume()
+            return dataTask
+        case true:
+            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+                completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+                return nil
+            }
+            log(msg)
+            request.httpBody = nil
+            
+            let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
+                if error == nil {
+                    completion(.success(data))
+                    return
+                }
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            uploadTask.resume()
+            return uploadTask
         }
-
-        dataTask.resume()
-        
-        return dataTask
     }
     
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+            return nil
+        }
+        
+        var request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        var msg = "\nNetworkService request<T: Decodable> \(endpoint.method.rawValue)"
+        if uploadTask { msg += ", uploadTask"}
+        msg += ", url: \(url)"
+        
+        switch uploadTask {
+        case false:
+            log(msg)
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                if error == nil {
+                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                        completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+                        return
+                    }
+                    completion(.success(decoded))
+                    return
+                }
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            dataTask.resume()
+            return dataTask
+        case true:
+            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+                completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+                return nil
+            }
+            log(msg)
+            request.httpBody = nil
+            
+            let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                if error == nil {
+                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                        completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+                        return
+                    }
+                    completion(.success(decoded))
+                    return
+                }
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            uploadTask.resume()
+            return uploadTask
+        }
+    }
+    
+    /// Fetches a file into memory
     func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
         log("\nNetworkService fetchFile: \(url)")
-     
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+        
+        let dataTask = urlSession.dataTask(with: request) { (data, _, error) in
             guard let data = data, !data.isEmpty, error == nil else {
                 completion(nil)
                 return
@@ -99,64 +162,153 @@ class NetworkService: NetworkServiceType {
         return dataTask
     }
     
-    func requestWithStatusCode(_ endpoint: EndpointType, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    /// Downloads a file to disk, and supports background downloads.
+    /// - Returns:.success(true), if successful
+    func downloadFile(url: URL, to localUrl: URL, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
+        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        log("\nNetworkService downloadFile, url: \(url), to: \(localUrl)")
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
-            completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
-            return nil
-        }
-        
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService requestWithStatusCode \(endpoint.method.rawValue), url: \(url)")
-        
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+        let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            
-            if error == nil {
-                completion(.success((data, statusCode)))
+            guard let tempLocalUrl = tempLocalUrl, error == nil else {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: nil)))
                 return
             }
-            
-            completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            do {
+                if !FileManager().fileExists(atPath: localUrl.path) {
+                    try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                }
+                completion(.success(true))
+            } catch {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: nil)))
+            }
         }
         
-        dataTask.resume()
+        downloadTask.resume()
         
-        return dataTask
+        return downloadTask
     }
     
-    func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         
         guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
             completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
             return nil
         }
         
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
-        log("\nNetworkService requestWithStatusCode<T: Decodable> \(endpoint.method.rawValue), url: \(url)")
+        var request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        var msg = "\nNetworkService requestWithStatusCode \(endpoint.method.rawValue)"
+        if uploadTask { msg += ", uploadTask"}
+        msg += ", url: \(url)"
         
-        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-            let response = response as? HTTPURLResponse
-            let statusCode = response?.statusCode
-            
-            if error == nil {
-                guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
-                    completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+        switch uploadTask {
+        case false:
+            log(msg)
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                
+                if error == nil {
+                    completion(.success((data, statusCode)))
                     return
                 }
-                completion(.success((decoded, statusCode)))
-                return
+                
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
             }
             
-            completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            dataTask.resume()
+            return dataTask
+        case true:
+            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+                completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+                return nil
+            }
+            log(msg)
+            request.httpBody = nil
+            
+            let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                
+                if error == nil {
+                    completion(.success((data, statusCode)))
+                    return
+                }
+                
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            uploadTask.resume()
+            return uploadTask
         }
-
-        dataTask.resume()
-        
-        return dataTask
     }
     
+    /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT/PATCH cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
+    func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+            return nil
+        }
+        
+        var request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        var msg = "\nNetworkService requestWithStatusCode<T: Decodable> \(endpoint.method.rawValue)"
+        if uploadTask { msg += ", uploadTask"}
+        msg += ", url: \(url)"
+        
+        switch uploadTask {
+        case false:
+            log(msg)
+            let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                
+                if error == nil {
+                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                        completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+                        return
+                    }
+                    completion(.success((decoded, statusCode)))
+                    return
+                }
+                
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            dataTask.resume()
+            return dataTask
+        case true:
+            guard let httpBody = request.httpBody, ["POST", "PUT", "PATCH"].contains(request.httpMethod) else {
+                completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
+                return nil
+            }
+            log(msg)
+            request.httpBody = nil
+            
+            let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                
+                if error == nil {
+                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                        completion(.failure(NetworkError(error: nil, statusCode: statusCode, data: data)))
+                        return
+                    }
+                    completion(.success((decoded, statusCode)))
+                    return
+                }
+                
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
+            }
+            
+            uploadTask.resume()
+            return uploadTask
+        }
+    }
+    
+    /// Fetches a file into memory
     func fetchFileWithStatusCode(url: URL, completion: @escaping ((result: Data?, statusCode: Int?)) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
         log("\nNetworkService fetchFileWithStatusCode: \(url)")
@@ -178,10 +330,32 @@ class NetworkService: NetworkServiceType {
         return dataTask
     }
     
-    private func log(_ str: String) {
-        #if DEBUG
-        print(str)
-        #endif
+    /// Downloads a file to disk, and supports background downloads.
+    /// - Returns:.success(true), if successful
+    func downloadFileWithStatusCode(url: URL, to localUrl: URL, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        log("\nNetworkService downloadFileWithStatusCode, url: \(url), to: \(localUrl)")
+        
+        let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
+            let response = response as? HTTPURLResponse
+            let statusCode = response?.statusCode
+            guard let tempLocalUrl = tempLocalUrl, error == nil else {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: nil)))
+                return
+            }
+            do {
+                if !FileManager().fileExists(atPath: localUrl.path) {
+                    try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                }
+                completion(.success((true, statusCode)))
+            } catch {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: nil)))
+            }
+        }
+        
+        downloadTask.resume()
+        
+        return downloadTask
     }
 }
 
@@ -190,4 +364,4 @@ protocol NetworkCancellable {
 }
 
 extension URLSessionDataTask: NetworkCancellable {}
-
+extension URLSessionDownloadTask: NetworkCancellable {}
