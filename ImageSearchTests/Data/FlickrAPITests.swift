@@ -24,12 +24,12 @@ class FlickrAPITests: XCTestCase {
             self.responseData = responseData
         }
         
-        func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
+        func request(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success(responseData))
             return nil
         }
         
-        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
                 return nil
@@ -43,12 +43,17 @@ class FlickrAPITests: XCTestCase {
             return nil
         }
         
-        func requestWithStatusCode(_ endpoint: EndpointType, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func downloadFile(url: URL, to localUrl: URL, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
+            completion(.success(true))
+            return nil
+        }
+        
+        func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success((responseData, 200)))
             return nil
         }
 
-        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 completion(.failure(NetworkError(error: nil, statusCode: nil, data: nil)))
                 return nil
@@ -59,6 +64,11 @@ class FlickrAPITests: XCTestCase {
         
         func fetchFileWithStatusCode(url: URL, completion: @escaping ((result: Data?, statusCode: Int?)) -> Void) -> NetworkCancellable? {
             completion(("image".data(using: .utf8), 200))
+            return nil
+        }
+        
+        func downloadFileWithStatusCode(url: URL, to localUrl: URL, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+            completion(.success((true, 200)))
             return nil
         }
     }
