@@ -53,7 +53,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Unit tests for a number of components from all layers
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Network/NetworkService
-[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Storages/SQLite/SQLite.swift
+[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Storages/SQLite
 [ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Services/DefaultImageCachingService.swift
 
 ### Main layers
