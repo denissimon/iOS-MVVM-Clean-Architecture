@@ -10,7 +10,7 @@ class DefaultTagRepository: TagRepository {
     
     private func getHotTags(completionHandler: @escaping (TagsResult) -> Void) -> NetworkCancellable? {
         let endpoint = FlickrAPI.getHotTags()
-        let networkTask = apiInteractor.request(endpoint, type: Tags.self) { result in
+        return apiInteractor.request(endpoint, type: Tags.self) { result in
             switch result {
             case .success(let tags):
                 if tags.stat != "ok" {
@@ -22,7 +22,6 @@ class DefaultTagRepository: TagRepository {
                 completionHandler(.failure(error))
             }
         }
-        return networkTask
     }
     
     // MARK: - async methods
