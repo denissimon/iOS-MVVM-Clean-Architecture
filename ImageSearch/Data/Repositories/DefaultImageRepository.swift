@@ -12,10 +12,9 @@ class DefaultImageRepository: ImageRepository {
     
     private func searchImages(_ imageQuery: ImageQuery, completionHandler: @escaping (ImagesDataResult) -> Void) -> NetworkCancellable? {
         let endpoint = FlickrAPI.search(imageQuery)
-        let networkTask = apiInteractor.request(endpoint) { result in
+        return apiInteractor.request(endpoint) { result in
             completionHandler(result)
         }
-        return networkTask
     }
     
     // A pure transformation of the data (a pure function within the impure context)
@@ -57,10 +56,9 @@ class DefaultImageRepository: ImageRepository {
     }
     
     private func getImage(url: URL, completionHandler: @escaping (Data?) -> Void) -> NetworkCancellable? {
-        let networkTask = apiInteractor.fetchFile(url: url) { result in
+        apiInteractor.fetchFile(url: url) { result in
             completionHandler(result)
         }
-        return networkTask
     }
     
     private func saveImage(_ image: Image, searchId: String, sortId: Int, completionHandler: @escaping (Bool?) -> Void) {
