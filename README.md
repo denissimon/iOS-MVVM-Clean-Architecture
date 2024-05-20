@@ -28,6 +28,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
 - [Pure functional transformations][PureFunctionalTransformationsLink]
 - [Shared Kernel][SharedKernelLink], delegating entity behavior
+- [Codable][CodableLink]
 - [Alternative DTO approach][AlternativeDTOApproachLink]
 
 [MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Modules/ImagesFeature/ImageSearch
@@ -43,12 +44,13 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
 [PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Repositories/DefaultImageRepository.swift 
 [SharedKernelLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/SharedKernel.swift
+[CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Image.swift
 [AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
 ### Includes
 
-- Reusable [NetworkService][NetworkServiceLink] based on URLSession
-- Reusable [SQLite][SQLiteAdapterLink] wrapper around SQLite3
+- Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
+- Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
 - Unit tests for a number of components from all layers
 
@@ -95,6 +97,6 @@ HotTags module:
 
 ### Requirements
 
-iOS version support: 15.0+
+iOS version support: 15.0+. For app versions <= 1.2, iOS version support: 10.0+
 
 Xcode 13.0+, Swift 5.5+
