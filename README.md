@@ -24,7 +24,6 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [Clean Architecture][CleanArchitectureLink]
 - [Explicit Architecture][ExplicitArchitectureLink]
 - [Protocol-Oriented Programming][POPLink]
-- [async/await][AsyncAwaitLink] with the existing Transport Layer remaining unchanged
 - [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
 - [Pure functional transformations][PureFunctionalTransformationsLink]
 - [Shared Kernel][SharedKernelLink], delegating entity behavior
@@ -40,7 +39,6 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [ExplicitArchitectureLink]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together
 [POPLink]: https://www.swiftanytime.com/blog/protocol-oriented-programming-in-swift
-[AsyncAwaitLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Repositories
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
 [PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Repositories/DefaultImageRepository.swift 
 [SharedKernelLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/SharedKernel.swift
