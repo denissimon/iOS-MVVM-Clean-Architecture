@@ -16,7 +16,7 @@ class DefaultImageRepository: ImageRepository {
             let result = try await apiInteractor.request(endpoint)
             return .success(result)
         } catch {
-            return .failure(NetworkError(error: error, statusCode: nil, data: nil))
+            return .failure(NetworkError(error: error))
         }
     }
     
