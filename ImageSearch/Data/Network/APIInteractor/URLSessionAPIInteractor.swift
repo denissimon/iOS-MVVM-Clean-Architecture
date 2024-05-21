@@ -8,15 +8,27 @@ class URLSessionAPIInteractor: APIInteractor {
         self.urlSessionAdapter = networkService
     }
     
-    func request(_ endpoint: EndpointType, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
-        return urlSessionAdapter.request(endpoint, completion: completion)
+    func request(_ endpoint: EndpointType) async throws -> Data {
+        do {
+            return try await urlSessionAdapter.request(endpoint)
+        } catch {
+            throw NetworkError(error: error)
+        }
     }
     
-    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
-        return urlSessionAdapter.request(endpoint, type: type, completion: completion)
+    func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type) async throws -> T {
+        do {
+            return try await urlSessionAdapter.request(endpoint, type: type)
+        } catch {
+            throw NetworkError(error: error)
+        }
     }
     
-    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
-        return urlSessionAdapter.fetchFile(url: url, completion: completion)
+    func fetchFile(url: URL) async throws -> Data? {
+        do {
+            return try await urlSessionAdapter.fetchFile(url: url)
+        } catch {
+            return nil
+        }
     }
 }

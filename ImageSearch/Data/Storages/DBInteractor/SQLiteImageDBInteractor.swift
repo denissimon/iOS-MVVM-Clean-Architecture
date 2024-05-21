@@ -38,43 +38,37 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type, completion: @escaping (Bool?) -> Void) {
-        guard let sqliteAdapter = sqliteAdapter else {
-            completion(nil)
-            return
-        }
+    func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type) async -> Bool? {
+        guard let sqliteAdapter = sqliteAdapter else { return nil }
+        
         let encoder = JSONEncoder()
         if let encodedData = try? encoder.encode(image) {
             if let jsonString = String(data: encodedData, encoding: .utf8) {
                 do {
                     let sql = "INSERT INTO \(imagesTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
                     let _ = try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
-                    completion(true)
+                    return true
                 } catch {
                     print("SQLite:", error)
-                    completion(nil)
+                    return nil
                 }
             } else {
-                completion(nil)
+                return nil
             }
         } else {
-            completion(nil)
+            return nil
         }
     }
     
-    func getImages<T: Codable>(searchId: String, type: T.Type, completion: @escaping ([T]?) -> Void) {
-        guard let sqliteAdapter = sqliteAdapter else {
-            completion(nil)
-            return
-        }
+    func getImages<T: Codable>(searchId: String, type: T.Type) async -> [T]? {
+        guard let sqliteAdapter = sqliteAdapter else { return nil }
         
         do {
             var images: [T] = []
             
             let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? ORDER BY sortId ASC;"
             guard let results = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId]) else {
-                completion(images)
-                return
+                return nil
             }
             
             for row in results {
@@ -84,47 +78,44 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
                     if let decoded = try? decoder.decode(type, from: jsonData) {
                         images.append(decoded)
                     } else {
-                        completion(nil)
+                        return nil
                     }
                 } else {
-                    completion(nil)
+                    return nil
                 }
             }
-            completion(images)
+            return images
         } catch {
             print("SQLite:", error)
-            completion(nil)
+            return nil
         }
     }
     
     /* Another way (albeit more computationally heavy) to perform this check is as follows:
-     func checkImageCount(searchId: String, completion: @escaping (Int?) -> Void) {
+     func checkImagesAreCached(searchId: String) async -> Int? {
         ...
         let sql = "SELECT count(*) FROM \(imagesTable.name) WHERE searchId = ?;"
-        let rowCount = try sqliteAdapter.getRowCountWithCondition(sql: sql, params: [searchId])
-        completion(rowCount) // Returns 0 if images with the given searchId are not already cached
+        let rowCount = try? sqliteAdapter.getRowCountWithCondition(sql: sql, params: [searchId])
+        return rowCount // Returns 0 if images with the given searchId are not already cached
         ...
      }
      */
-    func checkImagesAreCached(searchId: String, completion: @escaping (Bool?) -> Void) {
-        guard let sqliteAdapter = sqliteAdapter else {
-            completion(nil)
-            return
-        }
+    func checkImagesAreCached(searchId: String) async -> Bool? {
+        guard let sqliteAdapter = sqliteAdapter else { return nil }
+        
         let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? LIMIT 1"
         do {
             if let _ = try sqliteAdapter.getRow(from: imagesTable, sql: sql, params: [searchId]) {
-                completion(true)
-            } else {
-                completion(false)
+                return true
             }
+            return false
         } catch {
             print("SQLite:", error)
-            completion(nil)
+            return nil
         }
     }
     
-    func deleteAllImages() {
+    func deleteAllImages() async {
         guard let sqliteAdapter = sqliteAdapter else { return }
         do {
             try sqliteAdapter.deleteAllRows(in: imagesTable)
