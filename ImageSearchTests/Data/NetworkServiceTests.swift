@@ -78,24 +78,411 @@ class NetworkServiceTests: XCTestCase {
         }
     }
     
+    // MARK: - async/await API
+    
     // JSONPlaceholderAPI.getPost:
     
-    func testRequestGet() {
+    func testRequestGet_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestGet")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let resultData = try await networkService.request(JSONPlaceholderAPI.getPost(id: 10))
+            XCTAssertEqual(resultData.count, 217)
+            promise.fulfill()
+        } catch {
+            XCTFail()
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestGet_withDecodedResult_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestGet_withDecodedResult")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.getPost(id: 10), type: Post.self)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 10)
+            XCTAssertEqual(returnedPost.title, "optio molestias id quia eum")
+            XCTAssertEqual(returnedPost.body, "quo et expedita modi cum officia vel magni\ndoloribus qui repudiandae\nvero nisi sit\nquos veniam quod sed accusamus veritatis error")
+            XCTAssertEqual(returnedPost.userId, 1)
+            promise.fulfill()
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testRequestGet: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestGet_withDecodedResult_andErrorReturned_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestGet_withDecodedResult_andErrorReturned")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let _ = try await networkService.request(JSONPlaceholderAPI.getPost(id: 102), type: Post.self)
+            XCTFail() // shouldn't happen
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testRequestGet: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+                
+                XCTAssertEqual(errorDescription, nil)
+                XCTAssertEqual(errorStatusCode, 404)
+                XCTAssertEqual(errorDataStr, "{}")
+                promise.fulfill()
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestWithStatusCodeGet_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestWithStatusCodeGet")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let result = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 1))
+            XCTAssertEqual(result.result.count, 292)
+            XCTAssertEqual(result.statusCode, 200)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestWithStatusCodeGet_withErrorReturned_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let _ = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102))
+            XCTFail() // shouldn't happen
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testRequestWithStatusCodeGet: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+                
+                XCTAssertEqual(errorDescription, nil)
+                XCTAssertEqual(errorStatusCode, 404)
+                XCTAssertEqual(errorDataStr, "{}")
+                promise.fulfill()
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    // JSONPlaceholderAPI.createPost:
+    
+    func testRequestPost_withDecodedResult_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestPost_withDecodedResult")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let post = Post(id: nil, title: "title", body: "body", userId: 2)
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 101)
+            XCTAssertEqual(returnedPost.title, "title")
+            XCTAssertEqual(returnedPost.body, "body")
+            XCTAssertEqual(returnedPost.userId, 2)
+            promise.fulfill()
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testRequestPost: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestPost_withDecodedResult_andUploadTask_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestPost_withDecodedResult_andUploadTask")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let post = Post(id: nil, title: "title", body: "body", userId: 2)
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self, uploadTask: true)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 101)
+            XCTAssertEqual(returnedPost.title, "title")
+            XCTAssertEqual(returnedPost.body, "body")
+            XCTAssertEqual(returnedPost.userId, 2)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestWithStatusCodePost_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestWithStatusCodePost")
+        
+        let networkService = NetworkServiceTests.networkService
+        let post = Post(id: nil, title: "title", body: "body", userId: 2)
+        if let result = try? await networkService.requestWithStatusCode(JSONPlaceholderAPI.createPost(post)) {
+            XCTAssertEqual(result.result.count, 68)
+            XCTAssertEqual(result.statusCode, 201)
+            promise.fulfill()
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    // JSONPlaceholderAPI.updatePost:
+    
+    func testRequestPut_withDecodedResult_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestPut_withDecodedResult")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 1)
+            XCTAssertEqual(returnedPost.title, "foo")
+            XCTAssertEqual(returnedPost.body, "bar")
+            XCTAssertEqual(returnedPost.userId, 1)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testRequestPut_withDecodedResult_andUploadTask_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestPut_withDecodedResult_andUploadTask")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self, uploadTask: true)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 1)
+            XCTAssertEqual(returnedPost.title, "foo")
+            XCTAssertEqual(returnedPost.body, "bar")
+            XCTAssertEqual(returnedPost.userId, 1)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    // JSONPlaceholderAPI.patchPost:
+    
+    func testRequestPatch_withDecodedResult_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestPatch_withDecodedResult")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let returnedPost = try await networkService.request(JSONPlaceholderAPI.patchPost(id: 1, title: "foo"), type: Post.self)
+            dump(returnedPost)
+            XCTAssertEqual(returnedPost.id, 1)
+            XCTAssertEqual(returnedPost.title, "foo")
+            XCTAssertEqual(returnedPost.body, "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto")
+            XCTAssertEqual(returnedPost.userId, 1)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    // Fetch or download the file from the provided URL:
+    
+    func testFetchFile_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testFetchFile")
+        
+        let networkService = NetworkServiceTests.networkService
+        let data = try? await networkService.fetchFile(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!)
+        XCTAssertNotNil(data)
+        promise.fulfill()
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testFetchFileWithStatusCode_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testFetchFileWithStatusCode")
+        
+        let networkService = NetworkServiceTests.networkService
+        if let data = try? await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) {
+            XCTAssertNotNil(data.result)
+            XCTAssertEqual(data.statusCode, 200)
+            promise.fulfill()
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testFetchFileWithStatusCode_whenInvalidURL_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testFetchFileWithStatusCode_whenInvalidURL")
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let _ = try await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!)
+            XCTFail() // shouldn't happen
+        } catch {
+            let networkError = error as! NetworkError
+            XCTAssertEqual(networkError.statusCode, 404)
+            promise.fulfill()
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testDownloadFile_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testDownloadFile")
+        
+        let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
+        let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let destinationUrl = documentsUrl.appendingPathComponent(url.lastPathComponent)
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            guard try await networkService.downloadFile(url: url, to: destinationUrl) else {
+                XCTFail() // shouldn't happen
+                return
+            }
+            if FileManager().fileExists(atPath: destinationUrl.path) {
+                XCTAssertTrue(true)
+                promise.fulfill()
+            }
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testDownloadFile: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testDownloadFileWithStatusCode_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testDownloadFileWithStatusCode")
+        
+        let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
+        let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let destinationUrl = documentsUrl.appendingPathComponent(url.lastPathComponent)
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let result = try await networkService.downloadFileWithStatusCode(url: url, to: destinationUrl)
+            
+            XCTAssertEqual(result.result, true)
+            XCTAssertEqual(result.statusCode, 200)
+            
+            guard try await networkService.downloadFile(url: url, to: destinationUrl) else {
+                XCTFail() // shouldn't happen
+                return
+            }
+            if FileManager().fileExists(atPath: destinationUrl.path) {
+                XCTAssertTrue(true)
+                promise.fulfill()
+            }
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testDownloadFileWithStatusCode: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    func testDownloadFileWithStatusCode_whenInvalidURL_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testDownloadFileWithStatusCode_whenInvalidURL")
+        
+        let url = URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!
+        let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let destinationUrl = documentsUrl.appendingPathComponent(url.lastPathComponent)
+        
+        let networkService = NetworkServiceTests.networkService
+        do {
+            let _ = try await networkService.downloadFileWithStatusCode(url: url, to: destinationUrl)
+            XCTFail() // shouldn't happen
+        } catch {
+            switch error {
+            case is NetworkError:
+                let networkError = error as! NetworkError
+                XCTAssertEqual(networkError.statusCode, 404)
+                promise.fulfill()
+            default:
+                break
+            }
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
+    // MARK: - callbacks API
+    
+    // JSONPlaceholderAPI.getPost:
+    
+    func testRequestGet_callbacksAPI() {
         let promise = expectation(description: "testRequestGet")
         
         let networkService = NetworkServiceTests.networkService
         let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 10)) { result in
             if let resultData = try? result.get() {
                 XCTAssertEqual(resultData.count, 217)
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestGet_withDecodedResult() {
-        let promise = expectation(description: "testRequestGet")
+    func testRequestGet_withDecodedResult_callbacksAPI() {
+        let promise = expectation(description: "testRequestGet_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
         let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 10), type: Post.self) { result in
@@ -106,26 +493,26 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "optio molestias id quia eum")
                 XCTAssertEqual(returnedPost.body, "quo et expedita modi cum officia vel magni\ndoloribus qui repudiandae\nvero nisi sit\nquos veniam quod sed accusamus veritatis error")
                 XCTAssertEqual(returnedPost.userId, 1)
+                promise.fulfill()
             case .failure(let networkError):
                 let errorDescription = networkError.error?.localizedDescription
                 let errorStatusCode = networkError.statusCode
                 let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
                 print("testRequestGet: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestGet_withDecodedResult_andErrorReturned() {
-        let promise = expectation(description: "testRequestGet")
+    func testRequestGet_withDecodedResult_andErrorReturned_callbacksAPI() {
+        let promise = expectation(description: "testRequestGet_withDecodedResult_andErrorReturned")
         
         let networkService = NetworkServiceTests.networkService
         let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 102), type: Post.self) { result in
             switch result {
             case .success(_):
-                XCTFail() // shouldn't happen
+                break
             case .failure(let networkError):
                 let errorDescription = networkError.error?.localizedDescription
                 let errorStatusCode = networkError.statusCode
@@ -135,14 +522,14 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(errorDescription, nil)
                 XCTAssertEqual(errorStatusCode, 404)
                 XCTAssertEqual(errorDataStr, "{}")
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestWithStatusCodeGet() {
+    func testRequestWithStatusCodeGet_callbacksAPI() {
         let promise = expectation(description: "testRequestWithStatusCodeGet")
         
         let networkService = NetworkServiceTests.networkService
@@ -150,23 +537,32 @@ class NetworkServiceTests: XCTestCase {
             if let resultData = try? result.get() {
                 XCTAssertEqual(resultData.result!.count, 292)
                 XCTAssertEqual(resultData.statusCode, 200)
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestWithStatusCodeGet_withErrorReturned() {
-        let promise = expectation(description: "testRequestWithStatusCodeGet")
+    func testRequestWithStatusCodeGet_withErrorReturned_callbacksAPI() {
+        let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned")
         
         let networkService = NetworkServiceTests.networkService
         let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102)) { result in
-            if let resultData = try? result.get() {
-                XCTAssertEqual(String(data: resultData.result!, encoding: .utf8), "{}")
-                XCTAssertEqual(resultData.statusCode, 404)
+            switch result {
+            case .success(_):
+                break
+            case .failure(let networkError):
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testRequestWithStatusCodeGet: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+                
+                XCTAssertEqual(errorDescription, nil)
+                XCTAssertEqual(errorStatusCode, 404)
+                XCTAssertEqual(errorDataStr, "{}")
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
@@ -174,8 +570,8 @@ class NetworkServiceTests: XCTestCase {
     
     // JSONPlaceholderAPI.createPost:
     
-    func testRequestPost_withDecodedResult() {
-        let promise = expectation(description: "testRequestPost")
+    func testRequestPost_withDecodedResult_callbacksAPI() {
+        let promise = expectation(description: "testRequestPost_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
@@ -187,20 +583,20 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "title")
                 XCTAssertEqual(returnedPost.body, "body")
                 XCTAssertEqual(returnedPost.userId, 2)
+                promise.fulfill()
             case .failure(let networkError):
                 let errorDescription = networkError.error?.localizedDescription
                 let errorStatusCode = networkError.statusCode
                 let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
                 print("testRequestPost: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestPost_withDecodedResult_andUploadTask() {
-        let promise = expectation(description: "testRequestPost")
+    func testRequestPost_withDecodedResult_andUploadTask_callbacksAPI() {
+        let promise = expectation(description: "testRequestPost_withDecodedResult_andUploadTask")
         
         let networkService = NetworkServiceTests.networkService
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
@@ -212,16 +608,16 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "title")
                 XCTAssertEqual(returnedPost.body, "body")
                 XCTAssertEqual(returnedPost.userId, 2)
+                promise.fulfill()
             case .failure(_):
-                XCTFail() // shouldn't happen
+                break
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestWithStatusCodePost() {
+    func testRequestWithStatusCodePost_callbacksAPI() {
         let promise = expectation(description: "testRequestWithStatusCodePost")
         
         let networkService = NetworkServiceTests.networkService
@@ -230,8 +626,8 @@ class NetworkServiceTests: XCTestCase {
             if let resultData = try? result.get() {
                 XCTAssertEqual(resultData.result!.count, 68)
                 XCTAssertEqual(resultData.statusCode, 201)
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
@@ -239,8 +635,8 @@ class NetworkServiceTests: XCTestCase {
     
     // JSONPlaceholderAPI.updatePost:
     
-    func testRequestPut_withDecodedResult() {
-        let promise = expectation(description: "testRequestPut")
+    func testRequestPut_withDecodedResult_callbacksAPI() {
+        let promise = expectation(description: "testRequestPut_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
         let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
@@ -252,17 +648,17 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "foo")
                 XCTAssertEqual(returnedPost.body, "bar")
                 XCTAssertEqual(returnedPost.userId, 1)
+                promise.fulfill()
             case .failure(_):
-                XCTFail() // shouldn't happen
+                break
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testRequestPut_withDecodedResult_andUploadTask() {
-        let promise = expectation(description: "testRequestPut")
+    func testRequestPut_withDecodedResult_andUploadTask_callbacksAPI() {
+        let promise = expectation(description: "testRequestPut_withDecodedResult_andUploadTask")
         
         let networkService = NetworkServiceTests.networkService
         let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
@@ -274,10 +670,10 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "foo")
                 XCTAssertEqual(returnedPost.body, "bar")
                 XCTAssertEqual(returnedPost.userId, 1)
+                promise.fulfill()
             case .failure(_):
-                XCTFail() // shouldn't happen
+                break
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
@@ -285,8 +681,8 @@ class NetworkServiceTests: XCTestCase {
     
     // JSONPlaceholderAPI.patchPost:
     
-    func testRequestPatch_withDecodedResult() {
-        let promise = expectation(description: "testRequestPatch")
+    func testRequestPatch_withDecodedResult_callbacksAPI() {
+        let promise = expectation(description: "testRequestPatch_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
         let _ = networkService.request(JSONPlaceholderAPI.patchPost(id: 1, title: "foo"), type: Post.self) { result in
@@ -297,10 +693,10 @@ class NetworkServiceTests: XCTestCase {
                 XCTAssertEqual(returnedPost.title, "foo")
                 XCTAssertEqual(returnedPost.body, "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto")
                 XCTAssertEqual(returnedPost.userId, 1)
+                promise.fulfill()
             case .failure(_):
-                XCTFail() // shouldn't happen
+                break
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
@@ -308,45 +704,66 @@ class NetworkServiceTests: XCTestCase {
     
     // Fetch or download the file from the provided URL:
     
-    func testFetchFile() {
+    func testFetchFile_callbacksAPI() {
         let promise = expectation(description: "testFetchFile")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { data in
-            XCTAssertNotNil(data)
-            promise.fulfill()
+        let _ = networkService.fetchFile(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { result in
+            switch result {
+            case .success(let data):
+                XCTAssertNotNil(data)
+                promise.fulfill()
+            case .failure(_):
+                break
+            }
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testFetchFileWithStatusCode() {
+    func testFetchFileWithStatusCode_callbacksAPI() {
         let promise = expectation(description: "testFetchFileWithStatusCode")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { data in
-            XCTAssertNotNil(data.result)
-            XCTAssertEqual(data.statusCode, 200)
-            promise.fulfill()
+        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { result in
+            switch result {
+            case .success(let data):
+                XCTAssertNotNil(data.result)
+                XCTAssertEqual(data.statusCode, 200)
+                promise.fulfill()
+            case .failure(_):
+                break
+            }
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testFetchFileWithStatusCode_whenInvalidURL() {
-        let promise = expectation(description: "testFetchFileWithStatusCode")
+    func testFetchFileWithStatusCode_whenInvalidURL_callbacksAPI() {
+        let promise = expectation(description: "testFetchFileWithStatusCode_whenInvalidURL")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { data in
-            XCTAssertNil(data.result)
-            XCTAssertEqual(data.statusCode, 404)
-            promise.fulfill()
+        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { result in
+            switch result {
+            case .success(_):
+                break
+            case .failure(let networkError):
+                let errorDescription = networkError.error?.localizedDescription
+                let errorStatusCode = networkError.statusCode
+                let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
+                print("testFetchFileWithStatusCode: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
+                
+                XCTAssertEqual(errorDescription, nil)
+                XCTAssertEqual(errorStatusCode, 404)
+                XCTAssertEqual(errorDataStr, "")
+                promise.fulfill()
+            }
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testDownloadFile() {
+    func testDownloadFile_callbacksAPI() {
         let promise = expectation(description: "testDownloadFile")
         
         let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
@@ -361,6 +778,7 @@ class NetworkServiceTests: XCTestCase {
                 
                 if FileManager().fileExists(atPath: destinationUrl.path) {
                     XCTAssertTrue(true)
+                    promise.fulfill()
                 } else {
                     XCTFail() // shouldn't happen
                 }
@@ -370,13 +788,12 @@ class NetworkServiceTests: XCTestCase {
                 let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
                 print("testDownloadFile: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testDownloadFileWithStatusCode() {
+    func testDownloadFileWithStatusCode_callbacksAPI() {
         let promise = expectation(description: "testDownloadFileWithStatusCode")
         
         let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
@@ -392,6 +809,7 @@ class NetworkServiceTests: XCTestCase {
                 
                 if FileManager().fileExists(atPath: destinationUrl.path) {
                     XCTAssertTrue(true)
+                    promise.fulfill()
                 } else {
                     XCTFail() // shouldn't happen
                 }
@@ -401,14 +819,13 @@ class NetworkServiceTests: XCTestCase {
                 let errorDataStr = String(data: networkError.data ?? Data(), encoding: .utf8)!
                 print("testDownloadFileWithStatusCode: \(String(describing: errorDescription)), \(String(describing: errorStatusCode)), \(errorDataStr)")
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
     }
     
-    func testDownloadFileWithStatusCode_whenInvalidURL() {
-        let promise = expectation(description: "testDownloadFileWithStatusCode")
+    func testDownloadFileWithStatusCode_whenInvalidURL_callbacksAPI() {
+        let promise = expectation(description: "testDownloadFileWithStatusCode_whenInvalidURL")
         
         let url = URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!
         let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -421,8 +838,8 @@ class NetworkServiceTests: XCTestCase {
                 break
             case .failure(let networkError):
                 XCTAssertEqual(networkError.statusCode, 404)
+                promise.fulfill()
             }
-            promise.fulfill()
         }
         
         wait(for: [promise], timeout: 5)
