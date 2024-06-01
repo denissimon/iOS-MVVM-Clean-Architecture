@@ -31,12 +31,12 @@ protocol NetworkServiceCallbacksType {
     
     func request(_ endpoint: EndpointType, uploadTask: Bool, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
-    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable?
+    func fetchFile(url: URL, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
     func downloadFile(url: URL, to localUrl: URL, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable?
     
     func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
     func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
-    func fetchFileWithStatusCode(url: URL, completion: @escaping ((result: Data?, statusCode: Int?)) -> Void) -> NetworkCancellable?
+    func fetchFileWithStatusCode(url: URL, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
     func downloadFileWithStatusCode(url: URL, to localUrl: URL, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
 }
 
@@ -56,6 +56,14 @@ class NetworkService: NetworkServiceType {
         #endif
     }
     
+    @discardableResult
+    private func checkStatusCode(_ statusCode: Int?, data: Data? = nil) throws -> Bool {
+        guard statusCode != nil, !(statusCode! >= 400 && statusCode! <= 599) else {
+            throw NetworkError(statusCode: statusCode, data: data)
+        }
+        return true
+    }
+    
     // MARK: - async/await API
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
@@ -69,25 +77,31 @@ class NetworkService: NetworkServiceType {
         if uploadTask { msg += ", uploadTask"}
         msg += ", url: \(url)"
         
+        var responseData = Data()
+        var response = URLResponse()
+        
         switch uploadTask {
         case false:
             log(msg)
-            let (responseData, _) = try await urlSession.data(
+            (responseData, response) = try await urlSession.data(
                 for: request
             )
-            return responseData
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 throw NetworkError()
             }
             log(msg)
             request.httpBody = nil
-            let (responseData, _) = try await urlSession.upload(
+            (responseData, response) = try await urlSession.upload(
                 for: request,
                 from: httpBody
             )
-            return responseData
         }
+        
+        let httpResponse = response as? HTTPURLResponse
+        try checkStatusCode(httpResponse?.statusCode, data: responseData)
+        
+        return responseData
     }
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
@@ -101,48 +115,46 @@ class NetworkService: NetworkServiceType {
         if uploadTask { msg += ", uploadTask"}
         msg += ", url: \(url)"
         
+        var responseData = Data()
+        var response = URLResponse()
+        
         switch uploadTask {
         case false:
             log(msg)
-            let (responseData, response) = try await urlSession.data(
+            (responseData, response) = try await urlSession.data(
                 for: request
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
-                throw NetworkError(statusCode: statusCode, data: responseData)
-            }
-            
-            return decoded
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 throw NetworkError()
             }
             log(msg)
             request.httpBody = nil
-            let (responseData, response) = try await urlSession.upload(
+            (responseData, response) = try await urlSession.upload(
                 for: request,
                 from: httpBody
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
-                throw NetworkError(statusCode: statusCode, data: responseData)
-            }
-            
-            return decoded
         }
+        
+        let httpResponse = response as? HTTPURLResponse
+        let statusCode = httpResponse?.statusCode
+        try checkStatusCode(statusCode, data: responseData)
+        
+        guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
+            throw NetworkError(statusCode: statusCode, data: responseData)
+        }
+        
+        return decoded
     }
     
     /// Fetches a file into memory
     func fetchFile(url: URL) async throws -> Data? {
         log("\nNetworkService fetchFile: \(url)")
         
-        let (responseData, _) = try await urlSession.data(from: url)
+        let (responseData, response) = try await urlSession.data(from: url)
+        
+        let httpResponse = response as? HTTPURLResponse
+        try checkStatusCode(httpResponse?.statusCode, data: responseData)
         
         guard !responseData.isEmpty else {
             return nil
@@ -159,10 +171,7 @@ class NetworkService: NetworkServiceType {
         
         let httpResponse = response as? HTTPURLResponse
         let statusCode = httpResponse?.statusCode
-        
-        if statusCode == 404 {
-            throw NetworkError(statusCode: statusCode)
-        }
+        try checkStatusCode(statusCode)
         
         do {
             if !FileManager().fileExists(atPath: localUrl.path) {
@@ -185,33 +194,32 @@ class NetworkService: NetworkServiceType {
         if uploadTask { msg += ", uploadTask"}
         msg += ", url: \(url)"
         
+        var responseData = Data()
+        var response = URLResponse()
+        
         switch uploadTask {
         case false:
             log(msg)
-            let (responseData, response) = try await urlSession.data(
+            (responseData, response) = try await urlSession.data(
                 for: request
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            return (responseData, statusCode)
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 throw NetworkError()
             }
             log(msg)
             request.httpBody = nil
-            let (responseData, response) = try await urlSession.upload(
+            (responseData, response) = try await urlSession.upload(
                 for: request,
                 from: httpBody
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            return (responseData, statusCode)
         }
+        
+        let httpResponse = response as? HTTPURLResponse
+        let statusCode = httpResponse?.statusCode
+        try checkStatusCode(statusCode, data: responseData)
+        
+        return (responseData, statusCode)
     }
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
@@ -225,41 +233,36 @@ class NetworkService: NetworkServiceType {
         if uploadTask { msg += ", uploadTask"}
         msg += ", url: \(url)"
         
+        var responseData = Data()
+        var response = URLResponse()
+        
         switch uploadTask {
         case false:
             log(msg)
-            let (responseData, response) = try await urlSession.data(
+            (responseData, response) = try await urlSession.data(
                 for: request
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
-                throw NetworkError(statusCode: statusCode, data: responseData)
-            }
-            
-            return (decoded, statusCode)
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
                 throw NetworkError()
             }
             log(msg)
             request.httpBody = nil
-            let (responseData, response) = try await urlSession.upload(
+            (responseData, response) = try await urlSession.upload(
                 for: request,
                 from: httpBody
             )
-            
-            let httpResponse = response as? HTTPURLResponse
-            let statusCode = httpResponse?.statusCode
-            
-            guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
-                throw NetworkError(statusCode: statusCode, data: responseData)
-            }
-            
-            return (decoded, statusCode)
         }
+        
+        let httpResponse = response as? HTTPURLResponse
+        let statusCode = httpResponse?.statusCode
+        try checkStatusCode(statusCode, data: responseData)
+        
+        guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
+            throw NetworkError(statusCode: statusCode, data: responseData)
+        }
+        
+        return (decoded, statusCode)
     }
     
     /// Fetches a file into memory
@@ -267,8 +270,10 @@ class NetworkService: NetworkServiceType {
         log("\nNetworkService fetchFileWithStatusCode: \(url)")
         
         let (responseData, response) = try await urlSession.data(from: url)
+        
         let httpResponse = response as? HTTPURLResponse
         let statusCode = httpResponse?.statusCode
+        try checkStatusCode(statusCode, data: responseData)
         
         guard !responseData.isEmpty else {
             return (nil, statusCode)
@@ -286,10 +291,7 @@ class NetworkService: NetworkServiceType {
         
         let httpResponse = response as? HTTPURLResponse
         let statusCode = httpResponse?.statusCode
-        
-        if statusCode == 404 {
-            throw NetworkError(statusCode: statusCode)
-        }
+        try checkStatusCode(statusCode)
         
         do {
             if !FileManager().fileExists(atPath: localUrl.path) {
@@ -320,12 +322,12 @@ class NetworkService: NetworkServiceType {
         case false:
             log(msg)
             let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
-                if error == nil {
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     completion(.success(data))
                     return
                 }
-                let response = response as? HTTPURLResponse
-                let statusCode = response?.statusCode
                 completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
             }
             
@@ -340,12 +342,12 @@ class NetworkService: NetworkServiceType {
             request.httpBody = nil
             
             let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
-                if error == nil {
+                let response = response as? HTTPURLResponse
+                let statusCode = response?.statusCode
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     completion(.success(data))
                     return
                 }
-                let response = response as? HTTPURLResponse
-                let statusCode = response?.statusCode
                 completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
             }
             
@@ -373,7 +375,7 @@ class NetworkService: NetworkServiceType {
             let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
@@ -397,7 +399,7 @@ class NetworkService: NetworkServiceType {
             let uploadTask = urlSession.uploadTask(with: request, from: httpBody) { (data, response, error) in
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
@@ -414,16 +416,22 @@ class NetworkService: NetworkServiceType {
     }
     
     /// Fetches a file into memory
-    func fetchFile(url: URL, completion: @escaping (Data?) -> Void) -> NetworkCancellable? {
+    func fetchFile(url: URL, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
         log("\nNetworkService fetchFile: \(url)")
         
-        let dataTask = urlSession.dataTask(with: request) { (data, _, error) in
-            guard let data = data, !data.isEmpty, error == nil else {
-                completion(nil)
+        let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
+            let response = response as? HTTPURLResponse
+            let statusCode = response?.statusCode
+            guard error == nil, (try? self.checkStatusCode(statusCode)) != nil else {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
                 return
             }
-            completion(data)
+            guard let data = data, !data.isEmpty else {
+                completion(.success(nil))
+                return
+            }
+            completion(.success(data))
         }
         
         dataTask.resume()
@@ -440,10 +448,12 @@ class NetworkService: NetworkServiceType {
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            guard let tempLocalUrl = tempLocalUrl, error == nil, statusCode != 404 else {
+            
+            guard let tempLocalUrl = tempLocalUrl, error == nil, (try? self.checkStatusCode(statusCode)) != nil else {
                 completion(.failure(NetworkError(error: error, statusCode: statusCode)))
                 return
             }
+            
             do {
                 if !FileManager().fileExists(atPath: localUrl.path) {
                     try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
@@ -479,7 +489,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     completion(.success((data, statusCode)))
                     return
                 }
@@ -501,7 +511,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     completion(.success((data, statusCode)))
                     return
                 }
@@ -534,7 +544,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
@@ -560,7 +570,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 
-                if error == nil {
+                if error == nil, (try? self.checkStatusCode(statusCode)) != nil {
                     guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
@@ -578,20 +588,22 @@ class NetworkService: NetworkServiceType {
     }
     
     /// Fetches a file into memory
-    func fetchFileWithStatusCode(url: URL, completion: @escaping ((result: Data?, statusCode: Int?)) -> Void) -> NetworkCancellable? {
+    func fetchFileWithStatusCode(url: URL, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         let request = RequestFactory.request(url: url, method: .GET, params: nil)
         log("\nNetworkService fetchFileWithStatusCode: \(url)")
      
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            
-            guard let data = data, !data.isEmpty, error == nil else {
-                completion((nil, statusCode))
+            guard error == nil, (try? self.checkStatusCode(statusCode)) != nil else {
+                completion(.failure(NetworkError(error: error, statusCode: statusCode, data: data)))
                 return
             }
-            
-            completion((data, statusCode))
+            guard let data = data, !data.isEmpty else {
+                completion(.success((nil, statusCode)))
+                return
+            }
+            completion(.success((data, statusCode)))
         }
         
         dataTask.resume()
@@ -608,10 +620,12 @@ class NetworkService: NetworkServiceType {
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
             let statusCode = response?.statusCode
-            guard let tempLocalUrl = tempLocalUrl, error == nil, statusCode != 404 else {
+            
+            guard let tempLocalUrl = tempLocalUrl, error == nil, (try? self.checkStatusCode(statusCode)) != nil else {
                 completion(.failure(NetworkError(error: error, statusCode: statusCode)))
                 return
             }
+            
             do {
                 if !FileManager().fileExists(atPath: localUrl.path) {
                     try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
