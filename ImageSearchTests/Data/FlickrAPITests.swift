@@ -24,41 +24,41 @@ class FlickrAPITests: XCTestCase {
             self.responseData = responseData
         }
         
-        func request(_ endpoint: EndpointType, uploadTask: Bool = false) async throws -> Data {
+        func request(_ endpoint: EndpointType, config: RequestConfig? = nil) async throws -> Data {
             responseData
         }
         
-        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false) async throws -> T {
+        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, config: RequestConfig? = nil) async throws -> T {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 throw NetworkError()
             }
             return decoded
         }
         
-        func fetchFile(url: URL) async throws -> Data? {
+        func fetchFile(url: URL, config: RequestConfig? = nil) async throws -> Data? {
             "image".data(using: .utf8)
         }
         
-        func downloadFile(url: URL, to localUrl: URL) async throws -> Bool {
+        func downloadFile(url: URL, to localUrl: URL, config: RequestConfig? = nil) async throws -> Bool {
             true
         }
         
-        func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool = false) async throws -> (result: Data, statusCode: Int?) {
+        func requestWithStatusCode(_ endpoint: EndpointType, config: RequestConfig? = nil) async throws -> (result: Data, statusCode: Int?) {
             (responseData, 200)
         }
 
-        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false) async throws -> (result: T, statusCode: Int?) {
+        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, config: RequestConfig? = nil) async throws -> (result: T, statusCode: Int?) {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 throw NetworkError()
             }
             return (decoded, 200)
         }
         
-        func fetchFileWithStatusCode(url: URL) async throws -> (result: Data?, statusCode: Int?) {
+        func fetchFileWithStatusCode(url: URL, config: RequestConfig? = nil) async throws -> (result: Data?, statusCode: Int?) {
             ("image".data(using: .utf8), 200)
         }
         
-        func downloadFileWithStatusCode(url: URL, to localUrl: URL) async throws -> (result: Bool, statusCode: Int?) {
+        func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig? = nil) async throws -> (result: Bool, statusCode: Int?) {
             (true, 200)
         }
     }
@@ -74,12 +74,12 @@ class FlickrAPITests: XCTestCase {
             self.responseData = responseData
         }
         
-        func request(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
+        func request(_ endpoint: EndpointType, config: RequestConfig? = nil, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success(responseData))
             return nil
         }
         
-        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+        func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type, config: RequestConfig? = nil, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 completion(.failure(NetworkError()))
                 return nil
@@ -88,22 +88,22 @@ class FlickrAPITests: XCTestCase {
             return nil
         }
         
-        func fetchFile(url: URL, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
+        func fetchFile(url: URL, config: RequestConfig? = nil, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success("image".data(using: .utf8)))
             return nil
         }
         
-        func downloadFile(url: URL, to localUrl: URL, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
+        func downloadFile(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success(true))
             return nil
         }
         
-        func requestWithStatusCode(_ endpoint: EndpointType, uploadTask: Bool = false, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func requestWithStatusCode(_ endpoint: EndpointType, config: RequestConfig? = nil, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success((responseData, 200)))
             return nil
         }
 
-        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, uploadTask: Bool = false, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func requestWithStatusCode<T: Decodable>(_ endpoint: EndpointType, type: T.Type, config: RequestConfig? = nil, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
                 completion(.failure(NetworkError()))
                 return nil
@@ -112,12 +112,12 @@ class FlickrAPITests: XCTestCase {
             return nil
         }
         
-        func fetchFileWithStatusCode(url: URL, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func fetchFileWithStatusCode(url: URL, config: RequestConfig? = nil, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success(("image".data(using: .utf8), 200)))
             return nil
         }
         
-        func downloadFileWithStatusCode(url: URL, to localUrl: URL, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+        func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success((true, 200)))
             return nil
         }
@@ -181,7 +181,7 @@ class FlickrAPITests: XCTestCase {
         let promise = expectation(description: "testNetworkError_whenInvalidAPIKey")
         
         var endpoint = FlickrAPI.getHotTags()
-        endpoint.path = "?method=flickr.photos.search&api_key=123iuhg6754gi945&text=nice&per_page=20&format=json&nojsoncallback=1"
+        endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
         let networkService = NetworkService()
         
         do {
@@ -192,6 +192,7 @@ class FlickrAPITests: XCTestCase {
             switch error {
             case is NetworkError:
                 let error = error as! NetworkError
+                
                 if error.data != nil {
                     let dataStr = String(data: error.data!, encoding: .utf8)
                     XCTAssertEqual(dataStr, "{\"stat\":\"fail\",\"code\":100,\"message\":\"Invalid API Key (Key has invalid format)\"}")
@@ -210,9 +211,9 @@ class FlickrAPITests: XCTestCase {
         
         let networkService = NetworkService()
         do {
-            let data = try await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!)
-            XCTAssertNotNil(data.result)
-            XCTAssertEqual(data.statusCode, 200)
+            let response = try await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!)
+            XCTAssertNotNil(response.result)
+            XCTAssertEqual(response.statusCode, 200)
             promise.fulfill()
         } catch {
             XCTFail()
@@ -243,6 +244,22 @@ class FlickrAPITests: XCTestCase {
         await fulfillment(of: [promise], timeout: 5)
     }
     
+    func testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation")
+        
+        let networkService = NetworkService(autoValidation: false)
+        do {
+            let response = try await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!)
+            XCTAssertEqual(response.result, nil)
+            XCTAssertEqual(response.statusCode, 404)
+            promise.fulfill()
+        } catch {
+            XCTFail()
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
     // MARK: - callbacks API
     
     func testSearch_callbacksAPI() async {
@@ -251,8 +268,8 @@ class FlickrAPITests: XCTestCase {
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: expectedData)
         
         var resultData: Data? = Data()
-        let _ = networkServiceMock.request(endpoint) { result in
-            switch result {
+        let _ = networkServiceMock.request(endpoint) { response in
+            switch response {
             case .success(let data):
                 XCTAssertEqual(data, expectedData)
                 resultData = data
@@ -274,8 +291,8 @@ class FlickrAPITests: XCTestCase {
     func testGetHotTags_callbacksAPI() {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
-        let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
-            switch result {
+        let _ = networkServiceMock.request(endpoint, type: Tags.self) { response in
+            switch response {
             case .success(let tags):
                 if tags.stat != "ok" {
                     XCTFail()
@@ -292,8 +309,8 @@ class FlickrAPITests: XCTestCase {
     func testNetworkError_whenInvalidResponse_callbacksAPI() {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: "some_data".data(using: .utf8)!)
-        let _ = networkServiceMock.request(endpoint, type: Tags.self) { result in
-            switch result {
+        let _ = networkServiceMock.request(endpoint, type: Tags.self) { response in
+            switch response {
             case .success(_):
                 XCTFail()
             case .failure(let error):
@@ -308,8 +325,8 @@ class FlickrAPITests: XCTestCase {
         var endpoint = FlickrAPI.getHotTags()
         endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
         let networkService = NetworkService()
-        let _ = networkService.request(endpoint, type: Tags.self) { result in
-            switch result {
+        let _ = networkService.request(endpoint, type: Tags.self) { response in
+            switch response {
             case .success(_):
                 break
             case .failure(let error):
@@ -329,8 +346,8 @@ class FlickrAPITests: XCTestCase {
         let promise = expectation(description: "testFetchFile")
         
         let networkService = NetworkService()
-        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { result in
-            switch result {
+        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { response in
+            switch response {
             case .success(let data):
                 XCTAssertNotNil(data.result)
                 XCTAssertEqual(data.statusCode, 200)
@@ -347,14 +364,32 @@ class FlickrAPITests: XCTestCase {
         let promise = expectation(description: "testFetchFile_whenInvalidURL")
         
         let networkService = NetworkService()
-        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { result in
-            switch result {
+        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { response in
+            switch response {
             case .success(_):
                 break
             case .failure(let error):
                 XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
                 XCTAssertEqual(error.statusCode, 404)
                 promise.fulfill()
+            }
+        }
+        
+        wait(for: [promise], timeout: 5)
+    }
+    
+    func testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation_callbacksAPI() {
+        let promise = expectation(description: "testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation")
+        
+        let networkService = NetworkService(autoValidation: false)
+        let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { response in
+            switch response {
+            case .success(let result):
+                XCTAssertEqual(result.result, nil)
+                XCTAssertEqual(result.statusCode, 404)
+                promise.fulfill()
+            case .failure(_):
+                break
             }
         }
         
