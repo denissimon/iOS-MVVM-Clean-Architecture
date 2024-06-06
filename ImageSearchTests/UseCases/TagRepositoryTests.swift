@@ -11,10 +11,10 @@ class TagRepositoryTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<TagsType, NetworkError>
+        let result: Result<TagsType, AppError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, NetworkError>) {
+        init(result: Result<TagsType, AppError>) {
             self.result = result
         }
         
@@ -41,7 +41,7 @@ class TagRepositoryTests: XCTestCase {
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
-        let tagRepository = TagRepositoryMock(result: .failure(NetworkError()))
+        let tagRepository = TagRepositoryMock(result: .failure(AppError.default()))
         
         let tagsResult = await tagRepository.getHotTags()
         
