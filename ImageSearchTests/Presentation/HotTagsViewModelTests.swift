@@ -13,10 +13,10 @@ class HotTagsViewModelTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<TagsType, NetworkError>
+        let result: Result<TagsType, AppError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, NetworkError>) {
+        init(result: Result<TagsType, AppError>) {
             self.result = result
         }
         
@@ -77,7 +77,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testGetHotTags_whenResultIsFailure() async throws {
         let hotTagsViewModel: HotTagsViewModel!
         
-        let tagRepository = TagRepositoryMock(result: .failure(NetworkError.init(error: nil, statusCode: nil, data: nil)))
+        let tagRepository = TagRepositoryMock(result: .failure(AppError.default()))
         let didSelect = Event<ImageQuery>()
         hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
         bind(hotTagsViewModel)
