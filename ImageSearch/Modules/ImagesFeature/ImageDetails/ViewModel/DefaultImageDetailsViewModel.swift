@@ -46,12 +46,8 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     }
     
     private func showErrorToast(_ msg: String = "") {
-        if msg.isEmpty {
-            self.showToast.value = NSLocalizedString("An error has occurred", comment: "")
-        } else {
-            self.showToast.value = msg
-        }
-        self.activityIndicatorVisibility.value = false
+        showToast.value = !msg.isEmpty ? msg : NSLocalizedString("An error has occurred", comment: "")
+        activityIndicatorVisibility.value = false
     }
     
     func loadBigImage() {
