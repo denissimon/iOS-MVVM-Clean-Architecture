@@ -35,18 +35,18 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
         tableView.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] (data) in
+        viewModel.data.bind(self, queue: .main) { [weak self] data in
             guard let self = self else { return }
             self.dataSource?.updateData(data)
             self.tableView.reloadData()
         }
         
-        viewModel.showToast.bind(self, queue: .main) { [weak self] (message) in
+        viewModel.showToast.bind(self, queue: .main) { [weak self] message in
             guard !message.isEmpty else { return }
             self?.makeToast(message: message)
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
             guard let self = self else { return }
             if value {
                 self.makeToastActivity()
