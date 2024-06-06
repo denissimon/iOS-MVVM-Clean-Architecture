@@ -1,6 +1,6 @@
 import Foundation
 
-// Result<Type, Error> can be used as another way to return the result in saveImage, getImages and checkImagesAreCached methods
+// Result<Type, AppError> can be used as another way to return the result in saveImage, getImages and checkImagesAreCached methods
 protocol ImageDBInteractor {
     func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type) async -> Bool?
     func getImages<T: Codable>(searchId: String, type: T.Type) async -> [T]?

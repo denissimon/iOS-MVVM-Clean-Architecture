@@ -73,7 +73,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = NSLocalizedString("Network error", comment: "")
+            self.showToast.value = NSLocalizedString("An error has occurred", comment: "")
         } else {
             self.showToast.value = msg
         }
@@ -105,7 +105,14 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 let imageQuery = ImageQuery(query: searchString)
                 thumbnailImages = try await self.imageService.searchImages(imageQuery, imagesLoadTask: self.imagesLoadTask)
             } catch {
-                self.showErrorToast(error.localizedDescription)
+                switch error {
+                case is AppError:
+                    let error = error as! AppError
+                    let msg = ((error.failureReason ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.showErrorToast(msg)
+                default:
+                    self.showErrorToast(error.localizedDescription)
+                }
                 return
             }
             

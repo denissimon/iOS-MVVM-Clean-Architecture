@@ -47,7 +47,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = NSLocalizedString("Network error", comment: "")
+            self.showToast.value = NSLocalizedString("An error has occurred", comment: "")
         } else {
             self.showToast.value = msg
         }

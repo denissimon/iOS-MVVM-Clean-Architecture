@@ -13,11 +13,14 @@ class DefaultTagRepository: TagRepository {
         do {
             let tags = try await apiInteractor.request(endpoint, type: Tags.self)
             if tags.stat != "ok" {
-                return .failure(NetworkError())
+                return .failure(AppError.server())
             }
             return .success(tags)
         } catch {
-            return .failure(NetworkError(error: error))
+            if error is AppError {
+                return .failure(error as! AppError)
+            }
+            return .failure(AppError.unexpected(error))
         }
     }
 }

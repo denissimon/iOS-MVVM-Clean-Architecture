@@ -58,7 +58,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     private func showErrorToast(_ msg: String = "") {
         if msg.isEmpty {
-            self.showToast.value = NSLocalizedString("Network error", comment: "")
+            self.showToast.value = NSLocalizedString("An error has occurred", comment: "")
         } else {
             self.showToast.value = msg
         }
@@ -73,30 +73,25 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
         self.activityIndicatorVisibility.value = true
                 
         hotTagsLoadTask = Task.detached { [weak self] in
+            guard let self = self else { return }
             
-            let result = await self?.tagRepository.getHotTags()
+            let result = await self.tagRepository.getHotTags()
             
             var allHotFlickrTags = [Tag]()
             
             switch result {
             case .success(let tags):
-                if let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag]) {
-                    allHotFlickrTags = receivedHotTags
-                }
-                self?.dataForWeekFlickrTags = allHotFlickrTags
-                self?.activityIndicatorVisibility.value = false
+                let receivedHotTags = self.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
+                allHotFlickrTags = receivedHotTags
+                self.dataForWeekFlickrTags = allHotFlickrTags
+                self.activityIndicatorVisibility.value = false
             case .failure(let error):
-                if error.error != nil {
-                    self?.showErrorToast(error.error!.localizedDescription)
-                } else {
-                    self?.showErrorToast()
-                }
-            case .none:
-                self?.showErrorToast()
+                let msg = ((error.failureReason ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+                self.showErrorToast(msg)
             }
             
-            if self?.selectedSegment == .week {
-                self?.data.value = allHotFlickrTags
+            if self.selectedSegment == .week {
+                self.data.value = allHotFlickrTags
             }
         }
     }
