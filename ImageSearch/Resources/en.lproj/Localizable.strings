@@ -8,9 +8,13 @@
 "Image Search" = "Image Search";
 "Search" = "Search";
 "No image to share" = "No image to share";
-"Network error" = "Network error";
+"An error has occurred" = "An error has occurred";
 "Empty search query" = "Empty search query";
 "Search query error" = "Search query error";
 "Hot Tags" = "Hot Tags";
 "Week" = "Week";
 "All Times" = "All Times";
+"A server error has occurred." = "A server error has occurred.";
+"The operation couldn’t be completed." = "The operation couldn’t be completed.";
+"Please try again later." = "Please try again later.";
+"Please check your Internet connection." = "Please check your Internet connection.";

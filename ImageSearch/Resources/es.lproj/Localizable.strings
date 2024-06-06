@@ -8,9 +8,13 @@
 "Image Search" = "Búsqueda de imágenes";
 "Search" = "Buscar";
 "No image to share" = "No hay imagen para compartir";
-"Network error" = "Error de red";
+"An error has occurred" = "Se ha producido un error";
 "Empty search query" = "Consulta de búsqueda vacía";
 "Search query error" = "Error de consulta de búsqueda";
 "Hot Tags" = "Etiquetas calientes";
 "Week" = "Semana";
 "All Times" = "Todos los horarios";
+"A server error has occurred." = "Ha ocurrido un error de servidor.";
+"The operation couldn’t be completed." = "La operación no se pudo completar.";
+"Please try again later." = "Por favor, inténtelo de nuevo más tarde.";
+"Please check your Internet connection." = "Por favor, compruebe su conexión a Internet.";
