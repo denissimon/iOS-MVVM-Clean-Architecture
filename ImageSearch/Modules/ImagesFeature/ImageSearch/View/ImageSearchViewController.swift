@@ -44,7 +44,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         searchBar.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] (data) in
+        viewModel.data.bind(self, queue: .main) { [weak self] data in
             guard let self = self else { return }
             self.dataSource?.updateData(data)
             self.collectionView.reloadData()
@@ -53,18 +53,18 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             }
         }
         
-        viewModel.sectionData.bind(self, queue: .main) { [weak self] (data) in
+        viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
             guard let self = self else { return }
             self.dataSource?.updateData(data.0)
             self.collectionView.reloadSections(data.1)
         }
         
-        viewModel.scrollTop.bind(self, queue: .main) { [weak self] (data) in
+        viewModel.scrollTop.bind(self, queue: .main) { [weak self] data in
             guard let self = self else { return }
             self.scrollTop()
         }
         
-        viewModel.showToast.bind(self, queue: .main) { [weak self] (message) in
+        viewModel.showToast.bind(self, queue: .main) { [weak self] message in
             guard !message.isEmpty else { return }
             self?.makeToast(message: message)
         }
@@ -75,7 +75,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             self.searchBar.resignFirstResponder()
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
             guard let self = self else { return }
             if value {
                 self.makeToastActivity()
@@ -88,7 +88,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             }
         }
         
-        viewModel.collectionViewTopConstraint.bind(self) { [weak self] (value) in
+        viewModel.collectionViewTopConstraint.bind(self) { [weak self] value in
             guard let self = self else { return }
             self.collectionViewTopConstraint.constant = CGFloat(value)
             UIView.animate(withDuration: 0.25) {
