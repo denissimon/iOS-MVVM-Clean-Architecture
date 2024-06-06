@@ -26,13 +26,13 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     
     private func setup() {
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] (bigImage) in
+        viewModel.data.bind(self, queue: .main) { [weak self] bigImage in
             if let bigImage = bigImage {
                 self?.imageView.image = bigImage.image
             }
         }
         
-        viewModel.shareImage.bind(self) { [weak self] (imageWrapperArray) in
+        viewModel.shareImage.bind(self) { [weak self] imageWrapperArray in
             guard let self = self else { return }
             let activityVC = UIActivityViewController(activityItems: imageWrapperArray.toUIImageArray(), applicationActivities: nil)
             activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
@@ -45,11 +45,13 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
             self?.makeToast(message: message)
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] (value) in
+        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
             guard let self = self else { return }
             if value {
+                self.activityIndicator.isHidden = false
                 self.activityIndicator.startAnimating()
             } else {
+                self.activityIndicator.isHidden = true
                 self.activityIndicator.stopAnimating()
             }
         }
