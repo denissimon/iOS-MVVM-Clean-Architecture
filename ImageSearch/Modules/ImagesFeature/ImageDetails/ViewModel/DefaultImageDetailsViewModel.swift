@@ -59,23 +59,23 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         activityIndicatorVisibility.value = true
         
         imageLoadTask = Task.detached { [weak self] in
-            guard let self = self else { return }
-            if let imageData = await self.imageService.getBigImage(for: self.image) {
+            guard let image = self?.image else { return }
+            if let imageData = await self?.imageService.getBigImage(for: image) {
                 guard !imageData.isEmpty else {
-                    self.showErrorToast()
+                    self?.showErrorToast()
                     return
                 }
                 if let bigImage = Supportive.toUIImage(from: imageData) {
                     let imageWrapper = ImageWrapper(image: bigImage)
-                    self.image = ImageBehavior.updateImage(self.image, newWrapper: imageWrapper, for: .big)
-                    self.data.value = imageWrapper
+                    self?.image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
+                    self?.data.value = imageWrapper
                     
-                    self.activityIndicatorVisibility.value = false
+                    self?.activityIndicatorVisibility.value = false
                 } else {
-                    self.showErrorToast()
+                    self?.showErrorToast()
                 }
             } else {
-                self.showErrorToast()
+                self?.showErrorToast()
             }
         }
     }
