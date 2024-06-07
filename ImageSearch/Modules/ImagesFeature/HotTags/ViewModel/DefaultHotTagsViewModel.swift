@@ -69,25 +69,26 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
         self.activityIndicatorVisibility.value = true
                 
         hotTagsLoadTask = Task.detached { [weak self] in
-            guard let self = self else { return }
             
-            let result = await self.tagRepository.getHotTags()
+            let result = await self?.tagRepository.getHotTags()
             
             var allHotFlickrTags = [Tag]()
             
             switch result {
             case .success(let tags):
-                let receivedHotTags = self.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
-                allHotFlickrTags = receivedHotTags
-                self.dataForWeekFlickrTags = allHotFlickrTags
-                self.activityIndicatorVisibility.value = false
+                let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
+                allHotFlickrTags = receivedHotTags ?? []
+                self?.dataForWeekFlickrTags = allHotFlickrTags
+                self?.activityIndicatorVisibility.value = false
             case .failure(let error):
                 let msg = ((error.failureReason ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
-                self.showErrorToast(msg)
+                self?.showErrorToast(msg)
+            case .none:
+                return
             }
             
-            if self.selectedSegment == .week {
-                self.data.value = allHotFlickrTags
+            if self?.selectedSegment == .week {
+                self?.data.value = allHotFlickrTags
             }
         }
     }
