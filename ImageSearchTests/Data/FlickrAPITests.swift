@@ -189,8 +189,7 @@ class FlickrAPITests: XCTestCase {
             XCTFail()
         } catch {
             XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
-            switch error {
-            case is NetworkError:
+            if error is NetworkError {
                 let error = error as! NetworkError
                 
                 if error.data != nil {
@@ -198,8 +197,6 @@ class FlickrAPITests: XCTestCase {
                     XCTAssertEqual(dataStr, "{\"stat\":\"fail\",\"code\":100,\"message\":\"Invalid API Key (Key has invalid format)\"}")
                     promise.fulfill()
                 }
-            default:
-                break
             }
         }
         
@@ -231,13 +228,10 @@ class FlickrAPITests: XCTestCase {
             XCTFail()
         } catch {
             XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
-            switch error {
-            case is NetworkError:
+            if error is NetworkError {
                 let error = error as! NetworkError
                 XCTAssertEqual(error.statusCode, 404)
                 promise.fulfill()
-            default:
-                break
             }
         }
         
