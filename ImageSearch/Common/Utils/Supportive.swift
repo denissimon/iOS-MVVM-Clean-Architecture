@@ -23,8 +23,8 @@ class DeepCopier {
 
 enum AppError: Error, LocalizedError {
     case `default`(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil, description: String? = nil)
-    case server(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
-    case unexpected(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
+    case server(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil, description: String? = nil)
+    case unexpected(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil, description: String? = nil)
     
     var failureReason: String? {
         switch self {
