@@ -5,10 +5,10 @@ actor DefaultImageCachingService: ImageCachingService {
     private let imageRepository: ImageRepository
     
     // To avoid reading from cache and updating UI while writing to cache may be in progress
-    var checkingInProgress: Task<Void, Never>? = nil
+    var cachingTask: Task<Void, Never>? = nil
     
     // To prevent images with the same searchId from being read again from the cache
-    var searchIdsToGetFromCache: Set<String> = []
+    var searchIdsFromCache: Set<String> = []
     
     let didProcess: Event<[ImageSearchResults]> = Event()
     
@@ -27,20 +27,20 @@ actor DefaultImageCachingService: ImageCachingService {
     // Called after each new search
     func cacheIfNecessary(_ data: [ImageSearchResults]) async {
         if data.count <= AppConfiguration.MemorySafety.cacheAfterSearches { return }
-        if checkingInProgress != nil { return }
+        if cachingTask != nil { return }
         
-        checkingInProgress = Task {
-            searchIdsToGetFromCache = []
+        cachingTask = Task {
+            searchIdsFromCache = []
             let dataPart1 = Array(data.prefix(AppConfiguration.MemorySafety.cacheAfterSearches))
             let dataPart2 = Array(data.suffix(data.count - AppConfiguration.MemorySafety.cacheAfterSearches))
             let processedPart2 = await processData(dataPart2)
             let newData = dataPart1 + processedPart2
             didProcess.notify(newData)
             try? await Task.sleep(nanoseconds: 500_000_000)
-            checkingInProgress = nil
+            cachingTask = nil
         }
         
-        await checkingInProgress!.value
+        await cachingTask!.value
     }
     
     private func processData(_ data: [ImageSearchResults]) async -> [ImageSearchResults] {
@@ -74,8 +74,8 @@ actor DefaultImageCachingService: ImageCachingService {
     }
     
     func getCachedImages(searchId: String) async -> [Image]? {
-        if !searchIdsToGetFromCache.contains(searchId) {
-            searchIdsToGetFromCache.insert(searchId)
+        if !searchIdsFromCache.contains(searchId) {
+            searchIdsFromCache.insert(searchId)
             if let images = await self.imageRepository.getImages(searchId: searchId) as? [Image] {
                 return images
             }
