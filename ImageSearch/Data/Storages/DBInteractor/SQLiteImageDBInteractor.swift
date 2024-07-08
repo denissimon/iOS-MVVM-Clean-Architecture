@@ -38,7 +38,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type) async -> Bool? {
+    func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type) -> Bool? {
         guard let sqliteAdapter = sqliteAdapter else { return nil }
         
         let encoder = JSONEncoder()
@@ -60,7 +60,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    func getImages<T: Codable>(searchId: String, type: T.Type) async -> [T]? {
+    func getImages<T: Codable>(searchId: String, type: T.Type) -> [T]? {
         guard let sqliteAdapter = sqliteAdapter else { return nil }
         
         do {
@@ -92,7 +92,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     }
     
     /* Another way (albeit more computationally heavy) to perform this check is as follows:
-     func checkImagesAreCached(searchId: String) async -> Int? {
+     func checkImagesAreCached(searchId: String) -> Int? {
         ...
         let sql = "SELECT count(*) FROM \(imagesTable.name) WHERE searchId = ?;"
         let rowCount = try? sqliteAdapter.getRowCountWithCondition(sql: sql, params: [searchId])
@@ -100,7 +100,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         ...
      }
      */
-    func checkImagesAreCached(searchId: String) async -> Bool? {
+    func checkImagesAreCached(searchId: String) -> Bool? {
         guard let sqliteAdapter = sqliteAdapter else { return nil }
         
         let sql = "SELECT * FROM \(imagesTable.name) WHERE searchId = ? LIMIT 1"
@@ -115,7 +115,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
-    func deleteAllImages() async {
+    func deleteAllImages() {
         guard let sqliteAdapter = sqliteAdapter else { return }
         do {
             try sqliteAdapter.deleteAllRows(in: imagesTable)

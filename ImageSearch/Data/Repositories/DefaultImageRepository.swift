@@ -60,18 +60,27 @@ class DefaultImageRepository: ImageRepository {
     }
     
     func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-        await imageDBInteractor.saveImage(image, searchId: searchId, sortId: sortId, type: Image.self)
+        await withCheckedContinuation { continuation in
+            let result = imageDBInteractor.saveImage(image, searchId: searchId, sortId: sortId, type: Image.self)
+            continuation.resume(returning: result)
+        }
     }
     
     func getImages(searchId: String) async -> [ImageType]? {
-        await imageDBInteractor.getImages(searchId: searchId, type: Image.self)
+        await withCheckedContinuation { continuation in
+            let result = imageDBInteractor.getImages(searchId: searchId, type: Image.self)
+            continuation.resume(returning: result)
+        }
     }
     
     func checkImagesAreCached(searchId: String) async -> Bool? {
-        await imageDBInteractor.checkImagesAreCached(searchId: searchId)
+        await withCheckedContinuation { continuation in
+            let result = imageDBInteractor.checkImagesAreCached(searchId: searchId)
+            continuation.resume(returning: result)
+        }
     }
     
     func deleteAllImages() async {
-        await imageDBInteractor.deleteAllImages()
+        imageDBInteractor.deleteAllImages()
     }
 }
