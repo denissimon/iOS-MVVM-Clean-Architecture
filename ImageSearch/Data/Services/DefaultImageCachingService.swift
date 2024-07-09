@@ -5,10 +5,10 @@ actor DefaultImageCachingService: ImageCachingService {
     private let imageRepository: ImageRepository
     
     // To avoid reading from cache and updating UI while writing to cache may be in progress
-    var cachingTask: Task<Void, Never>? = nil
+    private(set) var cachingTask: Task<Void, Never>? = nil
     
     // To prevent images with the same searchId from being read again from the cache
-    var searchIdsFromCache: Set<String> = []
+    private(set) var searchIdsFromCache: Set<String> = []
     
     let didProcess: Event<[ImageSearchResults]> = Event()
     
@@ -21,7 +21,7 @@ actor DefaultImageCachingService: ImageCachingService {
     
     // Clear the Image table at the app's start
     private func deleteAllImages() async {
-        await self.imageRepository.deleteAllImages()
+        await imageRepository.deleteAllImages()
     }
     
     // Called after each new search
@@ -44,7 +44,8 @@ actor DefaultImageCachingService: ImageCachingService {
     }
     
     private func processData(_ data: [ImageSearchResults]) async -> [ImageSearchResults] {
-        let processedData = await withTaskGroup(of: ImageSearchResults.self, returning: [ImageSearchResults].self) { taskGroup in
+        await withTaskGroup(of: ImageSearchResults.self, returning: [ImageSearchResults].self) { taskGroup in
+            
             for search in data {
                 taskGroup.addTask {
                     if search.searchResults.first?.thumbnail == nil {
@@ -55,8 +56,10 @@ actor DefaultImageCachingService: ImageCachingService {
                     }
                     for (index, image) in search.searchResults.enumerated(){
                         let image = image as! Image
-                        search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .big) // We don't necessarily need to cache big images in the local DB since they are already cached for a while by iOS
-                        if !imagesAreCached { // cache if image is not already cached
+                        // We don't necessarily need to cache big images in the local DB since they are already cached for a while by iOS
+                        search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .big)
+                        if !imagesAreCached {
+                            // Cache the thumbnail if it's not already cached
                             let _ = await self.imageRepository.saveImage(image, searchId: search.id, sortId: index+1)
                         }
                         search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .thumbnail)
@@ -64,13 +67,20 @@ actor DefaultImageCachingService: ImageCachingService {
                     return search
                 }
             }
-            var results: [ImageSearchResults] = []
-            for await item in taskGroup {
-                results.append(item)
+            
+            var processedData = data
+            
+            for await editedSearch in taskGroup {
+                // The tasks are executed concurrently, so we need to make sure that the edited searches are reassembled in the correct order in which they were originally done
+                for (index, search) in data.enumerated() {
+                    if search.id == editedSearch.id {
+                        processedData[index] = editedSearch
+                        break
+                    }
+                }
             }
-            return results
+            return processedData
         }
-        return processedData
     }
     
     func getCachedImages(searchId: String) async -> [Image]? {
