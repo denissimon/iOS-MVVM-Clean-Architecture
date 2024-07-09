@@ -101,12 +101,11 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 let imageQuery = ImageQuery(query: searchString)
                 thumbnailImages = try await self.imageService.searchImages(imageQuery, imagesLoadTask: self.imagesLoadTask)
             } catch {
-                switch error {
-                case is AppError:
+                if error is AppError {
                     let error = error as! AppError
-                    let msg = ((error.failureReason ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+                    let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
                     self.showErrorToast(msg)
-                default:
+                } else {
                     self.showErrorToast(error.localizedDescription)
                 }
                 return

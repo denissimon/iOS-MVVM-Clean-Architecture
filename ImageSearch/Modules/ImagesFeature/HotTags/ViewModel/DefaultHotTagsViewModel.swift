@@ -81,7 +81,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
                 self?.dataForWeekFlickrTags = allHotFlickrTags
                 self?.activityIndicatorVisibility.value = false
             case .failure(let error):
-                let msg = ((error.failureReason ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+                let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
                 self?.showErrorToast(msg)
             case .none:
                 return
