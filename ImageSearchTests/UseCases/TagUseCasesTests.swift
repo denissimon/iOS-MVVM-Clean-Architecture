@@ -1,13 +1,13 @@
 import XCTest
 @testable import ImageSearch
 
-class TagRepositoryTests: XCTestCase {
+class TagUseCasesTests: XCTestCase {
     
     static let tagsStub = Tags(
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2")]),
         stat: "ok")
     
-    static let syncQueue = DispatchQueue(label: "TagRepositoryTests")
+    static let syncQueue = DispatchQueue(label: "TagUseCasesTests")
     
     class TagRepositoryMock: TagRepository {
         
@@ -19,7 +19,7 @@ class TagRepositoryTests: XCTestCase {
         }
         
         func getHotTags() async -> TagsResult {
-            TagRepositoryTests.syncQueue.sync {
+            TagUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
             return result
@@ -27,7 +27,7 @@ class TagRepositoryTests: XCTestCase {
     }
     
     func testGetHotTagsUseCase_whenResultIsSuccess() async {
-        let tagRepository = TagRepositoryMock(result: .success(TagRepositoryTests.tagsStub))
+        let tagRepository = TagRepositoryMock(result: .success(TagUseCasesTests.tagsStub))
         
         let tagsResult = await tagRepository.getHotTags()
         
@@ -35,7 +35,7 @@ class TagRepositoryTests: XCTestCase {
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
-        TagRepositoryTests.syncQueue.sync {
+        TagUseCasesTests.syncQueue.sync {
             XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
         }
     }
@@ -48,7 +48,7 @@ class TagRepositoryTests: XCTestCase {
         let hotTags = try? tagsResult.get().tags
         
         XCTAssertNil(hotTags)
-        TagRepositoryTests.syncQueue.sync {
+        TagUseCasesTests.syncQueue.sync {
             XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
         }
     }
