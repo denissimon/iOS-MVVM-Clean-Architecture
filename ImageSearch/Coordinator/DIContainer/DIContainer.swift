@@ -10,7 +10,7 @@ class DIContainer {
         return URLSessionAPIInteractor(with: networkService)
     }()
     
-    // MARK: - Storages
+    // MARK: - Persistence
     
     lazy var imageDBInteractor: ImageDBInteractor = {
         let sqliteAdapter = try? SQLite(path: AppConfiguration.SQLite.imageSearchDBPath)
@@ -27,11 +27,21 @@ class DIContainer {
         return DefaultTagRepository(apiInteractor: apiInteractor)
     }
     
-    // MARK: - Services
+    // MARK: - Use Cases
     
-    lazy var imageService: ImageService = {
-        return DefaultImageService(imageRepository: makeImageRepository())
+    lazy var searchImagesUseCase: SearchImagesUseCase = {
+        return DefaultSearchImagesUseCase(imageRepository: makeImageRepository())
     }()
+    
+    lazy var getBigImageUseCase: GetBigImageUseCase = {
+        return DefaultGetBigImageUseCase(imageRepository: makeImageRepository())
+    }()
+    
+    lazy var getHotTagsUseCase: GetHotTagsUseCase = {
+        return DefaultGetHotTagsUseCase(tagRepository: makeTagRepository())
+    }()
+    
+    // MARK: - Services
     
     lazy var imageCachingService: ImageCachingService = {
         return DefaultImageCachingService(imageRepository: makeImageRepository())
@@ -50,18 +60,17 @@ extension DIContainer: MainCoordinatorDIContainer {
     // MARK: - View Controllers
     
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController {
-        let viewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let viewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         return ImageSearchViewController.instantiate(viewModel: viewModel, actions: actions)
     }
     
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController {
-        let viewModel = DefaultImageDetailsViewModel(imageService: imageService, image: image, imageQuery: imageQuery)
+        let viewModel = DefaultImageDetailsViewModel(getBigImageUseCase: getBigImageUseCase, image: image, imageQuery: imageQuery)
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController {
-        let tagRepository = makeTagRepository()
-        let viewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        let viewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         return HotTagsViewController.instantiate(viewModel: viewModel, actions: actions)
     }
 }
