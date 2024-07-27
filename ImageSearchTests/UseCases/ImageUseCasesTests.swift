@@ -89,7 +89,7 @@ class ImageUseCasesTests: XCTestCase {
         let result = try? await searchImagesUseCase.execute(imageQuery)
         
         XCTAssertNotNil(result)
-        let images = result!.searchResults as! [Image]
+        let images = result!.searchResults
         XCTAssertEqual(images.count, 3)
         XCTAssertTrue(images.contains(ImageUseCasesTests.testImageStub))
         ImageUseCasesTests.syncQueue.sync {

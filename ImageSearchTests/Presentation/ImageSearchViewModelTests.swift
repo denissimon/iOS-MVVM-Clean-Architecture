@@ -195,7 +195,7 @@ class ImageSearchViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
-        XCTAssertTrue((imageSearchViewModel.data.value[0].searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertTrue(imageSearchViewModel.data.value[0].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
             XCTAssertEqual(imageSearchViewModel.data.value[0].searchResults[0].thumbnail?.image?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
         }
@@ -253,8 +253,8 @@ class ImageSearchViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 2)
-        XCTAssertTrue((imageSearchViewModel.data.value[0].searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
-        XCTAssertTrue((imageSearchViewModel.data.value[1].searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertTrue(imageSearchViewModel.data.value[0].searchResults.contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertTrue(imageSearchViewModel.data.value[1].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery1)
         ImageSearchViewModelTests.syncQueue.sync {
             XCTAssertEqual(self.observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
