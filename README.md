@@ -5,7 +5,7 @@
 
 Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurrency.
 
-The app retrieves images for any search query or tag via the Flickr API. It has three MVVM modules: ImageSearch, ImageDetails, HotTags.
+The app retrieves images for any search query or tag via the Flickr API. It has three modules: ImageSearch, ImageDetails, HotTags.
 
 <table> 
   <tr>
@@ -17,32 +17,28 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 ### Architecture concepts used here
 
+- [Clean Architecture][CleanArchitectureLink]
+- [Explicit Architecture][Explicit ArchitectureLink]
 - [MVVM][MVVMLink]
 - [Flow coordinator][FlowCoordinatorLink] implemented with closure-based actions
 - [Dependency Injection][DIContainerLink], DIContainer
-- [Data Binding][DataBindingLink] using the lightweight [Observable\<T\>][ObservableLink]
-- [Clean Architecture][CleanArchitectureLink]
-- [Explicit Architecture][ExplicitArchitectureLink]
 - [Protocol-Oriented Programming][POPLink]
+- [Data Binding][DataBindingLink] using the lightweight [Observable\<T\>][ObservableLink]
 - [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
 - [Pure functional transformations][PureFunctionalTransformationsLink]
-- [Shared Kernel][SharedKernelLink], delegating entity behavior
-- [Codable][CodableLink]
 - [Alternative DTO approach][AlternativeDTOApproachLink]
 
-[MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Modules/ImagesFeature/ImageSearch
-[FlowCoordinatorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Coordinator
-[DIContainerLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Coordinator/DIContainer/DIContainer.swift
-[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift#L86
-[DataBindingLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/ImageSearch/ViewModel/DefaultImageSearchViewModel.swift
-[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Common/Utils/SwiftEvents.swift
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [ExplicitArchitectureLink]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together
+[MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Presentation/ImagesFeature/ImageSearch
+[FlowCoordinatorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Coordinator
+[DIContainerLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Coordinator/DIContainer/DIContainer.swift
 [POPLink]: https://www.swiftanytime.com/blog/protocol-oriented-programming-in-swift
-[ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Modules/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
-[PureFunctionalTransformationsLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Repositories/DefaultImageRepository.swift 
-[SharedKernelLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/SharedKernel.swift
-[CodableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Image.swift
+[DataBindingLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/ImageSearch/ViewModel/DefaultImageSearchViewModel.swift
+[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Event+Observable.swift#L86
+[ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
+[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Common/Event+Observable.swift
+[PureFunctionalTransformationsLink]: https://blog.ploeh.dk/2020/03/02/impureim-sandwich
 [AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
 ### Includes
@@ -53,40 +49,43 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Advanced error handling
 - Unit tests for a number of components from all layers
 
-[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Network/NetworkService
-[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Storages/SQLite
-[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Services/DefaultImageCachingService.swift
+[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Network/NetworkService/NetworkService.swift
+[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
+[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/DefaultImageCachingService.swift
 
-### Main layers
+### Layers
 
-**Presentation Layer**: _coordinators_, _UI elements / views_, _storyboards_, _view controllers_ and _ViewModels_
+**Presentation (MVVM)** -> **Domain** <- **Data**
 
-**Domain Layer**: _entities_ (or _domain models_), _interfaces_ (for services and repositories) and _domain services_
+Presentation: _UI elements_, _SwiftUI views_, _UIKit storyboards_, _view controllers_, _ViewModels_
 
-**Data Layer**: _services_, _entity repositories_, _API/DB interactors_ (or network services and storages) and _adapters_
+Domain: _entities_, _use cases_, _services_, _interfaces for repositories_
+
+Data: _entity repositories_, _APIs_, _API/DB interactors_, _adapters_
 
 ### Use cases
 
 ImageSearch module:
 ```swift
-* imageService.searchImages(imageQuery)
-* imageCachingService.cacheIfNecessary(self.data.value)
+* searchImagesUseCase.execute(imageQuery)
+* imageCachingService.cacheIfNecessary(data)
 * imageCachingService.getCachedImages(searchId: searchId)
 ```
 
 ImageDetails module:
 ```swift
-* imageService.getBigImage(for: self.image)
+* getBigImageUseCase.execute(for: image)
 ```
 
 HotTags module:
 ```swift
-* tagRepository.getHotTags()
+* getHotTagsUseCase.execute()
 ```
 
 ### Image caching service
 
-[ImageCachingService][ImageCachingServiceLink] implements logic for caching images downloaded from Flickr. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching, the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
+[ImageCachingService][ImageCachingServiceLink] implements the logic of caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since without caching it can quickly grow to hundreds of MB. Downloaded images are cached and read from the cache automatically.
+```
 
 ### Reusable components from this project
 
@@ -96,6 +95,57 @@ HotTags module:
 
 ### Requirements
 
-iOS version support: 15.0+. For app versions <= 1.2, iOS version support: 10.0+
+iOS version support: 15.0+. Xcode 13.0+, Swift 5.5+
 
-Xcode 13.0+, Swift 5.5+
+### Folder structure 
+
+```bash 
+├── ImageSearch
+│   ├── Coordinator
+│   │   └── DIContainer
+│   ├── Common
+│   │   └── Utils
+│   ├── Presentation
+│   │   ├── ImagesFeature
+│   │   │   ├── ImageSearch
+│   │   │   │   ├── View
+│   │   │   │   │   └── Cells
+│   │   │   │   └── ViewModel
+│   │   │   ├── ImageDetails
+│   │   │   │   ├── View
+│   │   │   │   └── ViewModel
+│   │   │   └── HotTags
+│   │   │       ├── View
+│   │   │       └── ViewModel
+│   │   └── Common
+│   │       └── Protocols
+│   ├── Domain
+│   │   ├── Entities
+│   │   │   └── Behaviors
+│   │   ├── Exception
+│   │   ├── UseCases
+│   │   ├── Services
+│   │   └── Interfaces
+│   │       └── Repositories
+│   ├── Data
+│   │   ├── Repositories
+│   │   ├── APIs
+│   │   ├── Network
+│   │   │   ├── APIInteractor
+│   │   │   ├── NetworkService
+│   │   │   └── Utils
+│   │   └── Persistence
+│   │       ├── DBInteractor
+│   │       │   └── Image
+│   │       └── SQLite
+│   └── Resources
+│       ├── Assets.xcassets
+│       ├── Base.lproj
+│       ├── en.lproj
+│       └── es.lproj
+├── ImageSearchTests
+│   ├── UseCases
+│   ├── Domain
+│   ├── Presentation
+└── └── Data
+```
