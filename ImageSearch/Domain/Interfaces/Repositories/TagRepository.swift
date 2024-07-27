@@ -1,7 +1,5 @@
 import Foundation
 
 protocol TagRepository {
-    typealias TagsResult = Result<TagsType, AppError>
-    
-    func getHotTags() async -> TagsResult
+    func getHotTags() async -> Result<TagsType, AppError>
 }

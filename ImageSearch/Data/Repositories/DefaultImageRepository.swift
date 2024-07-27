@@ -10,7 +10,9 @@ class DefaultImageRepository: ImageRepository {
         self.imageDBInteractor = imageDBInteractor
     }
     
-    func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
+    // MARK: - API methods
+    
+    func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
         let endpoint = FlickrAPI.search(imageQuery)
         do {
             let result = try await apiInteractor.request(endpoint)
@@ -58,6 +60,8 @@ class DefaultImageRepository: ImageRepository {
             return nil
         }
     }
+    
+    // MARK: - DB methods
     
     func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
         await withCheckedContinuation { continuation in

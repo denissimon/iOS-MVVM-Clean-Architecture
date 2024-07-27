@@ -8,7 +8,7 @@ class DefaultTagRepository: TagRepository {
         self.apiInteractor = apiInteractor
     }
     
-    func getHotTags() async -> TagsResult {
+    func getHotTags() async -> Result<TagsType, AppError> {
         let endpoint = FlickrAPI.getHotTags()
         do {
             let tags = try await apiInteractor.request(endpoint, type: Tags.self)
