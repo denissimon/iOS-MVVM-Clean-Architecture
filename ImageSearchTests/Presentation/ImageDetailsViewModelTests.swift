@@ -23,7 +23,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
             ImageDetailsViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -67,20 +67,17 @@ class ImageDetailsViewModelTests: XCTestCase {
             return nil
         }
         
-        func deleteAllImages() async {
-            ImageDetailsViewModelTests.syncQueue.sync {
-                dbMethodsCallsCount += 1
-            }
-        }
+        // Called once when initializing the ImageCachingService to clear the Image table
+        func deleteAllImages() async {}
     }
     
     override func setUp() {
         super.setUp()
         
         let imageRepository = ImageRepositoryMock()
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let getBigImageUseCase = DefaultGetBigImageUseCase(imageRepository: imageRepository)
         
-        imageDetailsViewModel = DefaultImageDetailsViewModel(imageService: imageService, image: ImageDetailsViewModelTests.testImageStub, imageQuery: ImageQuery(query: "random"))
+        imageDetailsViewModel = DefaultImageDetailsViewModel(getBigImageUseCase: getBigImageUseCase, image: ImageDetailsViewModelTests.testImageStub, imageQuery: ImageQuery(query: "random"))
         
         imageDetailsViewModel.data.bind(self) { [weak self] _ in
             ImageDetailsViewModelTests.syncQueue.sync {
@@ -88,7 +85,7 @@ class ImageDetailsViewModelTests: XCTestCase {
             }
         }
         
-        imageDetailsViewModel.showToast.bind(self) { [weak self] _ in
+        imageDetailsViewModel.makeToast.bind(self) { [weak self] _ in
             ImageDetailsViewModelTests.syncQueue.sync {
                 self?.observablesTriggerCount += 1
             }
@@ -142,7 +139,7 @@ class ImageDetailsViewModelTests: XCTestCase {
     func testSharedImage() async throws {
         imageDetailsViewModel.onShareButton()
         XCTAssertTrue(self.imageDetailsViewModel.shareImage.value.isEmpty)
-        XCTAssertEqual(self.imageDetailsViewModel.showToast.value, "No image to share")
+        XCTAssertEqual(self.imageDetailsViewModel.makeToast.value, "No image to share")
         
         imageDetailsViewModel.loadBigImage()
         
@@ -152,7 +149,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         XCTAssertFalse(self.imageDetailsViewModel.shareImage.value.isEmpty)
         
         ImageDetailsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 5) // showToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
+            XCTAssertEqual(self.observablesTriggerCount, 5) // makeToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
         }
     }
 }

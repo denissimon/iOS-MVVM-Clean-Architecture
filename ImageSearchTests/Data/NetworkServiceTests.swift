@@ -87,7 +87,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let resultData = try await networkService.request(JSONPlaceholderAPI.getPost(id: 10))
+            let endpoint = JSONPlaceholderAPI.getPost(id: 10)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let resultData = try await networkService.request(request)
             XCTAssertEqual(resultData.count, 217)
             promise.fulfill()
         } catch {
@@ -102,7 +110,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.getPost(id: 10), type: Post.self)
+            let endpoint = JSONPlaceholderAPI.getPost(id: 10)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self)
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 10)
             XCTAssertEqual(returnedPost.title, "optio molestias id quia eum")
@@ -127,7 +143,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let _ = try await networkService.request(JSONPlaceholderAPI.getPost(id: 102), type: Post.self)
+            let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let _ = try await networkService.request(request, type: Post.self)
             XCTFail() // shouldn't happen
         } catch {
             if error is NetworkError {
@@ -152,7 +176,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let response = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 1))
+            let endpoint = JSONPlaceholderAPI.getPost(id: 1)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let response = try await networkService.requestWithStatusCode(request)
             XCTAssertEqual(response.result.count, 292)
             XCTAssertEqual(response.statusCode, 200)
             promise.fulfill()
@@ -168,7 +200,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let _ = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102))
+            let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let _ = try await networkService.requestWithStatusCode(request)
             XCTFail() // shouldn't happen
         } catch {
             if error is NetworkError {
@@ -194,7 +234,15 @@ class NetworkServiceTests: XCTestCase {
         let networkService = NetworkServiceTests.networkService
         XCTAssertEqual(networkService.autoValidation, true)
         do {
-            let response = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102), config: RequestConfig(autoValidation: false))
+            let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let response = try await networkService.requestWithStatusCode(request, config: RequestConfig(autoValidation: false))
             XCTAssertEqual(response.result, "{}".data(using: .utf8))
             XCTAssertEqual(response.statusCode, 404)
             promise.fulfill()
@@ -210,7 +258,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkService(autoValidation: false)
         do {
-            let response = try await networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102))
+            let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let response = try await networkService.requestWithStatusCode(request)
             XCTAssertEqual(response.result, "{}".data(using: .utf8))
             XCTAssertEqual(response.statusCode, 404)
             promise.fulfill()
@@ -229,7 +285,15 @@ class NetworkServiceTests: XCTestCase {
         let networkService = NetworkServiceTests.networkService
         do {
             let post = Post(id: nil, title: "title", body: "body", userId: 2)
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self)
+            let endpoint = JSONPlaceholderAPI.createPost(post)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self)
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 101)
             XCTAssertEqual(returnedPost.title, "title")
@@ -255,7 +319,15 @@ class NetworkServiceTests: XCTestCase {
         let networkService = NetworkServiceTests.networkService
         do {
             let post = Post(id: nil, title: "title", body: "body", userId: 2)
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self, config: RequestConfig(uploadTask: true))
+            let endpoint = JSONPlaceholderAPI.createPost(post)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self, config: RequestConfig(uploadTask: true))
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 101)
             XCTAssertEqual(returnedPost.title, "title")
@@ -273,8 +345,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodePost")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
-        if let response = try? await networkService.requestWithStatusCode(JSONPlaceholderAPI.createPost(post)) {
+        let endpoint = JSONPlaceholderAPI.createPost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        if let response = try? await networkService.requestWithStatusCode(request) {
             XCTAssertEqual(response.result.count, 68)
             XCTAssertEqual(response.statusCode, 201)
             promise.fulfill()
@@ -291,7 +372,15 @@ class NetworkServiceTests: XCTestCase {
         let networkService = NetworkServiceTests.networkService
         do {
             let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self)
+            let endpoint = JSONPlaceholderAPI.updatePost(post)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self)
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 1)
             XCTAssertEqual(returnedPost.title, "foo")
@@ -311,7 +400,15 @@ class NetworkServiceTests: XCTestCase {
         let networkService = NetworkServiceTests.networkService
         do {
             let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self, config: RequestConfig(uploadTask: true))
+            let endpoint = JSONPlaceholderAPI.updatePost(post)
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self, config: RequestConfig(uploadTask: true))
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 1)
             XCTAssertEqual(returnedPost.title, "foo")
@@ -332,7 +429,15 @@ class NetworkServiceTests: XCTestCase {
         
         let networkService = NetworkServiceTests.networkService
         do {
-            let returnedPost = try await networkService.request(JSONPlaceholderAPI.patchPost(id: 1, title: "foo"), type: Post.self)
+            let endpoint = JSONPlaceholderAPI.patchPost(id: 1, title: "foo")
+            
+            guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+                XCTFail()
+                return
+            }
+            let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+            
+            let returnedPost = try await networkService.request(request, type: Post.self)
             dump(returnedPost)
             XCTAssertEqual(returnedPost.id, 1)
             XCTAssertEqual(returnedPost.title, "foo")
@@ -516,7 +621,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestGet")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 10)) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 10)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request) { response in
             if let resultData = try? response.get() {
                 XCTAssertEqual(resultData.count, 217)
                 promise.fulfill()
@@ -530,7 +644,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestGet_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 10), type: Post.self) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 10)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)
@@ -554,7 +677,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestGet_withDecodedResult_andErrorReturned")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.request(JSONPlaceholderAPI.getPost(id: 102), type: Post.self) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self) { response in
             switch response {
             case .success(_):
                 break
@@ -578,7 +710,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodeGet")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 1)) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 1)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.requestWithStatusCode(request) { response in
             if let resultData = try? response.get() {
                 XCTAssertEqual(resultData.result!.count, 292)
                 XCTAssertEqual(resultData.statusCode, 200)
@@ -593,7 +734,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102)) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.requestWithStatusCode(request) { response in
             switch response {
             case .success(_):
                 break
@@ -617,8 +767,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned_andDisabledRequestAutoValidation")
         
         let networkService = NetworkServiceTests.networkService
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
         XCTAssertEqual(networkService.autoValidation, true)
-        let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102), config: RequestConfig(autoValidation: false)) { response in
+        let _ = networkService.requestWithStatusCode(request, config: RequestConfig(autoValidation: false)) { response in
             switch response {
             case .success(let result):
                 XCTAssertEqual(result.result, "{}".data(using: .utf8))
@@ -636,7 +795,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned_andDisabledGlobalAutoValidation")
         
         let networkService = NetworkService(autoValidation: false)
-        let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.getPost(id: 102)) { response in
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.requestWithStatusCode(request) { response in
             switch response {
             case .success(let result):
                 XCTAssertEqual(result.result, "{}".data(using: .utf8))
@@ -656,8 +824,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestPost_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
-        let _ = networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self) { response in
+        let endpoint = JSONPlaceholderAPI.createPost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)
@@ -681,8 +858,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestPost_withDecodedResult_andUploadTask")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
-        let _ = networkService.request(JSONPlaceholderAPI.createPost(post), type: Post.self, config: RequestConfig(uploadTask: true)) { response in
+        let endpoint = JSONPlaceholderAPI.createPost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self, config: RequestConfig(uploadTask: true)) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)
@@ -703,8 +889,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestWithStatusCodePost")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: nil, title: "title", body: "body", userId: 2)
-        let _ = networkService.requestWithStatusCode(JSONPlaceholderAPI.createPost(post)) { response in
+        let endpoint = JSONPlaceholderAPI.createPost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.requestWithStatusCode(request) { response in
             if let resultData = try? response.get() {
                 XCTAssertEqual(resultData.result!.count, 68)
                 XCTAssertEqual(resultData.statusCode, 201)
@@ -721,8 +916,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestPut_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
-        let _ = networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self) { response in
+        let endpoint = JSONPlaceholderAPI.updatePost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)
@@ -743,8 +947,17 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestPut_withDecodedResult_andUploadTask")
         
         let networkService = NetworkServiceTests.networkService
+        
         let post = Post(id: 1, title: "foo", body: "bar", userId: 1)
-        let _ = networkService.request(JSONPlaceholderAPI.updatePost(post), type: Post.self, config: RequestConfig(uploadTask: true)) { response in
+        let endpoint = JSONPlaceholderAPI.updatePost(post)
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self, config: RequestConfig(uploadTask: true)) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)
@@ -767,7 +980,16 @@ class NetworkServiceTests: XCTestCase {
         let promise = expectation(description: "testRequestPatch_withDecodedResult")
         
         let networkService = NetworkServiceTests.networkService
-        let _ = networkService.request(JSONPlaceholderAPI.patchPost(id: 1, title: "foo"), type: Post.self) { response in
+        
+        let endpoint = JSONPlaceholderAPI.patchPost(id: 1, title: "foo")
+        
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+            XCTFail()
+            return
+        }
+        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        
+        let _ = networkService.request(request, type: Post.self) { response in
             switch response {
             case .success(let returnedPost):
                 dump(returnedPost)

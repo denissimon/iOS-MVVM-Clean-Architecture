@@ -15,7 +15,7 @@ class ImageUseCasesTests: XCTestCase {
         return testImage
     }
     
-    static let syncQueue = DispatchQueue(label: "ImageServiceTests")
+    static let syncQueue = DispatchQueue(label: "ImageUseCasesTests")
     
     class ImageRepositoryMock: ImageRepository {
         
@@ -29,7 +29,7 @@ class ImageUseCasesTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
             ImageUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -73,11 +73,8 @@ class ImageUseCasesTests: XCTestCase {
             return nil
         }
         
-        func deleteAllImages() async {
-            ImageUseCasesTests.syncQueue.sync {
-                dbMethodsCallsCount += 1
-            }
-        }
+        // Called once when initializing the ImageCachingService to clear the Image table
+        func deleteAllImages() async {}
     }
     
     func testSearchImagesUseCase_whenResultIsSuccess() async {
@@ -86,14 +83,15 @@ class ImageUseCasesTests: XCTestCase {
             return
         }
         let imageRepository = ImageRepositoryMock(result: .success(imagesData))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")
-        let images = try? await imageService.searchImages(imageQuery)
+        let result = try? await searchImagesUseCase.execute(imageQuery)
         
-        XCTAssertNotNil(images)
-        XCTAssertEqual(images!.count, 3)
-        XCTAssertTrue(images!.contains(ImageUseCasesTests.testImageStub))
+        XCTAssertNotNil(result)
+        let images = result!.searchResults as! [Image]
+        XCTAssertEqual(images.count, 3)
+        XCTAssertTrue(images.contains(ImageUseCasesTests.testImageStub))
         ImageUseCasesTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 5) // searchImages(), prepareImages(), and getImage() 3 times
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -102,12 +100,12 @@ class ImageUseCasesTests: XCTestCase {
     
     func testSearchImagesUseCase_whenResultIsFailure() async {
         let imageRepository = ImageRepositoryMock(result: .failure(AppError.default()))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")
-        let images = try? await imageService.searchImages(imageQuery)
+        let result = try? await searchImagesUseCase.execute(imageQuery)
         
-        XCTAssertNil(images)
+        XCTAssertNil(result)
         ImageUseCasesTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // searchImages()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -116,9 +114,9 @@ class ImageUseCasesTests: XCTestCase {
     
     func testGetBigImageUseCase() async {
         let imageRepository = ImageRepositoryMock()
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let getBigImageUseCase = DefaultGetBigImageUseCase(imageRepository: imageRepository)
         
-        let bigImageData = await imageService.getBigImage(for: ImageUseCasesTests.testImageStub)
+        let bigImageData = await getBigImageUseCase.execute(for: ImageUseCasesTests.testImageStub)
         
         XCTAssertNotNil(bigImageData)
         XCTAssertTrue(!bigImageData!.isEmpty)

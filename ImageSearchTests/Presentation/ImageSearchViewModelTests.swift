@@ -48,7 +48,7 @@ class ImageSearchViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> ImagesDataResult {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
             ImageSearchViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -127,7 +127,7 @@ class ImageSearchViewModelTests: XCTestCase {
                 self?.observablesTriggerCount += 1
             }
         }
-        imageSearchViewModel.showToast.bind(self) { [weak self] _ in
+        imageSearchViewModel.makeToast.bind(self) { [weak self] _ in
             ImageSearchViewModelTests.syncQueue.sync {
                 self?.observablesTriggerCount += 1
             }
@@ -154,23 +154,23 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTFail()
             return
         }
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
-        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
-        let imageSearchViewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
+        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
+        let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: ""))
-        XCTAssertEqual(imageSearchViewModel.showToast.value, "Empty search query")
+        XCTAssertEqual(imageSearchViewModel.makeToast.value, "Empty search query")
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: " "))
-        XCTAssertEqual(imageSearchViewModel.showToast.value, "Empty search query")
+        XCTAssertEqual(imageSearchViewModel.makeToast.value, "Empty search query")
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 4) // showToast, resetSearchBar, showToast, resetSearchBar
+            XCTAssertEqual(self.observablesTriggerCount, 4) // makeToast, resetSearchBar, makeToast, resetSearchBar
         }
     }
     
@@ -179,18 +179,18 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTFail()
             return
         }
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
-        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
-        let imageSearchViewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
+        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
+        let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
         
         let searchQuery = ImageQuery(query: "random")
         imageSearchViewModel.searchImage(for: searchQuery)
-        XCTAssertEqual(imageSearchViewModel.showToast.value, "")
+        XCTAssertEqual(imageSearchViewModel.makeToast.value, "")
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
@@ -207,23 +207,22 @@ class ImageSearchViewModelTests: XCTestCase {
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
         let imageRepository = ImageRepositoryMock(result: .failure(AppError.default()))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
-        
-        let imageSearchViewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: "random"))
-        XCTAssertEqual(imageSearchViewModel.showToast.value, "")
+        XCTAssertEqual(imageSearchViewModel.makeToast.value, "")
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastSearchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, showToast, activityIndicatorVisibility
+            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility
         }
     }
     
@@ -232,11 +231,11 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTFail()
             return
         }
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
-        let imageService = DefaultImageService(imageRepository: imageRepository)
-        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         
-        let imageSearchViewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
+        let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
+        let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
@@ -274,10 +273,9 @@ class ImageSearchViewModelTests: XCTestCase {
         }
         
         let imageRepository = ImageRepositoryMock(result: .success(imagesData), cachedImages: cachedImagesStub)
-        let imageService = DefaultImageService(imageRepository: imageRepository)
+        let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
-        
-        let imageSearchViewModel = DefaultImageSearchViewModel(imageService: imageService, imageCachingService: imageCachingService)
+        let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
         imageSearchViewModel.data.value = ImageSearchViewModelTests.searchResultsStub // 5 searches are done

@@ -20,7 +20,7 @@ class HotTagsViewModelTests: XCTestCase {
             self.result = result
         }
         
-        func getHotTags() async -> TagsResult {
+        func getHotTags() async -> Result<TagsType, AppError> {
             HotTagsViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -41,7 +41,7 @@ class HotTagsViewModelTests: XCTestCase {
                 self?.observablesTriggerCount += 1
             }
         }
-        hotTagsViewModel.showToast.bind(self) { [weak self] _ in
+        hotTagsViewModel.makeToast.bind(self) { [weak self] _ in
             HotTagsViewModelTests.syncQueue.sync {
                 self?.observablesTriggerCount += 1
             }
@@ -57,8 +57,9 @@ class HotTagsViewModelTests: XCTestCase {
         let hotTagsViewModel: HotTagsViewModel!
         
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
@@ -68,7 +69,7 @@ class HotTagsViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
         XCTAssertEqual(hotTagsViewModel.data.value.count, 3)
-        XCTAssertEqual(hotTagsViewModel.showToast.value, "")
+        XCTAssertEqual(hotTagsViewModel.makeToast.value, "")
         HotTagsViewModelTests.syncQueue.sync {
             XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
         }
@@ -78,8 +79,9 @@ class HotTagsViewModelTests: XCTestCase {
         let hotTagsViewModel: HotTagsViewModel!
         
         let tagRepository = TagRepositoryMock(result: .failure(AppError.default()))
+        let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
@@ -89,9 +91,9 @@ class HotTagsViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
-        XCTAssertNotEqual(hotTagsViewModel.showToast.value, "")
+        XCTAssertNotEqual(hotTagsViewModel.makeToast.value, "")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, showToast, activityIndicatorVisibility, data
+            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility, data
         }
     }
     
@@ -99,8 +101,9 @@ class HotTagsViewModelTests: XCTestCase {
         let hotTagsViewModel: HotTagsViewModel!
         
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
@@ -118,8 +121,9 @@ class HotTagsViewModelTests: XCTestCase {
         let hotTagsViewModel: HotTagsViewModel!
         
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(tagRepository: tagRepository, didSelect: didSelect)
+        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
@@ -140,7 +144,7 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 10) // data and activityIndicatorVisibility several times
+            XCTAssertEqual(self.observablesTriggerCount, 10) // data 6 times, activityIndicatorVisibility 4 times
         }
     }
 }
