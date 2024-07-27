@@ -1,5 +1,3 @@
-// Note: in case of using SwiftUI, it's better to rename the Image class e.g. to ISImage
-
 import Foundation
 
 protocol ImageType: AnyObject {
