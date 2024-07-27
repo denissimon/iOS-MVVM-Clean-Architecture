@@ -5,7 +5,7 @@ class ImageBehaviorTests: XCTestCase {
     
     static var testImageStub: Image {
         let testImage = Image(title: "random1", flickr: FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(image: UIImage(systemName: "heart.fill"))
+        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         return testImage
     }
     
@@ -25,7 +25,7 @@ class ImageBehaviorTests: XCTestCase {
         var image = ImageBehaviorTests.testImageStub
         XCTAssertNil(image.bigImage)
         
-        let imageWrapper = ImageWrapper(image: UIImage(systemName: "square.and.arrow.up"))
+        let imageWrapper = ImageWrapper(uiImage: UIImage(systemName: "square.and.arrow.up"))
         image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
         XCTAssertNotNil(image.bigImage)
         

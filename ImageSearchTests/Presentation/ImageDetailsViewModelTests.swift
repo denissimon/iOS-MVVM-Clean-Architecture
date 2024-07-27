@@ -9,7 +9,7 @@ class ImageDetailsViewModelTests: XCTestCase {
     
     static var testImageStub: Image {
         let testImage = Image(title: "random1", flickr: FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(image: UIImage(systemName: "heart.fill"))
+        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         testImage.bigImage = nil
         return testImage
     }
@@ -121,7 +121,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         
         XCTAssertNotNil(self.imageDetailsViewModel.image.bigImage)
         XCTAssertNotNil(self.imageDetailsViewModel.data.value)
-        XCTAssertNotNil(self.imageDetailsViewModel.data.value?.image)
+        XCTAssertNotNil(self.imageDetailsViewModel.data.value?.uiImage)
         ImageDetailsViewModelTests.syncQueue.sync {
             XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, data, activityIndicatorVisibility
         }

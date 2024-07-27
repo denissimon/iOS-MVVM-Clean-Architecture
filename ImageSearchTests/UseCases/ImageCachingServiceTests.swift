@@ -130,13 +130,13 @@ class ImageCachingServiceTests: XCTestCase {
         }
         
         let image1 = Image(title: "image1", flickr: nil)
-        image1.thumbnail = ImageWrapper(image: UIImage())
+        image1.thumbnail = ImageWrapper(uiImage: UIImage())
         let image2 = Image(title: "image2", flickr: nil)
-        image2.thumbnail = ImageWrapper(image: UIImage())
+        image2.thumbnail = ImageWrapper(uiImage: UIImage())
         let image3 = Image(title: "image3", flickr: nil)
-        image3.thumbnail = ImageWrapper(image: UIImage())
+        image3.thumbnail = ImageWrapper(uiImage: UIImage())
         let image4 = Image(title: "image4", flickr: nil)
-        image4.thumbnail = ImageWrapper(image: UIImage())
+        image4.thumbnail = ImageWrapper(uiImage: UIImage())
         let testSearchResults = [
             ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query5"), searchResults: [image1, image2, image3, image4]),
             ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [image1, image2, image3, image4]),

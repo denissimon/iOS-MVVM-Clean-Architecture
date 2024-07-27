@@ -13,7 +13,7 @@ class ImageSearchViewModelTests: XCTestCase {
     
     static var testImageStub: Image {
         let testImage = Image(title: "random1", flickr: FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(image: UIImage(systemName: "heart.fill"))
+        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         return testImage
     }
     
@@ -197,7 +197,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
         XCTAssertTrue(imageSearchViewModel.data.value[0].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
-            XCTAssertEqual(imageSearchViewModel.data.value[0].searchResults[0].thumbnail?.image?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
+            XCTAssertEqual(imageSearchViewModel.data.value[0].searchResults[0].thumbnail?.uiImage?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
         }
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
@@ -269,7 +269,7 @@ class ImageSearchViewModelTests: XCTestCase {
         
         let cachedImagesStub = ImageSearchViewModelTests.cachedImagesStub
         for image in cachedImagesStub {
-            image.image.thumbnail = ImageWrapper(image: UIImage(systemName: "heart.fill"))
+            image.image.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         }
         
         let imageRepository = ImageRepositoryMock(result: .success(imagesData), cachedImages: cachedImagesStub)
