@@ -18,7 +18,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 ### Architecture concepts used here
 
 - [Clean Architecture][CleanArchitectureLink]
-- [Explicit Architecture][Explicit ArchitectureLink]
+- [Explicit Architecture][ExplicitArchitectureLink]
 - [MVVM][MVVMLink]
 - [Flow coordinator][FlowCoordinatorLink] implemented with closure-based actions
 - [Dependency Injection][DIContainerLink], DIContainer
@@ -85,7 +85,6 @@ HotTags module:
 ### Image caching service
 
 [ImageCachingService][ImageCachingServiceLink] implements the logic of caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since without caching it can quickly grow to hundreds of MB. Downloaded images are cached and read from the cache automatically.
-```
 
 ### Reusable components from this project
 
