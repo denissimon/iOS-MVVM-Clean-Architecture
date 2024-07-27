@@ -35,9 +35,9 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [DIContainerLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Coordinator/DIContainer/DIContainer.swift
 [POPLink]: https://www.swiftanytime.com/blog/protocol-oriented-programming-in-swift
 [DataBindingLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/ImageSearch/ViewModel/DefaultImageSearchViewModel.swift
-[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Event+Observable.swift#L86
+[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift#L86
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
-[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Common/Event+Observable.swift
+[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift
 [PureFunctionalTransformationsLink]: https://blog.ploeh.dk/2020/03/02/impureim-sandwich
 [AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
@@ -51,7 +51,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Network/NetworkService/NetworkService.swift
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
-[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/DefaultImageCachingService.swift
+[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/ImageCachingService.swift
 
 ### Layers
 
