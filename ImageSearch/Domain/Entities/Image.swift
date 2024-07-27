@@ -46,11 +46,11 @@ class Image: Codable, ImageType, ImageListItemVM {
     func deepCopy() -> Image {
         var thumbnail: ImageWrapper?
         if self.thumbnail != nil {
-            thumbnail = ImageWrapper(image: self.thumbnail!.image)
+            thumbnail = ImageWrapper(uiImage: self.thumbnail!.uiImage)
         }
         var bigImage: ImageWrapper?
         if self.bigImage != nil {
-            bigImage = ImageWrapper(image: self.bigImage!.image)
+            bigImage = ImageWrapper(uiImage: self.bigImage!.uiImage)
         }
         let newImage = Image(title: self.title, flickr: flickr)
         newImage.thumbnail = thumbnail

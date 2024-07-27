@@ -66,7 +66,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
                     return
                 }
                 if let bigImage = Supportive.toUIImage(from: imageData) {
-                    let imageWrapper = ImageWrapper(image: bigImage)
+                    let imageWrapper = ImageWrapper(uiImage: bigImage)
                     self?.image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
                     self?.data.value = imageWrapper
                     

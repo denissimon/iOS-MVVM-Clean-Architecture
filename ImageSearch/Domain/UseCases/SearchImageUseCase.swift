@@ -39,7 +39,7 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
                         var tempImage = item
                         if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
                             if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
-                                let imageWrapper = ImageWrapper(image: thumbnailImage)
+                                let imageWrapper = ImageWrapper(uiImage: thumbnailImage)
                                 tempImage = ImageBehavior.updateImage(tempImage, newWrapper: imageWrapper, for: .thumbnail)
                             }
                         }

@@ -28,7 +28,7 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] bigImage in
             if let bigImage = bigImage {
-                self?.imageView.image = bigImage.image
+                self?.imageView.image = bigImage.uiImage
             }
         }
         

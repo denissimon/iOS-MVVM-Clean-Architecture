@@ -30,7 +30,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
         let image = data[indexPath.section].searchResults[indexPath.row]
-        cell.imageView.image = image.thumbnail?.image
+        cell.imageView.image = image.thumbnail?.uiImage
         return cell
     }
 
