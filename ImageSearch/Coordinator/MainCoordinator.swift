@@ -8,17 +8,14 @@ protocol MainCoordinatorDIContainer {
 
 class MainCoordinator: FlowCoordinator {
     
-    // MARK: - Properties
     let navigationController: UINavigationController
     let dependencyContainer: MainCoordinatorDIContainer
         
-    // MARK: - Initializer
     init(navigationController: UINavigationController, dependencyContainer: MainCoordinatorDIContainer) {
         self.navigationController = navigationController
         self.dependencyContainer = dependencyContainer
     }
     
-    // MARK: - Methods
     func start(completionHandler: CoordinatorStartCompletionHandler?) {
         showImageSearch()
     }

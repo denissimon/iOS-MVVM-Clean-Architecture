@@ -1,6 +1,6 @@
 import UIKit
 
-public typealias CoordinatorStartCompletionHandler = () -> ()
+typealias CoordinatorStartCompletionHandler = () -> ()
 
 protocol FlowCoordinator {
     var navigationController: UINavigationController { get }
