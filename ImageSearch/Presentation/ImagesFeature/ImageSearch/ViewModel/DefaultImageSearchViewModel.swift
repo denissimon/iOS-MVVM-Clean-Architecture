@@ -2,6 +2,8 @@ import Foundation
 
 /* Use cases:
  * searchImagesUseCase.execute(imageQuery)
+ * imageCachingService.cacheIfNecessary(data)
+ * imageCachingService.getCachedImages(searchId: searchId)
  */
 
 protocol ImageSearchViewModelInput {
