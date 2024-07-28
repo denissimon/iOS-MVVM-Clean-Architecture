@@ -4,7 +4,7 @@ protocol TagType {
     var name: String { get }
 }
 
-typealias TagListItemVM = TagType
+typealias TagListItemVM = Tag
 
 struct Tag: Decodable, TagType {
     
