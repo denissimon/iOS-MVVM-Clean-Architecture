@@ -18,12 +18,7 @@ class DefaultImageRepository: ImageRepository {
             let result = try await apiInteractor.request(endpoint)
             return .success(result)
         } catch {
-            //if error is CustomError {
-            let newError = error as! CustomError
-            dump(newError)
-                return .failure(newError)
-            //}
-            //return .failure(CustomError.unexpected(error))
+            return .failure(error as! CustomError)
         }
     }
     

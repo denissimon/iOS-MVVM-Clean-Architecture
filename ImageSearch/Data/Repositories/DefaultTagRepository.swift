@@ -17,10 +17,7 @@ class DefaultTagRepository: TagRepository {
             }
             return .success(tags)
         } catch {
-            if error is CustomError {
-                return .failure(error as! CustomError)
-            }
-            return .failure(CustomError.unexpected(error))
+            return .failure(error as! CustomError)
         }
     }
 }
