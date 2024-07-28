@@ -86,6 +86,12 @@ HotTags module:
 
 [ImageCachingService][ImageCachingServiceLink] implements the logic of caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since without caching it can quickly grow to hundreds of MB. Downloaded images are cached and read from the cache automatically.
 
+### Flickr API
+
+[flickr.photos.search][FlickrAPILink]
+
+[FlickrAPILink]: https://www.flickr.com/services/api/flickr.photos.search.html
+
 ### Reusable components from this project
 
 - [SwiftEvents](https://github.com/denissimon/SwiftEvents) - the easiest way to implement data binding and notifications. Includes Event\<T\> and Observable\<T\>. Has a thread-safe version.
