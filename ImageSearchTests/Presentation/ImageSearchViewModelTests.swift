@@ -34,12 +34,12 @@ class ImageSearchViewModelTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data?, AppError>?
+        let result: Result<Data?, CustomError>?
         var cachedImages: [(image: Image, searchId: String, sortId: Int)] = []
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data?, AppError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
+        init(result: Result<Data?, CustomError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
             self.result = result
             if !cachedImages.isEmpty {
                 self.cachedImages = cachedImages
@@ -48,7 +48,7 @@ class ImageSearchViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
             ImageSearchViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -206,7 +206,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
-        let imageRepository = ImageRepositoryMock(result: .failure(AppError.default()))
+        let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)

@@ -23,7 +23,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
             ImageDetailsViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }

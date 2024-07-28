@@ -19,17 +19,17 @@ class ImageUseCasesTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data?, AppError>?
+        let result: Result<Data?, CustomError>?
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data?, AppError>? = nil) {
+        init(result: Result<Data?, CustomError>? = nil) {
             self.result = result
         }
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
             ImageUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -99,7 +99,7 @@ class ImageUseCasesTests: XCTestCase {
     }
     
     func testSearchImagesUseCase_whenResultIsFailure() async {
-        let imageRepository = ImageRepositoryMock(result: .failure(AppError.default()))
+        let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")

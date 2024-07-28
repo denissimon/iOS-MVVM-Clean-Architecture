@@ -11,14 +11,14 @@ class TagUseCasesTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<TagsType, AppError>
+        let result: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, AppError>) {
+        init(result: Result<TagsType, CustomError>) {
             self.result = result
         }
         
-        func getHotTags() async -> Result<TagsType, AppError> {
+        func getHotTags() async -> Result<TagsType, CustomError> {
             TagUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
@@ -42,7 +42,7 @@ class TagUseCasesTests: XCTestCase {
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
-        let tagRepository = TagRepositoryMock(result: .failure(AppError.default()))
+        let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         
         let tagsResult = await getHotTagsUseCase.execute()

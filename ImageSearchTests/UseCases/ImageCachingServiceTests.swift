@@ -33,7 +33,7 @@ class ImageCachingServiceTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
             ImageCachingServiceTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
