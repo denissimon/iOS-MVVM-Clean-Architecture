@@ -86,12 +86,13 @@ class ImageUseCasesTests: XCTestCase {
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")
-        let result = try? await searchImagesUseCase.execute(imageQuery)
+        let result = await searchImagesUseCase.execute(imageQuery)
+        let images = (try? result.get())?.searchResults
         
-        XCTAssertNotNil(result)
-        let images = result!.searchResults
-        XCTAssertEqual(images.count, 3)
-        XCTAssertTrue(images.contains(ImageUseCasesTests.testImageStub))
+        XCTAssertNotNil(images)
+        XCTAssertEqual(images!.count, 3)
+        XCTAssertTrue(images!.contains(ImageUseCasesTests.testImageStub))
+        
         ImageUseCasesTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 5) // searchImages(), prepareImages(), and getImage() 3 times
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -103,9 +104,11 @@ class ImageUseCasesTests: XCTestCase {
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")
-        let result = try? await searchImagesUseCase.execute(imageQuery)
+        let result = await searchImagesUseCase.execute(imageQuery)
+        let images = (try? result.get())?.searchResults
         
-        XCTAssertNil(result)
+        XCTAssertNil(images)
+        
         ImageUseCasesTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // searchImages()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
