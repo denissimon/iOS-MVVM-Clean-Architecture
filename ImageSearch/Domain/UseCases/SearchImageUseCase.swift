@@ -27,7 +27,7 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
             let images = await self.imageRepository.prepareImages(imagesData)
             
             guard images != nil else {
-                throw AppError.default()
+                throw CustomError.app(.decoding)
             }
             
             if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }

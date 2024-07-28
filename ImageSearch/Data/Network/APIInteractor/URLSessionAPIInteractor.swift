@@ -8,42 +8,42 @@ class URLSessionAPIInteractor: APIInteractor {
         self.urlSessionAdapter = networkService
     }
     
-    private func handleError(_ error: Error? = nil) -> AppError {
+    private func customError(_ error: Error? = nil) -> CustomError {
         switch error {
         case nil:
-            return AppError.default()
+            return CustomError.app(.apiClient)
         default:
             if error is NetworkError {
                 let networkError = error as! NetworkError
                 if let statusCode = networkError.statusCode {
                     if statusCode >= 400 && statusCode <= 599 {
-                        return AppError.server(networkError.error, statusCode: statusCode, data: networkError.data)
+                        return CustomError.server(networkError.error, statusCode: statusCode, data: networkError.data)
                     } else {
-                        return AppError.unexpected(networkError.error, statusCode: statusCode, data: networkError.data)
+                        return CustomError.internetConnection(networkError.error, statusCode: statusCode, data: networkError.data)
                     }
                 }
             }
+            return CustomError.internetConnection(error)
         }
-        return AppError.unexpected(error)
     }
     
     func request(_ endpoint: EndpointType) async throws -> Data {
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw handleError() }
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw customError() }
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         do {
             return try await urlSessionAdapter.request(request)
         } catch {
-            throw handleError(error)
+            throw customError(error)
         }
     }
     
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type) async throws -> T {
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw handleError() }
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw customError() }
         let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         do {
             return try await urlSessionAdapter.request(request, type: type)
         } catch {
-            throw handleError(error)
+            throw customError(error)
         }
     }
     

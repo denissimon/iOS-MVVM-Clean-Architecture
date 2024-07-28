@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ImageRepository {
-    func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, AppError>
+    func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError>
     func prepareImages(_ imagesData: Data?) async -> [Image]?
     func getImage(url: URL) async -> Data?
     

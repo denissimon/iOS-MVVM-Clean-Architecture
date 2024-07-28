@@ -1,7 +1,7 @@
 import Foundation
 
 protocol GetHotTagsUseCase {
-    func execute() async -> Result<Tags, AppError>
+    func execute() async -> Result<Tags, CustomError>
 }
 
 class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
@@ -12,7 +12,7 @@ class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
         self.tagRepository = tagRepository
     }
     
-    func execute() async -> Result<Tags, AppError> {
+    func execute() async -> Result<Tags, CustomError> {
         let result = await tagRepository.getHotTags()
         switch result {
         case .success(let tagsType):

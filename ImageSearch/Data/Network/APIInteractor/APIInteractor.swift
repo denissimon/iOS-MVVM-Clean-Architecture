@@ -1,6 +1,6 @@
 import Foundation
 
-// Result<Type, AppError> can be used as another way to return the result
+// Result<Type, CustomError> can be used as another way to return the result
 
 protocol APIInteractor {
     func request(_ endpoint: EndpointType) async throws -> Data

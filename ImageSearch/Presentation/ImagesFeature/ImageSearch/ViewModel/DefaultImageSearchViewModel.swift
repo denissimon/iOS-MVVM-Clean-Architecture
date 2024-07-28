@@ -113,11 +113,14 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 let imageQuery = ImageQuery(query: searchString)
                 searchResults = try await self.searchImagesUseCase.execute(imageQuery, imagesLoadTask: self.imagesLoadTask)
             } catch {
-                if error is AppError {
-                    let error = error as! AppError
-                    let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
-                    self.showError(msg)
-                } else {
+                let customError = error as? CustomError
+                let defaultMessage = ((customError?.errorDescription ?? "") + " " + (customError?.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+                switch error {
+                case CustomError.app(_, let customMessage):
+                    self.showError(customMessage ?? defaultMessage)
+                case is CustomError:
+                    self.showError(defaultMessage)
+                default:
                     self.showError(error.localizedDescription)
                 }
                 return
