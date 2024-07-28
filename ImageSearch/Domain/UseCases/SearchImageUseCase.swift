@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SearchImagesUseCase {
-    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>?) async throws -> ImageSearchResults?
+    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>?) async -> Result<ImageSearchResults?, CustomError>
 }
 
 class DefaultSearchImagesUseCase: SearchImagesUseCase {
@@ -16,21 +16,21 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
         UUID().uuidString
     }
     
-    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async throws -> ImageSearchResults? {
+    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async -> Result<ImageSearchResults?, CustomError> {
         
         let result = await self.imageRepository.searchImages(imageQuery)
         
-        if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }
+        if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return .success(nil) } }
         
         switch result {
         case .success(let imagesData):
             let images = await self.imageRepository.prepareImages(imagesData)
             
             guard images != nil else {
-                throw CustomError.app(.decoding)
+                return .failure(CustomError.app(.decoding))
             }
             
-            if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return nil } }
+            if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return .success(nil) } }
             
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
                 for item in images! {
@@ -55,9 +55,9 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
                 return processedImages
             }
             
-            return ImageSearchResults(id: self.generateSearchId(), searchQuery: imageQuery, searchResults: thumbnailImages)
+            return .success(ImageSearchResults(id: self.generateSearchId(), searchQuery: imageQuery, searchResults: thumbnailImages))
         case .failure(let error):
-            throw error
+            return .failure(error)
         }
     }
 }

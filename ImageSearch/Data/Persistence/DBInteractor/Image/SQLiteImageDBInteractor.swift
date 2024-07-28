@@ -34,8 +34,15 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             try sqliteAdapter.createTable(sql: sqlStatement) // create table if not exists
             try sqliteAdapter.addIndex(to: imagesTable, forColumn: "searchId") // add index if not exists
         } catch {
-            print("SQLite:", error)
+            fatalError("Image table must be created by SQLite")
         }
+    }
+    
+    private func log(_ error: SQLiteError) {
+        // Optionally, reporting solutions like Firebase Crashlytics can be used here
+        #if DEBUG
+        print("SQLite:", error)
+        #endif
     }
     
     func saveImage<T: Codable>(_ image: T, searchId: String, sortId: Int, type: T.Type) -> Bool? {
@@ -47,7 +54,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
                 let _ = try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
                 return true
             } catch {
-                print("SQLite:", error)
+                log(error as! SQLiteError)
                 return nil
             }
         } else {
@@ -76,7 +83,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             }
             return images
         } catch {
-            print("SQLite:", error)
+            log(error as! SQLiteError)
             return nil
         }
     }
@@ -100,7 +107,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             }
             return false
         } catch {
-            print("SQLite:", error)
+            log(error as! SQLiteError)
             return nil
         }
     }
@@ -110,7 +117,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         do {
             try sqliteAdapter.deleteAllRows(in: imagesTable)
         } catch {
-            print("SQLite:", error)
+            log(error as! SQLiteError)
         }
     }
 }

@@ -107,37 +107,32 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 self.memorySafetyCheck(data: self.data.value)
             }
             
-            var searchResults: ImageSearchResults?
+            let imageQuery = ImageQuery(query: searchString)
+            let result = await self.searchImagesUseCase.execute(imageQuery, imagesLoadTask: self.imagesLoadTask)
             
-            do {
-                let imageQuery = ImageQuery(query: searchString)
-                searchResults = try await self.searchImagesUseCase.execute(imageQuery, imagesLoadTask: self.imagesLoadTask)
-            } catch {
-                let customError = error as? CustomError
-                let defaultMessage = ((customError?.errorDescription ?? "") + " " + (customError?.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
+            switch result {
+            case .success(let searchResults):
+                guard !Task.isCancelled else { return }
+                
+                guard let searchResults = searchResults else {
+                    self.activityIndicatorVisibility.value = false
+                    return
+                }
+                
+                self.data.value.insert(searchResults, at: 0)
+                self.lastSearchQuery = searchQuery
+                
+                self.activityIndicatorVisibility.value = false
+                self.scrollTop.value = nil
+            case .failure(let error):
+                let defaultMessage = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
                 switch error {
                 case CustomError.app(_, let customMessage):
                     self.showError(customMessage ?? defaultMessage)
-                case is CustomError:
-                    self.showError(defaultMessage)
                 default:
-                    self.showError(error.localizedDescription)
+                    self.showError(defaultMessage)
                 }
-                return
             }
-            
-            guard !Task.isCancelled else { return }
-            
-            guard let searchResults = searchResults else {
-                self.activityIndicatorVisibility.value = false
-                return
-            }
-            
-            self.data.value.insert(searchResults, at: 0)
-            self.lastSearchQuery = searchQuery
-            
-            self.activityIndicatorVisibility.value = false
-            self.scrollTop.value = nil
         }
     }
     
