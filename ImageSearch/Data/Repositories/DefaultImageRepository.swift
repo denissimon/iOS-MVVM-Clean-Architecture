@@ -22,7 +22,6 @@ class DefaultImageRepository: ImageRepository {
         }
     }
     
-    // A pure transformation of the data (a pure function within the impure context)
     func prepareImages(_ imagesData: Data?) async -> [Image]? {
         do {
             guard
