@@ -32,7 +32,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     let didSelect: Event<ImageQuery>
     
-    private var dataForWeekFlickrTags = [Tag]()
+    private var dataForWeekTags = [Tag]()
     private var selectedSegment: TagsSegmentType = .week
     
     let screenTitle = NSLocalizedString("Hot Tags", comment: "")
@@ -73,13 +73,13 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             
             let result = await self?.getHotTagsUseCase.execute()
             
-            var allHotFlickrTags = [Tag]()
+            var allHotTags = [Tag]()
             
             switch result {
             case .success(let tags):
-                let receivedHotTags = self?.composeFlickrHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
-                allHotFlickrTags = receivedHotTags ?? []
-                self?.dataForWeekFlickrTags = allHotFlickrTags
+                let receivedHotTags = self?.composeHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
+                allHotTags = receivedHotTags ?? []
+                self?.dataForWeekTags = allHotTags
                 self?.activityIndicatorVisibility.value = false
             case .failure(let error):
                 let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
@@ -89,23 +89,18 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             }
             
             if self?.selectedSegment == .week {
-                self?.data.value = allHotFlickrTags
+                self?.data.value = allHotTags
             }
         }
     }
     
-    private func composeFlickrHotTags(type: TagsSegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
+    private func composeHotTags(type: TagsSegmentType, weekHotTags: [Tag]? = nil) -> [Tag] {
         switch type {
         case .week:
-            if weekHotTags != nil {
-                return weekHotTags!
-            } else {
-                return [Tag]()
-            }
+            return weekHotTags ?? [Tag]()
         case .allTimes:
-            let allTimesHotTagsStr = AppConfiguration.Other.allTimesHotTags
             var allTimesHotTags = [Tag]()
-            for tag in allTimesHotTagsStr {
+            for tag in AppConfiguration.Other.allTimesHotTags {
                 allTimesHotTags.append(Tag(name: tag))
             }
             return allTimesHotTags
@@ -115,8 +110,8 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     func onSelectedSegmentChange(_ index: Int) {
         if index == 0 {
             selectedSegment = .week
-            if !dataForWeekFlickrTags.isEmpty {
-                data.value = dataForWeekFlickrTags
+            if !dataForWeekTags.isEmpty {
+                data.value = dataForWeekTags
             } else {
                 data.value = []
                 if !activityIndicatorVisibility.value {
@@ -125,7 +120,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             }
         } else if index == 1 {
             selectedSegment = .allTimes
-            data.value = composeFlickrHotTags(type: .allTimes)
+            data.value = composeHotTags(type: .allTimes)
         }
     }
 }
