@@ -53,7 +53,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
 [ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/ImageCachingService.swift
 
-### Layers
+### Main layers
 
 **Presentation (MVVM)** -> **Domain** <- **Data**
 
@@ -63,7 +63,7 @@ Domain: _entities_, _use cases_, _services_, _interfaces for repositories_
 
 Data: _entity repositories_, _APIs_, _API/DB interactors_, _adapters_
 
-### Use cases
+### Use case scenarios
 
 ImageSearch module:
 ```swift
@@ -86,15 +86,6 @@ HotTags module:
 
 [ImageCachingService][ImageCachingServiceLink] implements the logic of caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since without caching it can quickly grow to hundreds of MB. Downloaded images are cached and read from the cache automatically.
 
-### Flickr API
-
-- [flickr.photos.search][FlickrPhotosSearchLink]
-
-- [flickr.tags.getHotList][FlickrTagsGetHotListLink]
-
-[FlickrPhotosSearchLink]: https://www.flickr.com/services/api/flickr.photos.search.html
-[FlickrTagsGetHotListLink]: https://www.flickr.com/services/api/flickr.tags.getHotList.html
-
 ### Reusable components from this project
 
 - [SwiftEvents](https://github.com/denissimon/SwiftEvents) - the easiest way to implement data binding and notifications. Includes Event\<T\> and Observable\<T\>. Has a thread-safe version.
@@ -104,57 +95,3 @@ HotTags module:
 ### Requirements
 
 iOS version support: 15.0+. Xcode 13.0+, Swift 5.5+
-
-### Folder structure 
-
-```bash 
-├── ImageSearch
-│   ├── Coordinator
-│   │   └── DIContainer
-│   ├── Common
-│   │   └── Utils
-│   ├── Presentation
-│   │   ├── ImagesFeature
-│   │   │   ├── ImageSearch
-│   │   │   │   ├── View
-│   │   │   │   │   └── Cells
-│   │   │   │   └── ViewModel
-│   │   │   ├── ImageDetails
-│   │   │   │   ├── View
-│   │   │   │   └── ViewModel
-│   │   │   └── HotTags
-│   │   │       ├── View
-│   │   │       └── ViewModel
-│   │   └── Common
-│   │       └── Protocols
-│   ├── Domain
-│   │   ├── Entities
-│   │   │   └── Behaviors
-│   │   ├── Exception
-│   │   ├── UseCases
-│   │   ├── Services
-│   │   └── Interfaces
-│   │       └── Repositories
-│   ├── Data
-│   │   ├── Repositories
-│   │   ├── APIs
-│   │   ├── Network
-│   │   │   ├── APIInteractor
-│   │   │   ├── NetworkService
-│   │   │   └── Utils
-│   │   └── Persistence
-│   │       ├── DBInteractor
-│   │       │   └── Image
-│   │       └── SQLite
-│   └── Resources
-│       ├── Assets.xcassets
-│       ├── Base.lproj
-│       ├── en.lproj
-│       └── es.lproj
-├── ImageSearchTests
-│   ├── Domain
-│   │   ├── UseCases
-│   │   └── Behaviors
-│   ├── Presentation
-└── └── Data
-```
