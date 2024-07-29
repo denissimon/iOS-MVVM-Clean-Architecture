@@ -88,9 +88,12 @@ HotTags module:
 
 ### Flickr API
 
-[flickr.photos.search][FlickrAPILink]
+- [flickr.photos.search][FlickrPhotosSearchLink]
 
-[FlickrAPILink]: https://www.flickr.com/services/api/flickr.photos.search.html
+- [flickr.tags.getHotList][FlickrTagsGetHotListLink]
+
+[FlickrPhotosSearchLink]: https://www.flickr.com/services/api/flickr.photos.search.html
+[FlickrTagsGetHotListLink]: https://www.flickr.com/services/api/flickr.tags.getHotList.html
 
 ### Reusable components from this project
 
@@ -149,8 +152,9 @@ iOS version support: 15.0+. Xcode 13.0+, Swift 5.5+
 │       ├── en.lproj
 │       └── es.lproj
 ├── ImageSearchTests
-│   ├── UseCases
 │   ├── Domain
+│   │   ├── UseCases
+│   │   └── Behaviors
 │   ├── Presentation
 └── └── Data
 ```
