@@ -4,7 +4,7 @@ import XCTest
 class ImageBehaviorTests: XCTestCase {
     
     static var testImageStub: Image {
-        let testImage = Image(title: "random1", flickr: FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
+        let testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
         testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         return testImage
     }
