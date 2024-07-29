@@ -1,6 +1,6 @@
 import Foundation
 
-/* Use cases:
+/* Use case scenarios:
  * searchImagesUseCase.execute(imageQuery)
  * imageCachingService.cacheIfNecessary(data)
  * imageCachingService.getCachedImages(searchId: searchId)

@@ -1,6 +1,6 @@
 import Foundation
 
-/* Use cases:
+/* Use case scenarios:
  * getBigImageUseCase.execute(for: image)
  */
 

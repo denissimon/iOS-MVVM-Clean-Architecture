@@ -5,7 +5,7 @@ enum TagsSegmentType {
     case allTimes
 }
 
-/* Use cases:
+/* Use case scenarios:
  * getHotTagsUseCase.execute()
  */
 
