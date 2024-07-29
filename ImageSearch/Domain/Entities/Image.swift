@@ -10,15 +10,15 @@ protocol ImageListItemVM: AnyObject {
     var thumbnail: ImageWrapper? { get }
     var bigImage: ImageWrapper? { get }
 }
-    
-struct FlickrImageParameters: Codable {
-    let imageID: String
-    let farm: Int
-    let server: String
-    let secret: String
-}
 
 class Image: Codable, ImageType, ImageListItemVM {
+    
+    struct FlickrImageParameters: Codable {
+        let imageID: String
+        let farm: Int
+        let server: String
+        let secret: String
+    }
     
     var thumbnail: ImageWrapper?
     var bigImage: ImageWrapper?
