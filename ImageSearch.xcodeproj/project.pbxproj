@@ -279,6 +279,7 @@
 		4145C7D22B2F58EA001DD403 /* ImagesFeature */ = {
 			isa = PBXGroup;
 			children = (
+				4145C7C12B2C9846001DD403 /* MainCoordinator.swift */,
 				41E9A6B523FED04C00CDE3D6 /* ImageSearch */,
 				41AD9B8523FF3445001383AD /* ImageDetails */,
 				418F33B82441324B00193C74 /* HotTags */,
@@ -585,7 +586,6 @@
 				4145C7BC2B2B3BB6001DD403 /* DIContainer */,
 				41AD9B9623FFBD57001383AD /* FlowCoordinator.swift */,
 				41AD9B9523FFBD57001383AD /* AppCoordinator.swift */,
-				4145C7C12B2C9846001DD403 /* MainCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
