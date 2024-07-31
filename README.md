@@ -26,6 +26,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - [Data Binding][DataBindingLink] using the lightweight [Observable\<T\>][ObservableLink]
 - [Closure-based delegation][ClosureBasedDelegationLink] using the lightweight [Event\<T\>][EventLink]
 - [Pure functional transformations][PureFunctionalTransformationsLink]
+- [Delegating entity behavior][DelegatingEntityBehaviorLink]
 - [Alternative DTO approach][AlternativeDTOApproachLink]
 
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
@@ -39,6 +40,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 [ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
 [EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift
 [PureFunctionalTransformationsLink]: https://blog.ploeh.dk/2020/03/02/impureim-sandwich
+[DelegatingEntityBehaviorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Behaviors/ImageBehavior.swift
 [AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
 ### Includes
@@ -47,7 +49,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
 - Advanced error handling
-- Unit tests for a number of components from all layers
+- Unit and integration tests for a number of components from all layers
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Network/NetworkService/NetworkService.swift
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
@@ -55,13 +57,11 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 ### Main layers
 
-**Presentation (MVVM)** -> **Domain** <- **Data**
+**Presentation (MVVM)**: _coordinators_, _UI elements_, _SwiftUI views_, _UIKit storyboards_, _ViewControllers_, _ViewModels_
 
-Presentation: _UI elements_, _SwiftUI views_, _UIKit storyboards_, _view controllers_, _ViewModels_
+**Domain**: _entities_, _use cases_, _services_, _interfaces_ (for use cases, services and repositories)
 
-Domain: _entities_, _use cases_, _services_, _interfaces for repositories_
-
-Data: _entity repositories_, _APIs_, _API/DB interactors_, _adapters_
+**Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and storages), _adapters_
 
 ### Use case scenarios
 
@@ -84,7 +84,7 @@ HotTags module:
 
 ### Image caching service
 
-[ImageCachingService][ImageCachingServiceLink] implements the logic of caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since without caching it can quickly grow to hundreds of MB. Downloaded images are cached and read from the cache automatically.
+[ImageCachingService][ImageCachingServiceLink] implements the logic for caching downloaded images and freeing memory. This helps keep the app's memory usage under control, since there can be a lot of downloaded images, and without caching, the app could quickly accumulate hundreds of MB of memory used. Downloaded images are cached and read from the cache automatically.
 
 ### Reusable components from this project
 
