@@ -30,8 +30,6 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
                 return .failure(CustomError.app(.decoding))
             }
             
-            if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return .success(nil) } }
-            
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
                 for item in images! {
                     taskGroup.addTask {
