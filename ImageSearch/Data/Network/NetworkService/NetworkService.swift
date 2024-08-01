@@ -153,7 +153,7 @@ class NetworkService: NetworkServiceType {
         let statusCode = httpResponse?.statusCode
         try validate(statusCode, data: responseData, requestValidation: configAutoValidation)
         
-        guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
+        guard let decoded = try? JSONDecoder().decode(type, from: responseData) else {
             throw NetworkError(statusCode: statusCode, data: responseData)
         }
         
@@ -277,7 +277,7 @@ class NetworkService: NetworkServiceType {
         let statusCode = httpResponse?.statusCode
         try validate(statusCode, data: responseData, requestValidation: configAutoValidation)
         
-        guard let decoded = ResponseDecodable.decode(type, data: responseData) else {
+        guard let decoded = try? JSONDecoder().decode(type, from: responseData) else {
             throw NetworkError(statusCode: statusCode, data: responseData)
         }
         
@@ -304,7 +304,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// Downloads a file to disk, and supports background downloads.
-    /// - Returns:.success(true), if successful
+    /// - Returns: .success(true), if successful
     func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig? = nil) async throws -> (result: Bool, statusCode: Int?) {
         log("\nNetworkService downloadFileWithStatusCode, url: \(url), to: \(localUrl)")
         
@@ -395,7 +395,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 if error == nil, (try? self.validate(statusCode, requestValidation: configAutoValidation)) != nil {
-                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                    guard let data = data, let decoded = try? JSONDecoder().decode(type, from: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
                     }
@@ -419,7 +419,7 @@ class NetworkService: NetworkServiceType {
                 let response = response as? HTTPURLResponse
                 let statusCode = response?.statusCode
                 if error == nil, (try? self.validate(statusCode, requestValidation: configAutoValidation)) != nil {
-                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                    guard let data = data, let decoded = try? JSONDecoder().decode(type, from: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
                     }
@@ -440,7 +440,8 @@ class NetworkService: NetworkServiceType {
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
-        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -468,7 +469,8 @@ class NetworkService: NetworkServiceType {
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
-        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
@@ -562,7 +564,7 @@ class NetworkService: NetworkServiceType {
                 let statusCode = response?.statusCode
                 
                 if error == nil, (try? self.validate(statusCode, requestValidation: configAutoValidation)) != nil {
-                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                    guard let data = data, let decoded = try? JSONDecoder().decode(type, from: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
                     }
@@ -588,7 +590,7 @@ class NetworkService: NetworkServiceType {
                 let statusCode = response?.statusCode
                 
                 if error == nil, (try? self.validate(statusCode, requestValidation: configAutoValidation)) != nil {
-                    guard let data = data, let decoded = ResponseDecodable.decode(type, data: data) else {
+                    guard let data = data, let decoded = try? JSONDecoder().decode(type, from: data) else {
                         completion(.failure(NetworkError(statusCode: statusCode, data: data)))
                         return
                     }
@@ -610,7 +612,8 @@ class NetworkService: NetworkServiceType {
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
-        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
         let dataTask = urlSession.dataTask(with: request) { (data, response, error) in
             let response = response as? HTTPURLResponse
@@ -638,7 +641,8 @@ class NetworkService: NetworkServiceType {
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
-        let request = RequestFactory.request(url: url, method: .GET, params: nil)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
         let downloadTask = urlSession.downloadTask(with: request) { (tempLocalUrl, response, error) in
             let response = response as? HTTPURLResponse
