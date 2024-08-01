@@ -1,11 +1,13 @@
 import Foundation
 
 class RequestFactory {
-    static func request(url: URL, method: HTTPMethod, params: HTTPParams? = nil) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = method.rawValue
+    static func request(_ endpoint: EndpointType) -> URLRequest? {
+        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { return nil }
         
-        if let params = params {
+        var request = URLRequest(url: url)
+        request.httpMethod = endpoint.method.rawValue
+        
+        if let params = endpoint.params {
             if let httpBody = params.httpBody {
                 switch httpBody {
                 case is Data:
