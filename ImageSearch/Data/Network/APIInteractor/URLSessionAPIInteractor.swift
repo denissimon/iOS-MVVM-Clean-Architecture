@@ -28,8 +28,7 @@ class URLSessionAPIInteractor: APIInteractor {
     }
     
     func request(_ endpoint: EndpointType) async throws -> Data {
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw customError() }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        guard let request = RequestFactory.request(endpoint) else { throw customError() }
         do {
             return try await urlSessionAdapter.request(request)
         } catch {
@@ -38,8 +37,7 @@ class URLSessionAPIInteractor: APIInteractor {
     }
     
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type) async throws -> T {
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else { throw customError() }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
+        guard let request = RequestFactory.request(endpoint) else { throw customError() }
         do {
             return try await urlSessionAdapter.request(request, type: type)
         } catch {
