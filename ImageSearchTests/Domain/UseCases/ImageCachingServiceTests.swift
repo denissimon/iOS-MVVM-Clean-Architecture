@@ -175,7 +175,7 @@ class ImageCachingServiceTests: XCTestCase {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 1) // getImages()
         }
-        let count = await imageCachingService.searchIdsFromCache.count
+        let count = await imageCachingService.toTestSearchIdsFromCache.count
         XCTAssertEqual(count, 1)
         XCTAssertEqual(retrievedImagesFromCache!.count, 0)
     }
@@ -191,7 +191,7 @@ class ImageCachingServiceTests: XCTestCase {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 1) // getImages()
         }
-        let count = await imageCachingService.searchIdsFromCache.count
+        let count = await imageCachingService.toTestSearchIdsFromCache.count
         XCTAssertEqual(count, 1)
         XCTAssertEqual(retrievedImagesFromCache!.count, 2)
     }
