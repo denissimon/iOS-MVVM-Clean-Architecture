@@ -106,3 +106,9 @@ actor DefaultImageCachingService: ImageCachingService {
         return nil
     }
 }
+
+extension DefaultImageCachingService {
+    var toTestSearchIdsFromCache: Set<String> {
+        searchIdsFromCache
+    }
+}
