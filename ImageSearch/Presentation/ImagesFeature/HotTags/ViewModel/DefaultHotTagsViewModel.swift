@@ -9,9 +9,8 @@ enum TagsSegmentType {
  * getHotTagsUseCase.execute()
  */
 
-protocol HotTagsViewModelInput {
-    var didSelect: Event<ImageQuery> { get }
-    
+protocol HotTagsViewModelInput {    
+    func triggerDidSelect(with imageQuery: ImageQuery)
     func getHotTags()
     func getDataSource() -> TagsDataSource
     func onSelectedSegmentChange(_ index: Int)
@@ -30,7 +29,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     private let getHotTagsUseCase: GetHotTagsUseCase
     
-    let didSelect: Event<ImageQuery>
+    private let didSelect: Event<ImageQuery>
     
     private var dataForWeekTags = [Tag]()
     private var selectedSegment: TagsSegmentType = .week
@@ -51,6 +50,10 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     deinit {
         hotTagsLoadTask?.cancel()
+    }
+    
+    func triggerDidSelect(with imageQuery: ImageQuery) {
+        didSelect.notify(imageQuery)
     }
     
     func getDataSource() -> TagsDataSource {
