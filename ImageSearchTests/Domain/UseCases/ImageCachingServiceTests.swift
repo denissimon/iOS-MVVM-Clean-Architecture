@@ -102,7 +102,7 @@ class ImageCachingServiceTests: XCTestCase {
         
         let imageRepository = ImageRepositoryMock()
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
-        await imageCachingService.didProcess.subscribe(self) { newData in
+        await imageCachingService.subscribeToDidProcess(self) { newData in
             completionCallsCount += 1
             precessedData = newData
         }
@@ -124,7 +124,7 @@ class ImageCachingServiceTests: XCTestCase {
         
         let imageRepository = ImageRepositoryMock()
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
-        await imageCachingService.didProcess.subscribe(self) { newData in
+        await imageCachingService.subscribeToDidProcess(self) { newData in
             completionCallsCount += 1
             precessedData = newData
         }

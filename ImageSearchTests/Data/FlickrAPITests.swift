@@ -130,11 +130,10 @@ class FlickrAPITests: XCTestCase {
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
         let networkServiceMock = NetworkServiceAsyncAwaitMock(responseData: expectedData)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         var resultData: Data? = Data()
         do {
@@ -158,11 +157,10 @@ class FlickrAPITests: XCTestCase {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceAsyncAwaitMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         do {
             let tags = try await networkServiceMock.request(request, type: Tags.self)
@@ -181,11 +179,10 @@ class FlickrAPITests: XCTestCase {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceAsyncAwaitMock(responseData: "some_data".data(using: .utf8)!)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         do {
             let _ = try await networkServiceMock.request(request, type: Tags.self)
@@ -202,11 +199,10 @@ class FlickrAPITests: XCTestCase {
         endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
         let networkService = NetworkService()
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         do {
             let _ = try await networkService.request(request, type: Tags.self)
@@ -285,11 +281,10 @@ class FlickrAPITests: XCTestCase {
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: expectedData)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         var resultData: Data? = Data()
         let _ = networkServiceMock.request(request) { response in
@@ -316,11 +311,10 @@ class FlickrAPITests: XCTestCase {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: FlickrAPITests.getHotTagsResultJsonStub.data(using: .utf8)!)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         let _ = networkServiceMock.request(request, type: Tags.self) { response in
             switch response {
@@ -341,11 +335,10 @@ class FlickrAPITests: XCTestCase {
         let endpoint = FlickrAPI.getHotTags()
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: "some_data".data(using: .utf8)!)
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         let _ = networkServiceMock.request(request, type: Tags.self) { response in
             switch response {
@@ -364,11 +357,10 @@ class FlickrAPITests: XCTestCase {
         endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
         let networkService = NetworkService()
         
-        guard let url = URL(string: endpoint.baseURL + endpoint.path) else {
+        guard let request = RequestFactory.request(endpoint) else {
             XCTFail()
             return
         }
-        let request = RequestFactory.request(url: url, method: endpoint.method, params: endpoint.params)
         
         let _ = networkService.request(request, type: Tags.self) { response in
             switch response {
