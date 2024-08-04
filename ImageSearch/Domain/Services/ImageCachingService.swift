@@ -1,9 +1,7 @@
 import Foundation
 
 protocol ImageCachingService: Actor {
-    var cachingTask: Task<Void, Never>? { get }
-    var didProcess: Event<[ImageSearchResults]> { get }
-    
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping ([ImageSearchResults]) -> ())
     func cacheIfNecessary(_ data: [ImageSearchResults]) async
     func getCachedImages(searchId: String) async -> [Image]?
 }
@@ -13,12 +11,12 @@ actor DefaultImageCachingService: ImageCachingService {
     private let imageRepository: ImageRepository
     
     // To avoid reading from cache and updating UI while writing to cache may be in progress
-    private(set) var cachingTask: Task<Void, Never>? = nil
+    private var cachingTask: Task<Void, Never>? = nil
     
     // To prevent images with the same searchId from being read again from the cache
-    private(set) var searchIdsFromCache: Set<String> = []
+    private var searchIdsFromCache: Set<String> = []
     
-    let didProcess: Event<[ImageSearchResults]> = Event()
+    private var didProcess: Event<[ImageSearchResults]> = Event()
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
@@ -30,6 +28,12 @@ actor DefaultImageCachingService: ImageCachingService {
     // Clear the Image table at the app's start
     private func deleteAllImages() async {
         await imageRepository.deleteAllImages()
+    }
+    
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping ([ImageSearchResults]) -> ()) {
+        didProcess.subscribe(subscriber) { result in
+            handler(result)
+        }
     }
     
     // Called after each new search
@@ -91,6 +95,8 @@ actor DefaultImageCachingService: ImageCachingService {
     }
     
     func getCachedImages(searchId: String) async -> [Image]? {
+        guard cachingTask == nil else { return nil }
+        
         if !searchIdsFromCache.contains(searchId) {
             searchIdsFromCache.insert(searchId)
             if let images = await self.imageRepository.getImages(searchId: searchId) as? [Image] {
