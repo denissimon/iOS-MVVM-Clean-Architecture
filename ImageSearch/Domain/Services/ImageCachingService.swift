@@ -16,7 +16,7 @@ actor DefaultImageCachingService: ImageCachingService {
     // To prevent images with the same searchId from being read again from the cache
     private var searchIdsFromCache: Set<String> = []
     
-    private var didProcess: Event<[ImageSearchResults]> = Event()
+    private let didProcess: Event<[ImageSearchResults]> = Event()
     
     init(imageRepository: ImageRepository) {
         self.imageRepository = imageRepository
