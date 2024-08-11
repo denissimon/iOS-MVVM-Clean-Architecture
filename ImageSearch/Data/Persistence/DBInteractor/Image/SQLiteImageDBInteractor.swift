@@ -51,7 +51,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         if let encodedData = try? JSONEncoder().encode(image), let jsonString = String(data: encodedData, encoding: .utf8) {
             do {
                 let sql = "INSERT INTO \(imagesTable.name) (searchId, sortId, json) VALUES (?, ?, ?);"
-                let _ = try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
+                try sqliteAdapter.insertRow(sql: sql, params: [searchId, sortId, jsonString])
                 return true
             } catch {
                 log(error as! SQLiteError)
