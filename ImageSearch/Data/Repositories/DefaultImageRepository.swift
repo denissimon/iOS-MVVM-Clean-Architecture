@@ -12,17 +12,7 @@ class DefaultImageRepository: ImageRepository {
     
     // MARK: - API methods
     
-    func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
-        let endpoint = FlickrAPI.search(imageQuery)
-        do {
-            let result = try await apiInteractor.request(endpoint)
-            return .success(result)
-        } catch {
-            return .failure(error as! CustomError)
-        }
-    }
-    
-    func prepareImages(_ imagesData: Data?) async -> [Image]? {
+    private func prepareImages(_ imagesData: Data?) -> [Image]? {
         guard
             let imagesData = imagesData, !imagesData.isEmpty,
             let resultsDictionary = try? JSONSerialization.jsonObject(with: imagesData) as? [String: AnyObject],
@@ -43,6 +33,20 @@ class DefaultImageRepository: ImageRepository {
         guard !imagesArr.isEmpty else { return nil }
         
         return imagesArr
+    }
+    
+    func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
+        let endpoint = FlickrAPI.search(imageQuery)
+        do {
+            let data = try await apiInteractor.request(endpoint)
+            if let images = prepareImages(data) {
+                return .success(images)
+            } else {
+                return .failure(CustomError.app(.apiClient))
+            }
+        } catch {
+            return .failure(error as! CustomError)
+        }
     }
     
     func getImage(url: URL) async -> Data? {
@@ -78,5 +82,11 @@ class DefaultImageRepository: ImageRepository {
     
     func deleteAllImages() async {
         imageDBInteractor.deleteAllImages()
+    }
+}
+
+extension DefaultImageRepository {
+    func toTestPrepareImages(_ imagesData: Data?) -> [Image]? {
+        prepareImages(imagesData)
     }
 }
