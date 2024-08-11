@@ -7,7 +7,6 @@ enum CustomError: Error, LocalizedError {
     case unexpected(_ error: Error? = nil)
     
     enum AppError {
-        case decoding
         case apiClient
         case database
         case different
