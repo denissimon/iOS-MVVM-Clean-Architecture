@@ -13,7 +13,7 @@ class DefaultTagRepository: TagRepository {
         do {
             let tags = try await apiInteractor.request(endpoint, type: Tags.self)
             if tags.stat != "ok" {
-                return .failure(CustomError.server())
+                return .failure(CustomError.app(.apiClient))
             }
             return .success(tags)
         } catch {
