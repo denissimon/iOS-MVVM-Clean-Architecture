@@ -1,5 +1,7 @@
 import Foundation
 
+// callAsFunction() can be used instead of execute() to call instances of the use case class as if they were functions
+
 protocol GetHotTagsUseCase {
     func execute() async -> Result<Tags, CustomError>
 }
