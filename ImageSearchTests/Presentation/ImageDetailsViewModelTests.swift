@@ -23,18 +23,11 @@ class ImageDetailsViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
             ImageDetailsViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
-            return .success(Data())
-        }
-        
-        func prepareImages(_ imageData: Data?) async -> [Image]? {
-            ImageDetailsViewModelTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
-            }
-            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
+            return .success([])
         }
         
         func getImage(url: URL) async -> Data? {
@@ -50,14 +43,14 @@ class ImageDetailsViewModelTests: XCTestCase {
             ImageDetailsViewModelTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
             }
-            return nil
+            return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
             ImageDetailsViewModelTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
             }
-            return nil
+            return []
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {

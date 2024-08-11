@@ -144,13 +144,13 @@ class FlickrAPITests: XCTestCase {
         }
         
         let diContainer = DIContainer()
-        let imageRepository = diContainer.makeImageRepository()
+        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
         
-        let images = await imageRepository.prepareImages(resultData)
+        let images = imageRepository.toTestPrepareImages(resultData)
         
         XCTAssertNotNil(images)
         XCTAssertEqual(images!.count, 5)
-        XCTAssertEqual(images![0].title, "Andrea  Modelo  Model")
+        XCTAssertEqual(images![0].flickr?.imageID, "53624890009")
     }
     
     func testGetHotTags_asyncAwaitAPI() async throws {
@@ -298,13 +298,13 @@ class FlickrAPITests: XCTestCase {
         }
         
         let diContainer = DIContainer()
-        let imageRepository = diContainer.makeImageRepository()
+        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
         
-        let images = await imageRepository.prepareImages(resultData)
+        let images = imageRepository.toTestPrepareImages(resultData)
         
         XCTAssertNotNil(images)
         XCTAssertEqual(images!.count, 5)
-        XCTAssertEqual(images![0].title, "Andrea  Modelo  Model")
+        XCTAssertEqual(images![0].flickr?.imageID, "53624890009")
     }
     
     func testGetHotTags_callbacksAPI() {

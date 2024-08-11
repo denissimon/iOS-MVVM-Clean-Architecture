@@ -15,6 +15,10 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         return testImage
     }
     
+    static let imagesDataStub = """
+        {"photos":{"page":1,"pages":5632,"perpage":2,"total":112631,"photo":[{"id":"53910549451","owner":"183377981@N03","secret":"e5d42720cb","server":"65535","farm":66,"title":"Bees at rest","ispublic":1,"isfriend":0,"isfamily":0},{"id":"53910928365","owner":"44904157@N04","secret":"1b80873d60","server":"65535","farm":66,"title":"Wagon Load of Flowers","ispublic":1,"isfriend":0,"isfamily":0}]},"stat":"ok"}
+        """.data(using: .utf8)
+    
     static let tagsStub = Tags(
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2")]),
         stat: "ok")
@@ -23,28 +27,21 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data?, CustomError>?
+        let result: Result<[ImageType], CustomError>?
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data?, CustomError>? = nil) {
+        init(result: Result<[ImageType], CustomError>? = nil) {
             self.result = result
         }
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
             ImagesFeatureUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
             return result!
-        }
-        
-        func prepareImages(_ imageData: Data?) async -> [Image]? {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
-            }
-            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
@@ -60,14 +57,14 @@ class ImagesFeatureUseCasesTests: XCTestCase {
             ImagesFeatureUseCasesTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
             }
-            return nil
+            return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
             ImagesFeatureUseCasesTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
             }
-            return nil
+            return []
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
@@ -101,11 +98,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     // MARK: - SearchImagesUseCase
     
     func testSearchImagesUseCase_whenResultIsSuccess() async {
-        guard let imagesData = try? JSONEncoder().encode(ImagesFeatureUseCasesTests.imagesStub) else {
-            XCTFail()
-            return
-        }
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let imageRepository = ImageRepositoryMock(result: .success(ImagesFeatureUseCasesTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")
@@ -117,9 +110,20 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         XCTAssertTrue(images!.contains(ImagesFeatureUseCasesTests.testImageStub))
         
         ImagesFeatureUseCasesTests.syncQueue.sync {
-            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 5) // searchImages(), prepareImages(), and getImage() 3 times
+            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 4) // searchImages(), and getImage() 3 times
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
         }
+    }
+    
+    func testPrepareImages() async {
+        let diContainer = DIContainer()
+        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
+        
+        let images = imageRepository.toTestPrepareImages(ImagesFeatureUseCasesTests.imagesDataStub)
+        XCTAssertNotNil(images)
+        XCTAssertEqual(images!.count, 2)
+        XCTAssertEqual(images![0].flickr?.imageID, "53910549451")
+        XCTAssertEqual(images![1].flickr?.imageID, "53910928365")
     }
     
     func testSearchImagesUseCase_whenResultIsFailure() async {

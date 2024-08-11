@@ -33,18 +33,11 @@ class ImageCachingServiceTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
             ImageCachingServiceTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
-            return .success(Data())
-        }
-        
-        func prepareImages(_ imageData: Data?) async -> [Image]? {
-            ImageCachingServiceTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
-            }
-            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
+            return .success([])
         }
         
         func getImage(url: URL) async -> Data? {
@@ -61,7 +54,7 @@ class ImageCachingServiceTests: XCTestCase {
                 dbMethodsCallsCount += 1
                 cachedImages.append((image, searchId, sortId))
             }
-            return nil
+            return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
@@ -107,7 +100,7 @@ class ImageCachingServiceTests: XCTestCase {
             precessedData = newData
         }
         
-        let _ = await imageCachingService.cacheIfNecessary(ImageCachingServiceTests.searchResultsStub)
+        await imageCachingService.cacheIfNecessary(ImageCachingServiceTests.searchResultsStub)
         
         XCTAssertEqual(completionCallsCount, 1)
         XCTAssertEqual(precessedData.count, 5)
@@ -145,7 +138,7 @@ class ImageCachingServiceTests: XCTestCase {
             ImageSearchResults(id: "id1", searchQuery: ImageQuery(query: "query1"), searchResults: [image1, image2])
         ]
         
-        let _ = await imageCachingService.cacheIfNecessary(testSearchResults)
+        await imageCachingService.cacheIfNecessary(testSearchResults)
         
         XCTAssertEqual(completionCallsCount, 1)
         ImageCachingServiceTests.syncQueue.sync {

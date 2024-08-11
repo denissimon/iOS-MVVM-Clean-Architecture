@@ -34,12 +34,12 @@ class ImageSearchViewModelTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<Data?, CustomError>?
+        let result: Result<[ImageType], CustomError>?
         var cachedImages: [(image: Image, searchId: String, sortId: Int)] = []
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<Data?, CustomError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
+        init(result: Result<[ImageType], CustomError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
             self.result = result
             if !cachedImages.isEmpty {
                 self.cachedImages = cachedImages
@@ -48,18 +48,11 @@ class ImageSearchViewModelTests: XCTestCase {
         
         // API methods
         
-        func searchImages(_ imageQuery: ImageQuery) async -> Result<Data?, CustomError> {
+        func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
             ImageSearchViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
             return result!
-        }
-        
-        func prepareImages(_ imageData: Data?) async -> [Image]? {
-            ImageSearchViewModelTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
-            }
-            return try? JSONDecoder().decode([Image].self, from: imageData ?? Data())
         }
         
         func getImage(url: URL) async -> Data? {
@@ -76,7 +69,7 @@ class ImageSearchViewModelTests: XCTestCase {
                 dbMethodsCallsCount += 1
                 cachedImages.append((image, searchId, sortId))
             }
-            return nil
+            return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
@@ -150,12 +143,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsNotValid() {
-        guard let imagesData = try? JSONEncoder().encode(ImageSearchViewModelTests.imagesStub) else {
-            XCTFail()
-            return
-        }
-        
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -175,12 +163,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsSuccess() async throws {
-        guard let imagesData = try? JSONEncoder().encode(ImageSearchViewModelTests.imagesStub) else {
-            XCTFail()
-            return
-        }
-        
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -227,12 +210,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchIsRunTwice() async throws {
-        guard let imagesData = try? JSONEncoder().encode(ImageSearchViewModelTests.imagesStub) else {
-            XCTFail()
-            return
-        }
-        
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData))
+        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -262,17 +240,12 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testUpdateSection() async throws {
-        guard let imagesData = try? JSONEncoder().encode(ImageSearchViewModelTests.imagesStub) else {
-            XCTFail()
-            return
-        }
-        
         let cachedImagesStub = ImageSearchViewModelTests.cachedImagesStub
         for image in cachedImagesStub {
             image.image.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
         }
         
-        let imageRepository = ImageRepositoryMock(result: .success(imagesData), cachedImages: cachedImagesStub)
+        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub), cachedImages: cachedImagesStub)
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
