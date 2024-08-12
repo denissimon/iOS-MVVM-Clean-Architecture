@@ -16,10 +16,10 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
     
     init(with sqliteAdapter: SQLite?) {
         self.sqliteAdapter = sqliteAdapter
-        createImageTable()
+        createImagesTable()
     }
     
-    private func createImageTable() {
+    private func createImagesTable() {
         guard let sqliteAdapter = sqliteAdapter else { return }
         let sqlStatement = """
             CREATE TABLE IF NOT EXISTS "\(imagesTable.name)"(
@@ -34,7 +34,7 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
             try sqliteAdapter.createTable(sql: sqlStatement) // create table if not exists
             try sqliteAdapter.addIndex(to: imagesTable, forColumn: "searchId") // add index if not exists
         } catch {
-            fatalError("Image table must be created by SQLite")
+            fatalError("\(imagesTable.name) table must be created by SQLite")
         }
     }
     
