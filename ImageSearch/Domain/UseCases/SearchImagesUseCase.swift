@@ -49,7 +49,7 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
                 return processedImages
             }
             
-            return .success(ImageSearchResults(id: self.generateSearchId(), searchQuery: imageQuery, searchResults: thumbnailImages))
+            return .success(ImageSearchResults(id: generateSearchId(), searchQuery: imageQuery, searchResults: thumbnailImages))
         case .failure(let error):
             return .failure(error)
         }
