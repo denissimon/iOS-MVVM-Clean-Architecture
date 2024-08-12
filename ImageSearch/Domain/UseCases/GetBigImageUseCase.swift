@@ -16,7 +16,7 @@ class DefaultGetBigImageUseCase: GetBigImageUseCase {
     
     func execute(for image: Image) async -> Data? {
         if let bigImageURL = ImageBehavior.getFlickrImageURL(image, size: .big) {
-            if let imageData = await self.imageRepository.getImage(url: bigImageURL) {
+            if let imageData = await imageRepository.getImage(url: bigImageURL) {
                 return imageData
             }
         }
