@@ -9,9 +9,9 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 <table> 
   <tr>
-    <td> <img src="Screenshots/1 iOS-MVVM-Clean-Architecture Screen Shot - 2023-12-17.png" width = 252px></td>
-    <td> <img src="Screenshots/2 iOS-MVVM-Clean-Architecture Screen Shot - 2023-12-17.png" width = 252px></td>
-    <td> <img src="Screenshots/3 iOS-MVVM-Clean-Architecture Screen Shot - 2023-12-17.png" width = 252px></td>
+    <td> <img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
+    <td> <img src="Screenshots/2_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
+    <td> <img src="Screenshots/3_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
   </tr>
 </table>
 
