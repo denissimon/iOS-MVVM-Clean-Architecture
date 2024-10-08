@@ -158,7 +158,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 4) // makeToast, resetSearchBar, makeToast, resetSearchBar
+            XCTAssertEqual(observablesTriggerCount, 4) // makeToast, resetSearchBar, makeToast, resetSearchBar
         }
     }
     
@@ -184,7 +184,7 @@ class ImageSearchViewModelTests: XCTestCase {
         }
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+            XCTAssertEqual(observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
         }
     }
     
@@ -205,7 +205,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastSearchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility
+            XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility
         }
     }
     
@@ -235,7 +235,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertTrue(imageSearchViewModel.data.value[1].searchResults.contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery1)
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
+            XCTAssertEqual(observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
         }
     }
     
@@ -281,7 +281,7 @@ class ImageSearchViewModelTests: XCTestCase {
         }
         
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 3) // data, sectionData, sectionData
+            XCTAssertEqual(observablesTriggerCount, 3) // data, sectionData, sectionData
         }
     }
 }

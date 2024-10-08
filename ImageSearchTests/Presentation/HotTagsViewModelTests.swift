@@ -31,7 +31,7 @@ class HotTagsViewModelTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
         HotTagsViewModelTests.syncQueue.sync {
-            self.observablesTriggerCount = 0
+            observablesTriggerCount = 0
         }
     }
     
@@ -71,7 +71,7 @@ class HotTagsViewModelTests: XCTestCase {
         XCTAssertEqual(hotTagsViewModel.data.value.count, 3)
         XCTAssertEqual(hotTagsViewModel.makeToast.value, "")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
+            XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
         }
     }
     
@@ -93,7 +93,7 @@ class HotTagsViewModelTests: XCTestCase {
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         XCTAssertNotEqual(hotTagsViewModel.makeToast.value, "")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 4) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility, data
+            XCTAssertEqual(observablesTriggerCount, 4) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility, data
         }
     }
     
@@ -113,7 +113,7 @@ class HotTagsViewModelTests: XCTestCase {
         XCTAssertFalse(hotTagsViewModel.data.value.isEmpty)
         XCTAssertEqual(hotTagsViewModel.data.value[5].name, "nature")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 1) // data
+            XCTAssertEqual(observablesTriggerCount, 1) // data
         }
     }
     
@@ -144,7 +144,7 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 10) // data 6 times, activityIndicatorVisibility 4 times
+            XCTAssertEqual(observablesTriggerCount, 10) // data 6 times, activityIndicatorVisibility 4 times
         }
     }
 }
