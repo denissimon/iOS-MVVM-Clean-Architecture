@@ -52,7 +52,7 @@ class Image: Codable, ImageType, ImageListItemVM {
         if self.bigImage != nil {
             bigImage = ImageWrapper(uiImage: self.bigImage!.uiImage)
         }
-        let newImage = Image(title: self.title, flickr: flickr)
+        let newImage = Image(title: title, flickr: flickr)
         newImage.thumbnail = thumbnail
         newImage.bigImage = bigImage
         return newImage
