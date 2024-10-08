@@ -164,10 +164,10 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     func updateSection(_ searchId: String) {
         Task {
-            if let images = await self.imageCachingService.getCachedImages(searchId: searchId) {
+            if let images = await imageCachingService.getCachedImages(searchId: searchId) {
                 guard !images.isEmpty else { return }
                 
-                let dataCopy = self.data.value
+                let dataCopy = data.value
                 var sectionIndex = Int()
                 for (index, search) in dataCopy.enumerated() {
                     if search.id == searchId {
@@ -180,7 +180,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                     }
                 }
                 
-                self.sectionData.value = (dataCopy, [sectionIndex])
+                sectionData.value = (dataCopy, [sectionIndex])
             }
         }
     }
