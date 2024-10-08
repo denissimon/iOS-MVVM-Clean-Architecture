@@ -70,7 +70,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     }
     
     private func getFlickrHotTags() {
-        self.activityIndicatorVisibility.value = true
+        activityIndicatorVisibility.value = true
                 
         hotTagsLoadTask = Task.detached { [weak self] in
             
