@@ -20,7 +20,7 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
     
     func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async -> Result<ImageSearchResults?, CustomError> {
         
-        let result = await self.imageRepository.searchImages(imageQuery)
+        let result = await imageRepository.searchImages(imageQuery)
         
         if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return .success(nil) } }
         
