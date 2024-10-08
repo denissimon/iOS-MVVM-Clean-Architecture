@@ -88,7 +88,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         if let bigImage = image.bigImage {
             shareImage.value = [bigImage]
         } else {
-            self.makeToast.value = NSLocalizedString("No image to share", comment: "")
+            makeToast.value = NSLocalizedString("No image to share", comment: "")
         }
     }
 }
