@@ -16,9 +16,9 @@ class ImageWrapper: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let data = try container.decode(Data.self, forKey: CodingKeys.uiImage)
         if let image = UIImage(data: data) {
-            self.uiImage = image
+            uiImage = image
         } else {
-            self.uiImage = nil
+            uiImage = nil
         }
     }
 
