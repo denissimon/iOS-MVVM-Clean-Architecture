@@ -151,7 +151,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         }
         guard let lastSearchQuery = viewModel.lastSearchQuery else {
             let imageQuery = ImageQuery(query: "random")
-            self.viewModel.searchImage(for: imageQuery)
+            viewModel.searchImage(for: imageQuery)
             endRefreshing()
             return
         }
