@@ -99,7 +99,7 @@ actor DefaultImageCachingService: ImageCachingService {
         
         if !searchIdsFromCache.contains(searchId) {
             searchIdsFromCache.insert(searchId)
-            if let images = await self.imageRepository.getImages(searchId: searchId) as? [Image] {
+            if let images = await imageRepository.getImages(searchId: searchId) as? [Image] {
                 return images
             }
         }
