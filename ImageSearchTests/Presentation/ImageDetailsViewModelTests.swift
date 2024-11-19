@@ -105,18 +105,18 @@ class ImageDetailsViewModelTests: XCTestCase {
     }
     
     func testLoadBigImage() async throws {
-        XCTAssertNil(self.imageDetailsViewModel.image.bigImage)
-        XCTAssertNil(self.imageDetailsViewModel.data.value)
+        XCTAssertNil(imageDetailsViewModel.image.bigImage)
+        XCTAssertNil(imageDetailsViewModel.data.value)
         
         imageDetailsViewModel.loadBigImage()
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        XCTAssertNotNil(self.imageDetailsViewModel.image.bigImage)
-        XCTAssertNotNil(self.imageDetailsViewModel.data.value)
-        XCTAssertNotNil(self.imageDetailsViewModel.data.value?.uiImage)
+        XCTAssertNotNil(imageDetailsViewModel.image.bigImage)
+        XCTAssertNotNil(imageDetailsViewModel.data.value)
+        XCTAssertNotNil(imageDetailsViewModel.data.value?.uiImage)
         ImageDetailsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 3) // activityIndicatorVisibility, data, activityIndicatorVisibility
+            XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, data, activityIndicatorVisibility
         }
     }
     
@@ -125,24 +125,24 @@ class ImageDetailsViewModelTests: XCTestCase {
         
         XCTAssertEqual(title, "random")
         ImageDetailsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 0)
+            XCTAssertEqual(observablesTriggerCount, 0)
         }
     }
     
     func testSharedImage() async throws {
         imageDetailsViewModel.onShareButton()
-        XCTAssertTrue(self.imageDetailsViewModel.shareImage.value.isEmpty)
-        XCTAssertEqual(self.imageDetailsViewModel.makeToast.value, "No image to share")
+        XCTAssertTrue(imageDetailsViewModel.shareImage.value.isEmpty)
+        XCTAssertEqual(imageDetailsViewModel.makeToast.value, "No image to share")
         
         imageDetailsViewModel.loadBigImage()
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        self.imageDetailsViewModel.onShareButton()
-        XCTAssertFalse(self.imageDetailsViewModel.shareImage.value.isEmpty)
+        imageDetailsViewModel.onShareButton()
+        XCTAssertFalse(imageDetailsViewModel.shareImage.value.isEmpty)
         
         ImageDetailsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(self.observablesTriggerCount, 5) // makeToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
+            XCTAssertEqual(observablesTriggerCount, 5) // makeToast, activityIndicatorVisibility, data, activityIndicatorVisibility, shareImage
         }
     }
 }
