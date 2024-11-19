@@ -85,15 +85,9 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func searchImage(for searchQuery: ImageQuery) {
-        let trimmedString = searchQuery.query.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmedString.isEmpty {
+        let searchString = searchQuery.query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if searchString.isEmpty {
             makeToast.value = NSLocalizedString("Empty search query", comment: "")
-            resetSearchBar.value = nil
-            return
-        }
-        
-        guard let searchString = trimmedString.encodeURIComponent() else {
-            makeToast.value = NSLocalizedString("Search query error", comment: "")
             resetSearchBar.value = nil
             return
         }
@@ -164,10 +158,10 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     func updateSection(_ searchId: String) {
         Task {
-            if let images = await self.imageCachingService.getCachedImages(searchId: searchId) {
+            if let images = await imageCachingService.getCachedImages(searchId: searchId) {
                 guard !images.isEmpty else { return }
                 
-                let dataCopy = self.data.value
+                let dataCopy = data.value
                 var sectionIndex = Int()
                 for (index, search) in dataCopy.enumerated() {
                     if search.id == searchId {
@@ -180,7 +174,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                     }
                 }
                 
-                self.sectionData.value = (dataCopy, [sectionIndex])
+                sectionData.value = (dataCopy, [sectionIndex])
             }
         }
     }
