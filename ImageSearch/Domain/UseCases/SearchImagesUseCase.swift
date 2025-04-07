@@ -27,10 +27,10 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
         switch result {
         case .success(let imagesType):
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
-                for item in (imagesType as! [Image]) {
+                for image in imagesType as! [Image] {
                     taskGroup.addTask {
-                        guard let thumbnailUrl = ImageBehavior.getFlickrImageURL(item, size: .thumbnail) else { return item }
-                        var tempImage = item
+                        guard let thumbnailUrl = ImageBehavior.getFlickrImageURL(image, size: .thumbnail) else { return image }
+                        var tempImage = image
                         if let thumbnailImageData = await self.imageRepository.getImage(url: thumbnailUrl) {
                             if let thumbnailImage = Supportive.toUIImage(from: thumbnailImageData) {
                                 let imageWrapper = ImageWrapper(uiImage: thumbnailImage)
