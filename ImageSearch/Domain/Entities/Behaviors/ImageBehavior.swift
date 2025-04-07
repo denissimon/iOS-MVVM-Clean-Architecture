@@ -12,7 +12,7 @@ class ImageBehavior {
     }
     
     static func updateImage(_ image: Image, newWrapper: ImageWrapper?, for size: ImageSize) -> Image {
-        let resultImage = image.deepCopy()
+        let resultImage = deepCopy(image)
         switch size {
         case .thumbnail:
             resultImage.thumbnail = newWrapper
@@ -20,5 +20,21 @@ class ImageBehavior {
             resultImage.bigImage = newWrapper
         }
         return resultImage
+    }
+    
+    // Another way to make a deep copy is to use DeepCopier.copy(of:)
+    static func deepCopy(_ image: Image) -> Image {
+        var thumbnail: ImageWrapper?
+        if image.thumbnail != nil {
+            thumbnail = ImageWrapper(uiImage: image.thumbnail!.uiImage)
+        }
+        var bigImage: ImageWrapper?
+        if image.bigImage != nil {
+            bigImage = ImageWrapper(uiImage: image.bigImage!.uiImage)
+        }
+        let newImage = Image(title: image.title, flickr: image.flickr)
+        newImage.thumbnail = thumbnail
+        newImage.bigImage = bigImage
+        return newImage
     }
 }
