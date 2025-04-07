@@ -12,11 +12,6 @@ struct Tags: Decodable, TagsType {
     
     let hottags: HotTags
     let stat: String
-    
-    enum CodingKeys: String, CodingKey {
-        case hottags
-        case stat
-    }
 }
 
 extension Tags {
