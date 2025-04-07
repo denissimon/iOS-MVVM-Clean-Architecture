@@ -38,6 +38,15 @@ class SQLiteImageDBInteractor: ImageDBInteractor {
         }
     }
     
+    /* This method can be used if it's necessary to propagate the error further to the calling repository
+    private func customError(_ error: SQLiteError) -> CustomError {
+        switch error {
+        case .OpenDB(let msg), .Prepare(let msg), .Step(let msg), .Bind(let msg), .Column(let msg), .Statement(let msg), .Other(let msg):
+            return CustomError.app(.database, description: msg)
+        }
+    }
+     */
+    
     private func log(_ error: SQLiteError) {
         // Optionally, reporting solutions like Firebase Crashlytics can be used here
         #if DEBUG
