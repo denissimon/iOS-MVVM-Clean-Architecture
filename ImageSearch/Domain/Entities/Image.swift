@@ -41,22 +41,6 @@ class Image: Codable, ImageType, ImageListItemVM {
         let flickr = FlickrImageParameters(imageID: imageID, farm: farm, server: server, secret: secret)
         self.init(title: title, flickr: flickr)
     }
-    
-    // Another way to make a deep copy is to use DeepCopier.copy(of:)
-    func deepCopy() -> Image {
-        var thumbnail: ImageWrapper?
-        if self.thumbnail != nil {
-            thumbnail = ImageWrapper(uiImage: self.thumbnail!.uiImage)
-        }
-        var bigImage: ImageWrapper?
-        if self.bigImage != nil {
-            bigImage = ImageWrapper(uiImage: self.bigImage!.uiImage)
-        }
-        let newImage = Image(title: title, flickr: flickr)
-        newImage.thumbnail = thumbnail
-        newImage.bigImage = bigImage
-        return newImage
-    }
 }
 
 extension Image: Equatable {
