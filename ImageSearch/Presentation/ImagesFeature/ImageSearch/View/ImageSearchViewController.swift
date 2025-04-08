@@ -200,14 +200,14 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedImage = viewModel.data.value[indexPath.section].searchResults[indexPath.row]
+        let selectedImage = viewModel.data.value[indexPath.section].searchResults_[indexPath.row]
         if selectedImage.thumbnail == nil { return }
         coordinatorActions?.showImageDetails(selectedImage, viewModel.data.value[indexPath.section].searchQuery)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let section = viewModel.data.value[indexPath.section]
-        if section.searchResults[indexPath.row].thumbnail == nil {
+        if section.searchResults_[indexPath.row].thumbnail == nil {
             viewModel.updateSection(section.id)
         }
     }
