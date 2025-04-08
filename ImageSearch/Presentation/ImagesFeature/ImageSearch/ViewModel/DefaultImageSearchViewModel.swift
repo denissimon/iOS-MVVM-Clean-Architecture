@@ -68,7 +68,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func getDataSource() -> ImagesDataSource {
-        return ImagesDataSource(with: data.value)
+        ImagesDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {
@@ -98,7 +98,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         imagesLoadTask = Task.detached {
             
             defer {
-                self.memorySafetyCheck(data: self.data.value)
+                self.memorySafetyCheck(data: self.data.value as! [ImageSearchResults])
             }
             
             let imageQuery = ImageQuery(query: searchString)
@@ -163,12 +163,12 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 
                 let dataCopy = data.value
                 var sectionIndex = Int()
-                for (index, search) in dataCopy.enumerated() {
+                for (index, var search) in dataCopy.enumerated() {
                     if search.id == searchId {
-                        if let image = search.searchResults.first {
+                        if let image = search.searchResults_.first {
                             if image.thumbnail != nil { return }
                         }
-                        search.searchResults = images
+                        search.searchResults_ = images
                         sectionIndex = index
                         break
                     }
