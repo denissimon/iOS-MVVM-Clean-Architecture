@@ -66,7 +66,7 @@ actor DefaultImageCachingService: ImageCachingService {
                     guard let imagesAreCached = await self.imageRepository.checkImagesAreCached(searchId: search.id) else {
                         return search
                     }
-                    for (index, image) in search.searchResults.enumerated(){
+                    for (index, image) in search.searchResults.enumerated() {
                         // We don't necessarily need to cache big images in the local DB since they are already cached for a while by iOS
                         search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .big)
                         if !imagesAreCached {
