@@ -23,13 +23,13 @@ extension ImagesDataSource: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data[section].searchResults.count
+        return data[section].searchResults_.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
-        let image = data[indexPath.section].searchResults[indexPath.row]
+        let image = data[indexPath.section].searchResults_[indexPath.row]
         cell.imageView.image = image.thumbnail?.uiImage
         return cell
     }
