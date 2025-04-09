@@ -57,7 +57,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     }
     
     func getDataSource() -> TagsDataSource {
-        return TagsDataSource(with: data.value)
+        TagsDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {
