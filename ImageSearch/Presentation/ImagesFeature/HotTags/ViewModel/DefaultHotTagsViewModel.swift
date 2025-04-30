@@ -1,8 +1,8 @@
 import Foundation
 
-enum TagsSegmentType {
-    case week
-    case allTimes
+enum TagsSegmentType: String, CaseIterable {
+    case week = "Week"
+    case allTimes = "All Times"
 }
 
 /* Use case scenarios:
