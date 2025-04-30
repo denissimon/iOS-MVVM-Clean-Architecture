@@ -102,7 +102,9 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
             }
             
             let imageQuery = ImageQuery(query: searchString)
-            let result = await self.searchImagesUseCase.execute(imageQuery, imagesLoadTask: self.imagesLoadTask)
+            let result = await self.searchImagesUseCase.execute(imageQuery)
+            
+            if self.imagesLoadTask != nil { guard !self.imagesLoadTask!.isCancelled else { return } }
             
             switch result {
             case .success(let searchResults):
