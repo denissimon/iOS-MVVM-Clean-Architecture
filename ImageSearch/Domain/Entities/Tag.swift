@@ -1,13 +1,14 @@
 import Foundation
 
 protocol TagType {
+    var id: UUID { get }
     var name: String { get }
 }
 
 typealias TagListItemVM = TagType
 
-struct Tag: Decodable, TagType {
-    
+struct Tag: Decodable, TagType, Identifiable {
+    var id = UUID()
     let name: String
     
     enum CodingKeys: String, CodingKey {
