@@ -2,7 +2,7 @@ import Foundation
 
 class URLSessionAPIInteractor: APIInteractor {
     
-    let urlSessionAdapter: NetworkService
+    private let urlSessionAdapter: NetworkService
     
     init(with networkService: NetworkService) {
         self.urlSessionAdapter = networkService

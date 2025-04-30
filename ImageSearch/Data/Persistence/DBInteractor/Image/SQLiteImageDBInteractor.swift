@@ -2,7 +2,7 @@ import Foundation
 
 class SQLiteImageDBInteractor: ImageDBInteractor {
     
-    let sqliteAdapter: SQLite?
+    private let sqliteAdapter: SQLite?
     
     let imagesTable = SQLTable(
         name: "Images",

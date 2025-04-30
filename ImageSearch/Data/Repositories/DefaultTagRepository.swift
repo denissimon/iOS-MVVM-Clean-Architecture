@@ -2,7 +2,7 @@ import Foundation
 
 class DefaultTagRepository: TagRepository {
     
-    let apiInteractor: APIInteractor
+    private let apiInteractor: APIInteractor
     
     init(apiInteractor: APIInteractor) {
         self.apiInteractor = apiInteractor

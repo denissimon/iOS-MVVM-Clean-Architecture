@@ -2,8 +2,8 @@ import Foundation
 
 class DefaultImageRepository: ImageRepository {
     
-    let apiInteractor: APIInteractor
-    let imageDBInteractor: ImageDBInteractor
+    private let apiInteractor: APIInteractor
+    private let imageDBInteractor: ImageDBInteractor
     
     init(apiInteractor: APIInteractor, imageDBInteractor: ImageDBInteractor) {
         self.apiInteractor = apiInteractor
