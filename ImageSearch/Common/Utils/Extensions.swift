@@ -1,4 +1,5 @@
 import UIKit
+import SwiftUI
 
 extension String {
     
@@ -40,3 +41,5 @@ extension UIWindow {
         }
     }
 }
+
+extension UIHostingController: Alertable { }
