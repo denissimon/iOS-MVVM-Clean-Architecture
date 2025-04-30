@@ -3,7 +3,7 @@ import Foundation
 // callAsFunction() can be used instead of execute() to call instances of the use case class as if they were functions
 
 protocol SearchImagesUseCase {
-    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>?) async -> Result<ImageSearchResults?, CustomError>
+    func execute(_ imageQuery: ImageQuery) async -> Result<ImageSearchResults?, CustomError>
 }
 
 class DefaultSearchImagesUseCase: SearchImagesUseCase {
@@ -18,12 +18,10 @@ class DefaultSearchImagesUseCase: SearchImagesUseCase {
         UUID().uuidString
     }
     
-    func execute(_ imageQuery: ImageQuery, imagesLoadTask: Task<Void, Never>? = nil) async -> Result<ImageSearchResults?, CustomError> {
+    func execute(_ imageQuery: ImageQuery) async -> Result<ImageSearchResults?, CustomError> {
         
         let result = await imageRepository.searchImages(imageQuery)
-        
-        if imagesLoadTask != nil { guard !imagesLoadTask!.isCancelled else { return .success(nil) } }
-        
+
         switch result {
         case .success(let imagesType):
             let thumbnailImages = await withTaskGroup(of: Image.self, returning: [Image].self) { taskGroup in
