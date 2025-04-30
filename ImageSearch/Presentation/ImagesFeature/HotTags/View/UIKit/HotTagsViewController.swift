@@ -58,8 +58,8 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     
     private func prepareUI() {
         title = viewModel.screenTitle
-        segmentedControl.setTitle(NSLocalizedString("Week", comment: ""), forSegmentAt: 0)
-        segmentedControl.setTitle(NSLocalizedString("All Times", comment: ""), forSegmentAt: 1)
+        segmentedControl.setTitle(NSLocalizedString(TagsSegmentType.allCases[0].rawValue, comment: ""), forSegmentAt: 0)
+        segmentedControl.setTitle(NSLocalizedString(TagsSegmentType.allCases[1].rawValue, comment: ""), forSegmentAt: 1)
     }
     
     // MARK: - Actions
