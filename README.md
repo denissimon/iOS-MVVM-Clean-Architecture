@@ -48,12 +48,15 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
+- Configurable use of [UIKit][UIKitViewLink] or [SwiftUI][SwiftUIViewLink] example
 - Advanced error handling
 - Unit and integration tests for a number of components from all layers
 
 [NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Network/NetworkService/NetworkService.swift
 [SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
 [ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/ImageCachingService.swift
+[UIKitViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/View/UIKit/HotTagsViewController.swift
+[SwiftUIViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/View/SwiftUI/HotTagsView.swift
 
 ### Main layers
 
