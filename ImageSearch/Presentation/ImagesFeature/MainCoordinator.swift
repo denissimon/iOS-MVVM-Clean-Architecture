@@ -3,7 +3,7 @@ import UIKit
 protocol MainCoordinatorDIContainer {
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController
-    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> HotTagsViewController
+    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> UIViewController
 }
 
 class MainCoordinator: FlowCoordinator {
