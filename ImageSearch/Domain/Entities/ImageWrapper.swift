@@ -24,7 +24,7 @@ class ImageWrapper: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let imageData: Data = uiImage?.jpegData(compressionQuality: 1.0) {
+        if let imageData = uiImage?.jpegData(compressionQuality: 1.0) {
             try container.encode(imageData, forKey: .uiImage)
         }
     }
