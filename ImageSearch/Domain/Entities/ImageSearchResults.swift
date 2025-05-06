@@ -6,7 +6,7 @@ protocol ImageSearchResultsListItemVM {
     var searchResults_: [ImageListItemVM] { get set }
 }
 
-class ImageSearchResults: ImageSearchResultsListItemVM {
+class ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
     let id: String
     let searchQuery: ImageQuery
     var searchResults: [Image]
