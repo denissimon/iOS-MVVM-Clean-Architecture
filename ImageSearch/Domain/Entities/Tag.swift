@@ -7,8 +7,8 @@ protocol TagType {
 
 typealias TagListItemVM = TagType
 
-struct Tag: Decodable, TagType, Identifiable {
-    var id = UUID()
+struct Tag: Decodable, Identifiable, TagType {
+    let id = UUID()
     let name: String
     
     enum CodingKeys: String, CodingKey {
