@@ -6,7 +6,7 @@ protocol GetHotTagsUseCase {
     func execute() async -> Result<Tags, CustomError>
 }
 
-class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
+struct DefaultGetHotTagsUseCase: GetHotTagsUseCase {
     
     private let tagRepository: TagRepository
     
