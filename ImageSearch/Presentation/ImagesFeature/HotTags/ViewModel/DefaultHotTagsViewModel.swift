@@ -72,27 +72,24 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     private func getFlickrHotTags() {
         activityIndicatorVisibility.value = true
                 
-        hotTagsLoadTask = Task.detached { [weak self] in
+        hotTagsLoadTask = Task {
             
-            let result = await self?.getHotTagsUseCase.execute()
+            let result = await self.getHotTagsUseCase.execute()
             
             var allHotTags = [Tag]()
             
             switch result {
             case .success(let tags):
-                let receivedHotTags = self?.composeHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
-                allHotTags = receivedHotTags ?? []
-                self?.dataForWeekTags = allHotTags
-                self?.activityIndicatorVisibility.value = false
+                allHotTags = self.composeHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
+                self.dataForWeekTags = allHotTags
+                self.activityIndicatorVisibility.value = false
             case .failure(let error):
                 let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
-                self?.showError(msg)
-            case .none:
-                return
+                self.showError(msg)
             }
             
-            if self?.selectedSegment == .week {
-                self?.data.value = allHotTags
+            if self.selectedSegment == .week {
+                self.data.value = allHotTags
             }
         }
     }

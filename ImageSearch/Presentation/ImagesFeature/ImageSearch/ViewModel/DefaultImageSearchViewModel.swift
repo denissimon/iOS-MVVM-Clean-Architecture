@@ -95,7 +95,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         if activityIndicatorVisibility.value && searchQuery == lastSearchQuery { return }
         activityIndicatorVisibility.value = true
         
-        imagesLoadTask = Task.detached {
+        imagesLoadTask = Task {
             
             defer {
                 self.memorySafetyCheck(data: self.data.value as! [ImageSearchResults])
@@ -160,24 +160,20 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     func updateSection(_ searchId: String) {
         Task {
-            if let images = await imageCachingService.getCachedImages(searchId: searchId) {
-                guard !images.isEmpty else { return }
-                
-                let dataCopy = data.value
-                var sectionIndex = Int()
-                for (index, var search) in dataCopy.enumerated() {
-                    if search.id == searchId {
-                        if let image = search.searchResults_.first {
-                            if image.thumbnail != nil { return }
-                        }
-                        search.searchResults_ = images
-                        sectionIndex = index
-                        break
-                    }
+            guard let images = await imageCachingService.getCachedImages(searchId: searchId),
+                    !images.isEmpty else { return }
+            
+            var sectionIndex = Int()
+            for (index, var search) in data.value.enumerated() {
+                if search.id == searchId {
+                    if let image = search.searchResults_.first, image.thumbnail != nil { return }
+                    search.searchResults_ = images
+                    sectionIndex = index
+                    break
                 }
-                
-                sectionData.value = (dataCopy, [sectionIndex])
             }
+            
+            sectionData.value = (data.value, [sectionIndex])
         }
     }
 }
