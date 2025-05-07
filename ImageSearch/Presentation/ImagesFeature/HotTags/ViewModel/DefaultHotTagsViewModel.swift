@@ -12,7 +12,6 @@ enum TagsSegmentType: String, CaseIterable {
 protocol HotTagsViewModelInput {    
     func triggerDidSelect(with imageQuery: ImageQuery)
     func getHotTags()
-    func getDataSource() -> TagsDataSource
     func onSelectedSegmentChange(_ index: Int)
 }
 
@@ -54,10 +53,6 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     func triggerDidSelect(with imageQuery: ImageQuery) {
         didSelect.notify(imageQuery)
-    }
-    
-    func getDataSource() -> TagsDataSource {
-        TagsDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {

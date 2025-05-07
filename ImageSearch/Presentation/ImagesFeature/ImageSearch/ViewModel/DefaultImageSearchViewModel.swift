@@ -8,7 +8,6 @@ import Foundation
 
 protocol ImageSearchViewModelInput {
     func searchImage(for searchQuery: ImageQuery)
-    func getDataSource() -> ImagesDataSource
     func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery)
     func scrollUp()
     func scrollDown(_ searchBarHeight: Float)
@@ -65,10 +64,6 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 self.data.value = result
             }
         }
-    }
-    
-    func getDataSource() -> ImagesDataSource {
-        ImagesDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {

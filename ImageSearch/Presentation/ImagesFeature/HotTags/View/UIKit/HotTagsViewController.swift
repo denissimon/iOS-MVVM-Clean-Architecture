@@ -11,8 +11,6 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     
     private var viewModel: HotTagsViewModel!
     
-    private var dataSource: TagsDataSource?
-    
     private var coordinatorActions: HotTagsCoordinatorActions?
     
     static func instantiate(viewModel: HotTagsViewModel, actions: HotTagsCoordinatorActions) -> HotTagsViewController {
@@ -30,15 +28,12 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func setup() {
-        dataSource = viewModel.getDataSource()
-        tableView.dataSource = dataSource
+        tableView.dataSource = self
         tableView.delegate = self
         
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.dataSource?.updateData(data)
-            self.tableView.reloadData()
+            self?.tableView.reloadData()
         }
         
         viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
@@ -85,3 +80,27 @@ extension HotTagsViewController: UITableViewDelegate {
     }
 }
 
+// MARK: UITableViewDataSource
+
+extension HotTagsViewController: UITableViewDataSource {
+        
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.data.value.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath)
+
+        cell.textLabel?.text = viewModel.data.value[indexPath.item].name
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+}

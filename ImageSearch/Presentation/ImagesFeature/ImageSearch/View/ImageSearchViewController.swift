@@ -13,8 +13,6 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     private var viewModel: ImageSearchViewModel!
     
-    private var dataSource: ImagesDataSource?
-    
     private let refreshControl = UIRefreshControl()
     
     private var coordinatorActions: ImageSearchCoordinatorActions?
@@ -38,15 +36,13 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func setup() {
-        dataSource = viewModel.getDataSource()
-        collectionView.dataSource = dataSource
+        collectionView.dataSource = self
         collectionView.delegate = self
         searchBar.delegate = self
         
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
             guard let self = self else { return }
-            self.dataSource?.updateData(data)
             self.collectionView.reloadData()
             if self.refreshControl.isRefreshing {
                 self.refreshControl.endRefreshing()
@@ -54,14 +50,11 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         }
         
         viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.dataSource?.updateData(data.0)
-            self.collectionView.reloadSections(data.1)
+            self?.collectionView.reloadSections(data.1)
         }
         
         viewModel.scrollTop.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.scrollTop()
+            self?.scrollTop()
         }
         
         viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
@@ -251,5 +244,40 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
                       layout collectionViewLayout: UICollectionViewLayout,
                       minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return AppConfiguration.ImageCollection.horizontalSpace
+    }
+}
+
+// MARK: UICollectionViewDataSource
+
+extension ImageSearchViewController: UICollectionViewDataSource {
+        
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return viewModel.data.value.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.data.value[section].searchResults_.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
+        let image = viewModel.data.value[indexPath.section].searchResults_[indexPath.row]
+        cell.imageView.image = image.thumbnail?.uiImage
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "CollectionViewHeader", for: indexPath) as? CollectionViewHeader {
+                let searchQuery = viewModel.data.value[indexPath.section].searchQuery.query
+                headerView.label.text = searchQuery
+                return headerView
+            }
+        }
+
+        return UICollectionReusableView()
     }
 }
