@@ -35,7 +35,6 @@
 		4145C7EA2B39D0D0001DD403 /* APIInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7E92B39D0D0001DD403 /* APIInteractor.swift */; };
 		4145C7EC2B39D11A001DD403 /* URLSessionAPIInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7EB2B39D11A001DD403 /* URLSessionAPIInteractor.swift */; };
 		4145C7EE2B39D36C001DD403 /* DefaultTagRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */; };
-		414D90D22B65A955009F37CA /* ImagesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90D12B65A955009F37CA /* ImagesDataSource.swift */; };
 		414D90DE2B65ACD8009F37CA /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90D92B65ACD8009F37CA /* RequestFactory.swift */; };
 		414D90DF2B65ACD8009F37CA /* EncodeDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DA2B65ACD8009F37CA /* EncodeDecode.swift */; };
 		414D90E22B65ACD8009F37CA /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DD2B65ACD8009F37CA /* NetworkService.swift */; };
@@ -55,7 +54,6 @@
 		418F33BA244132A500193C74 /* HotTags.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418F33B9244132A500193C74 /* HotTags.storyboard */; };
 		418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BB244132E800193C74 /* HotTagsViewController.swift */; };
 		418F33BE244133E600193C74 /* DefaultHotTagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BD244133E600193C74 /* DefaultHotTagsViewModel.swift */; };
-		418F33C02441E8E200193C74 /* TagsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418F33BF2441E8E200193C74 /* TagsDataSource.swift */; };
 		419603402C4DE37F00AE598F /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4196033F2C4DE37F00AE598F /* Endpoint.swift */; };
 		419603442C4ED97900AE598F /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419603432C4ED97800AE598F /* HTTPMethod.swift */; };
 		419603462C4ED99800AE598F /* HTTPParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419603452C4ED99800AE598F /* HTTPParams.swift */; };
@@ -121,7 +119,6 @@
 		4145C7E92B39D0D0001DD403 /* APIInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIInteractor.swift; sourceTree = "<group>"; };
 		4145C7EB2B39D11A001DD403 /* URLSessionAPIInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionAPIInteractor.swift; sourceTree = "<group>"; };
 		4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTagRepository.swift; sourceTree = "<group>"; };
-		414D90D12B65A955009F37CA /* ImagesDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagesDataSource.swift; sourceTree = "<group>"; };
 		414D90D92B65ACD8009F37CA /* RequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestFactory.swift; sourceTree = "<group>"; };
 		414D90DA2B65ACD8009F37CA /* EncodeDecode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodeDecode.swift; sourceTree = "<group>"; };
 		414D90DD2B65ACD8009F37CA /* NetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -142,7 +139,6 @@
 		418F33B9244132A500193C74 /* HotTags.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HotTags.storyboard; sourceTree = "<group>"; };
 		418F33BB244132E800193C74 /* HotTagsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewController.swift; sourceTree = "<group>"; };
 		418F33BD244133E600193C74 /* DefaultHotTagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultHotTagsViewModel.swift; sourceTree = "<group>"; };
-		418F33BF2441E8E200193C74 /* TagsDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsDataSource.swift; sourceTree = "<group>"; };
 		4196033F2C4DE37F00AE598F /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		419603432C4ED97800AE598F /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		419603452C4ED99800AE598F /* HTTPParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPParams.swift; sourceTree = "<group>"; };
@@ -283,7 +279,6 @@
 			children = (
 				418F33B9244132A500193C74 /* HotTags.storyboard */,
 				418F33BB244132E800193C74 /* HotTagsViewController.swift */,
-				418F33BF2441E8E200193C74 /* TagsDataSource.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -526,7 +521,6 @@
 			children = (
 				417D76E82BE0156C005D9C1E /* ImageSearch.storyboard */,
 				4111D56523FDAEFF00B74B83 /* ImageSearchViewController.swift */,
-				414D90D12B65A955009F37CA /* ImagesDataSource.swift */,
 				419B5B3C25D13BF600443960 /* Cells */,
 			);
 			path = View;
@@ -765,12 +759,10 @@
 				4145C7EA2B39D0D0001DD403 /* APIInteractor.swift in Sources */,
 				41AD9B9823FFBD57001383AD /* FlowCoordinator.swift in Sources */,
 				41AD9B9723FFBD57001383AD /* AppCoordinator.swift in Sources */,
-				414D90D22B65A955009F37CA /* ImagesDataSource.swift in Sources */,
 				41AD9B9A23FFCFEC001383AD /* AppConfiguration.swift in Sources */,
 				414D90DE2B65ACD8009F37CA /* RequestFactory.swift in Sources */,
 				412AE7A02C545C4900C56A1C /* ImageBehavior.swift in Sources */,
 				4145C7E42B39CCE1001DD403 /* ImageRepository.swift in Sources */,
-				418F33C02441E8E200193C74 /* TagsDataSource.swift in Sources */,
 				418F33BE244133E600193C74 /* DefaultHotTagsViewModel.swift in Sources */,
 				4145C7C22B2C9846001DD403 /* MainCoordinator.swift in Sources */,
 				4145C7EE2B39D36C001DD403 /* DefaultTagRepository.swift in Sources */,
