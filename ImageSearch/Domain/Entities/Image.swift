@@ -1,17 +1,17 @@
 import Foundation
 
-protocol ImageType: AnyObject {
+protocol ImageType {
     var thumbnail: ImageWrapper? { get set }
     var bigImage: ImageWrapper? { get set }
     var title: String { get }
 }
 
-protocol ImageListItemVM: AnyObject {
+protocol ImageListItemVM {
     var thumbnail: ImageWrapper? { get }
     var bigImage: ImageWrapper? { get }
 }
 
-class Image: Codable, ImageType, ImageListItemVM {
+struct Image: Codable, ImageType, ImageListItemVM {
     
     struct FlickrImageParameters: Codable {
         let imageID: String
@@ -30,7 +30,7 @@ class Image: Codable, ImageType, ImageListItemVM {
         self.flickr = flickr
     }
     
-    convenience init?(flickrParams: [String: AnyObject]) {
+    init?(flickrParams: [String: AnyObject]) {
         guard let imageID = flickrParams["id"] as? String,
               let farm = flickrParams["farm"] as? Int,
               let server = flickrParams["server"] as? String,
