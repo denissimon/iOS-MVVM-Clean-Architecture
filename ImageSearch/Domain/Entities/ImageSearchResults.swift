@@ -3,10 +3,10 @@ import Foundation
 protocol ImageSearchResultsListItemVM {
     var id: String { get }
     var searchQuery: ImageQuery { get }
-    var searchResults_: [ImageListItemVM] { get set }
+    var searchResults_: [ImageListItemVM] { get }
 }
 
-class ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
+struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
     let id: String
     let searchQuery: ImageQuery
     var searchResults: [Image]
