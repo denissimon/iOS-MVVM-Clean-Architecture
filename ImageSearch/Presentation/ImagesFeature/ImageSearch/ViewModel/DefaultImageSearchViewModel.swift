@@ -16,8 +16,8 @@ protocol ImageSearchViewModelInput {
 }
 
 protocol ImageSearchViewModelOutput {
-    var data: Observable<[ImageSearchResultsListItemVM]> { get }
-    var sectionData: Observable<([ImageSearchResultsListItemVM], IndexSet)> { get }
+    var data: Observable<(data: [ImageSearchResultsListItemVM], reload: Bool)> { get }
+    var sectionData: Observable<IndexSet> { get }
     var scrollTop: Observable<Bool?> { get }
     var makeToast: Observable<String> { get }
     var resetSearchBar: Observable<Bool?> { get }
@@ -38,9 +38,11 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
+    private var imageSearchResults: [ImageSearchResults] = []
+    
     // Bindings
-    let data: Observable<[ImageSearchResultsListItemVM]> = Observable([])
-    let sectionData: Observable<([ImageSearchResultsListItemVM], IndexSet)> = Observable(([],[]))
+    let data: Observable<(data: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([],true))
+    let sectionData: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")
     let resetSearchBar: Observable<Bool?> = Observable(nil)
@@ -61,7 +63,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private func setup() {
         Task {
             await imageCachingService.subscribeToDidProcess(self) { result in
-                self.data.value = result
+                self.imageSearchResults = result
+                self.data.value = (result, true)
             }
         }
     }
@@ -93,7 +96,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         imagesLoadTask = Task {
             
             defer {
-                self.memorySafetyCheck(data: self.data.value as! [ImageSearchResults])
+                self.memorySafetyCheck(data: self.imageSearchResults)
             }
             
             let imageQuery = ImageQuery(query: searchString)
@@ -110,7 +113,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                     return
                 }
                 
-                self.data.value.insert(searchResults, at: 0)
+                self.imageSearchResults.insert(searchResults, at: 0)
+                self.data.value.data.insert(searchResults, at: 0)
                 self.lastSearchQuery = searchQuery
                 
                 self.activityIndicatorVisibility.value = false
@@ -159,16 +163,18 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                     !images.isEmpty else { return }
             
             var sectionIndex = Int()
-            for (index, var search) in data.value.enumerated() {
+            
+            for (index, search) in imageSearchResults.enumerated() {
                 if search.id == searchId {
-                    if let image = search.searchResults_.first, image.thumbnail != nil { return }
-                    search.searchResults_ = images
+                    if let image = search.searchResults.first, image.thumbnail != nil { return }
+                    imageSearchResults[index].searchResults = images
+                    data.value = (imageSearchResults, false)
                     sectionIndex = index
                     break
                 }
             }
             
-            sectionData.value = (data.value, [sectionIndex])
+            sectionData.value = [sectionIndex]
         }
     }
 }

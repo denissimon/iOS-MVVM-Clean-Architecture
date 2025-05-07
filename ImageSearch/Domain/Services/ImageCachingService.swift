@@ -58,7 +58,7 @@ actor DefaultImageCachingService: ImageCachingService {
     private func processData(_ data: [ImageSearchResults]) async -> [ImageSearchResults] {
         await withTaskGroup(of: ImageSearchResults.self, returning: [ImageSearchResults].self) { taskGroup in
             
-            for search in data {
+            for var search in data {
                 taskGroup.addTask {
                     if search.searchResults.first?.thumbnail == nil {
                         return search
