@@ -27,20 +27,20 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     private func setup() {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] bigImage in
-            if let bigImage = bigImage {
+            if let bigImage {
                 self?.imageView.image = bigImage.uiImage
             }
         }
         
-        viewModel.shareImage.bind(self) { [weak self] imageWrapperArray in
+        viewModel.shareImage.bind(self) { [weak self] imageWrappers in
             guard let self = self else { return }
-            let activityVC = UIActivityViewController(activityItems: imageWrapperArray.toUIImageArray(), applicationActivities: nil)
+            let activityVC = UIActivityViewController(activityItems: imageWrappers.toUIImageArray(), applicationActivities: nil)
             activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
             activityVC.popoverPresentationController?.permittedArrowDirections = .up
             self.present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.makeToast.bind(self, queue: .main) { [weak self] (message) in
+        viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
             guard !message.isEmpty else { return }
             self?.makeToast(message: message)
         }
