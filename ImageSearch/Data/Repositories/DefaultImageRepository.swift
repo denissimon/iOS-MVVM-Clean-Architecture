@@ -87,6 +87,6 @@ class DefaultImageRepository: ImageRepository {
 
 extension DefaultImageRepository {
     func toTestPrepareImages(_ imagesData: Data?) -> [Image]? {
-        prepareImages(imagesData)
+        Supportive.isRunningUnitTests() ? prepareImages(imagesData) : nil
     }
 }

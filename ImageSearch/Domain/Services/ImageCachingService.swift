@@ -109,6 +109,6 @@ actor DefaultImageCachingService: ImageCachingService {
 
 extension DefaultImageCachingService {
     var toTestSearchIdsFromCache: Set<String> {
-        searchIdsFromCache
+        Supportive.isRunningUnitTests() ? searchIdsFromCache : Set()
     }
 }
