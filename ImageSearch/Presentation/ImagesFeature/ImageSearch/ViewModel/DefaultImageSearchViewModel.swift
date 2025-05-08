@@ -178,3 +178,14 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
 }
+
+extension DefaultImageSearchViewModel {
+    var toTestImageSearchResults: [ImageSearchResults] {
+        get {
+            Supportive.isRunningUnitTests() ? imageSearchResults : []
+        }
+        set {
+            if Supportive.isRunningUnitTests() { imageSearchResults = newValue }
+        }
+    }
+}
