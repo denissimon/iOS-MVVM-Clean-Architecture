@@ -8,9 +8,9 @@ class ImageDetailsViewModelTests: XCTestCase {
     var observablesTriggerCount = 0
     
     static var testImageStub: Image {
-        let testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
-        testImage.bigImage = nil
+        var testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
+        testImage = ImageBehavior.updateImage(testImage, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
+        testImage = ImageBehavior.updateImage(testImage, newWrapper: nil, for: .big)
         return testImage
     }
     

@@ -122,14 +122,14 @@ class ImageCachingServiceTests: XCTestCase {
             precessedData = newData
         }
         
-        let image1 = Image(title: "image1", flickr: nil)
-        image1.thumbnail = ImageWrapper(uiImage: UIImage())
-        let image2 = Image(title: "image2", flickr: nil)
-        image2.thumbnail = ImageWrapper(uiImage: UIImage())
-        let image3 = Image(title: "image3", flickr: nil)
-        image3.thumbnail = ImageWrapper(uiImage: UIImage())
-        let image4 = Image(title: "image4", flickr: nil)
-        image4.thumbnail = ImageWrapper(uiImage: UIImage())
+        var image1 = Image(title: "image1", flickr: nil)
+        image1 = ImageBehavior.updateImage(image1, newWrapper: ImageWrapper(uiImage: UIImage()), for: .thumbnail)
+        var image2 = Image(title: "image2", flickr: nil)
+        image2 = ImageBehavior.updateImage(image2, newWrapper: ImageWrapper(uiImage: UIImage()), for: .thumbnail)
+        var image3 = Image(title: "image3", flickr: nil)
+        image3 = ImageBehavior.updateImage(image3, newWrapper: ImageWrapper(uiImage: UIImage()), for: .thumbnail)
+        var image4 = Image(title: "image4", flickr: nil)
+        image4 = ImageBehavior.updateImage(image4, newWrapper: ImageWrapper(uiImage: UIImage()), for: .thumbnail)
         let testSearchResults = [
             ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query5"), searchResults: [image1, image2, image3, image4]),
             ImageSearchResults(id: "id4", searchQuery: ImageQuery(query: "query4"), searchResults: [image1, image2, image3, image4]),

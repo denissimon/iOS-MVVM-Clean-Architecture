@@ -4,8 +4,8 @@ import XCTest
 class ImageBehaviorTests: XCTestCase {
     
     static var testImageStub: Image {
-        let testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
+        var testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
+        testImage = ImageBehavior.updateImage(testImage, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
         return testImage
     }
     
@@ -35,12 +35,5 @@ class ImageBehaviorTests: XCTestCase {
         XCTAssertNotNil(image.thumbnail)
         image = ImageBehavior.updateImage(image, newWrapper: nil, for: .thumbnail)
         XCTAssertNil(image.thumbnail)
-    }
-    
-    func testDeepCopy() {
-        let image = ImageBehaviorTests.testImageStub
-        let imageCopy = ImageBehavior.deepCopy(image)
-        XCTAssertTrue(image == imageCopy)
-        XCTAssertFalse(image === imageCopy)
     }
 }

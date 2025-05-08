@@ -12,8 +12,8 @@ class ImageSearchViewModelTests: XCTestCase {
     ]
     
     static var testImageStub: Image {
-        let testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
+        var testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
+        testImage = ImageBehavior.updateImage(testImage, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
         return testImage
     }
     
@@ -151,11 +151,11 @@ class ImageSearchViewModelTests: XCTestCase {
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: ""))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, "Empty search query")
-        XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
+        XCTAssertTrue(imageSearchViewModel.data.value.data.isEmpty)
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: " "))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, "Empty search query")
-        XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
+        XCTAssertTrue(imageSearchViewModel.data.value.data.isEmpty)
         
         ImageSearchViewModelTests.syncQueue.sync {
             XCTAssertEqual(observablesTriggerCount, 4) // makeToast, resetSearchBar, makeToast, resetSearchBar
@@ -169,7 +169,7 @@ class ImageSearchViewModelTests: XCTestCase {
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
-        XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
+        XCTAssertEqual(imageSearchViewModel.data.value.data.count, 0)
         
         let searchQuery = ImageQuery(query: "random")
         imageSearchViewModel.searchImage(for: searchQuery)
@@ -177,10 +177,10 @@ class ImageSearchViewModelTests: XCTestCase {
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
-        XCTAssertTrue((imageSearchViewModel.data.value[0].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertEqual(imageSearchViewModel.data.value.data.count, 1)
+        XCTAssertTrue((imageSearchViewModel.data.value.data[0].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
-            XCTAssertEqual((imageSearchViewModel.data.value[0].searchResults_ as! [Image])[0].thumbnail?.uiImage?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
+            XCTAssertEqual((imageSearchViewModel.data.value.data[0].searchResults_ as! [Image])[0].thumbnail?.uiImage?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
         }
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
@@ -195,14 +195,14 @@ class ImageSearchViewModelTests: XCTestCase {
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
-        XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
+        XCTAssertTrue(imageSearchViewModel.data.value.data.isEmpty)
         
         imageSearchViewModel.searchImage(for: ImageQuery(query: "random"))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, "")
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
+        XCTAssertTrue(imageSearchViewModel.data.value.data.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastSearchQuery)
         ImageSearchViewModelTests.syncQueue.sync {
             XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility
@@ -216,23 +216,23 @@ class ImageSearchViewModelTests: XCTestCase {
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
-        XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
+        XCTAssertEqual(imageSearchViewModel.data.value.data.count, 0)
         
         let searchQuery = ImageQuery(query: "query")
         imageSearchViewModel.searchImage(for: searchQuery)
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
+        XCTAssertEqual(imageSearchViewModel.data.value.data.count, 1)
         
         let searchQuery1 = ImageQuery(query: "new query")
         imageSearchViewModel.searchImage(for: searchQuery1)
         
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
         
-        XCTAssertEqual(imageSearchViewModel.data.value.count, 2)
-        XCTAssertTrue((imageSearchViewModel.data.value[0].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
-        XCTAssertTrue((imageSearchViewModel.data.value[1].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertEqual(imageSearchViewModel.data.value.data.count, 2)
+        XCTAssertTrue((imageSearchViewModel.data.value.data[0].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
+        XCTAssertTrue((imageSearchViewModel.data.value.data[1].searchResults_ as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertEqual(imageSearchViewModel.lastSearchQuery, searchQuery1)
         ImageSearchViewModelTests.syncQueue.sync {
             XCTAssertEqual(observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
@@ -240,9 +240,9 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testUpdateSection() async throws {
-        let cachedImagesStub = ImageSearchViewModelTests.cachedImagesStub
-        for image in cachedImagesStub {
-            image.image.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
+        var cachedImagesStub = ImageSearchViewModelTests.cachedImagesStub
+        for (index, image) in cachedImagesStub.enumerated() {
+            cachedImagesStub[index].image = ImageBehavior.updateImage(image.image, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
         }
         
         let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub), cachedImages: cachedImagesStub)
@@ -251,37 +251,38 @@ class ImageSearchViewModelTests: XCTestCase {
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
-        imageSearchViewModel.data.value = ImageSearchViewModelTests.searchResultsStub // 5 searches are done
+        imageSearchViewModel.toTestImageSearchResults = ImageSearchViewModelTests.searchResultsStub // 5 searches are done
+        imageSearchViewModel.data.value.data = imageSearchViewModel.toTestImageSearchResults
         XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub are cached
-        for image in imageSearchViewModel.data.value[3].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[3].searchResults_ {
             XCTAssertNil(image.thumbnail)
         }
-        for image in imageSearchViewModel.data.value[4].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[4].searchResults_ {
             XCTAssertNil(image.thumbnail)
         }
         
         // Get images of the 2nd search from cache and update data
         imageSearchViewModel.updateSection("id2")
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
-        for image in imageSearchViewModel.data.value[3].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[3].searchResults_ {
             XCTAssertNotNil(image.thumbnail)
         }
-        for image in imageSearchViewModel.data.value[4].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[4].searchResults_ {
             XCTAssertNil(image.thumbnail)
         }
         
         // Get images of the 1st search from cache and update data
         imageSearchViewModel.updateSection("id1")
         try await Task.sleep(nanoseconds: 1 * 500_000_000)
-        for image in imageSearchViewModel.data.value[3].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[3].searchResults_ {
             XCTAssertNotNil(image.thumbnail)
         }
-        for image in imageSearchViewModel.data.value[4].searchResults_ {
+        for image in imageSearchViewModel.data.value.data[4].searchResults_ {
             XCTAssertNotNil(image.thumbnail)
         }
         
         ImageSearchViewModelTests.syncQueue.sync {
-            XCTAssertEqual(observablesTriggerCount, 3) // data, sectionData, sectionData
+            XCTAssertEqual(observablesTriggerCount, 5) // data, data, sectionData, data, sectionData
         }
     }
 }
