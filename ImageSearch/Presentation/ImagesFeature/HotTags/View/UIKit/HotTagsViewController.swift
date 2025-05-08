@@ -94,9 +94,7 @@ extension HotTagsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TagCell", for: indexPath)
-
         cell.textLabel?.text = viewModel.data.value[indexPath.item].name
-        
         return cell
     }
     
