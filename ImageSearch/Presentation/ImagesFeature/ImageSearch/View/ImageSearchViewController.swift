@@ -42,8 +42,8 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
             guard data.reload else { return }
+            guard let self = self else { return }
             self.collectionView.reloadData()
             if self.refreshControl.isRefreshing {
                 self.refreshControl.endRefreshing()
@@ -99,20 +99,15 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     private func prepareUI() {
         title = viewModel.screenTitle
+        
         searchBar.isUserInteractionEnabled = false
         searchBar.placeholder = "..."
         searchBar.layer.borderColor = UIColor.lightGray.cgColor
         searchBar.layer.borderWidth = 0.5
         
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.refreshControl = refreshControl
         
-        if #available(iOS 11.0, *) {
-            navigationItem.backButtonTitle = ""
-        }
+        navigationItem.backButtonTitle = ""
     }
     
     private func scrollTop() {
@@ -127,13 +122,13 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let didSelect = Event<ImageQuery>()
-        didSelect.subscribe(self) { [weak self] (query) in self?.viewModel.searchImage(for: query) }
+        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImage(for: query) }
         coordinatorActions?.showHotTags(didSelect)
     }
     
     // MARK: - Other methods
     
-    @objc func deviceOrientationDidChange(_ notification: Notification) {
+    @objc func deviceOrientationDidChange(_ : Notification) {
         collectionView.reloadData()
     }
     
@@ -233,7 +228,7 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(
+        UIEdgeInsets(
             top: AppConfiguration.ImageCollection.verticleSpace,
             left: AppConfiguration.ImageCollection.horizontalSpace,
             bottom: AppConfiguration.ImageCollection.verticleSpace,
@@ -244,7 +239,7 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                       layout collectionViewLayout: UICollectionViewLayout,
                       minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return AppConfiguration.ImageCollection.horizontalSpace
+        AppConfiguration.ImageCollection.horizontalSpace
     }
 }
 
@@ -253,11 +248,11 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
 extension ImageSearchViewController: UICollectionViewDataSource {
         
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel.data.value.data.count
+        viewModel.data.value.data.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.data.value.data[section]._searchResults.count
+        viewModel.data.value.data[section]._searchResults.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -278,7 +273,6 @@ extension ImageSearchViewController: UICollectionViewDataSource {
                 return headerView
             }
         }
-
         return UICollectionReusableView()
     }
 }
