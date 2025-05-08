@@ -3,7 +3,7 @@ import Foundation
 protocol ImageSearchResultsListItemVM {
     var id: String { get }
     var searchQuery: ImageQuery { get }
-    var searchResults_: [ImageListItemVM] { get }
+    var _searchResults: [ImageListItemVM] { get }
 }
 
 struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
@@ -19,7 +19,7 @@ struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
 }
 
 extension ImageSearchResults {
-    var searchResults_: [ImageListItemVM] {
+    var _searchResults: [ImageListItemVM] {
         get { searchResults }
         set { searchResults = newValue as! [Image] }
     }
