@@ -75,7 +75,7 @@ class SQLite: SQLiteType {
     
     private let queue = DispatchQueue(label: "SQLite Queue")
     
-    var dateFormatter = DateFormatter()
+    let dateFormatter = DateFormatter()
     
     var lastInsertID: Int {
         var id = 0
