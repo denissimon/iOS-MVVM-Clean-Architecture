@@ -27,9 +27,8 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     private func setup() {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] bigImage in
-            if let bigImage {
-                self?.imageView.image = bigImage.uiImage
-            }
+            guard let bigImage else { return }
+            self?.imageView.image = bigImage.uiImage
         }
         
         viewModel.shareImage.bind(self) { [weak self] imageWrappers in
