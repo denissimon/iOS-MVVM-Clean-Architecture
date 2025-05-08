@@ -194,14 +194,14 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedImage = viewModel.data.value.data[indexPath.section].searchResults_[indexPath.row]
+        let selectedImage = viewModel.data.value.data[indexPath.section]._searchResults[indexPath.row]
         if selectedImage.thumbnail == nil { return }
         coordinatorActions?.showImageDetails(selectedImage, viewModel.data.value.data[indexPath.section].searchQuery)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let section = viewModel.data.value.data[indexPath.section]
-        if section.searchResults_[indexPath.row].thumbnail == nil {
+        if section._searchResults[indexPath.row].thumbnail == nil {
             viewModel.updateSection(section.id)
         }
     }
@@ -257,13 +257,13 @@ extension ImageSearchViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.data.value.data[section].searchResults_.count
+        return viewModel.data.value.data[section]._searchResults.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
-        let image = viewModel.data.value.data[indexPath.section].searchResults_[indexPath.row]
+        let image = viewModel.data.value.data[indexPath.section]._searchResults[indexPath.row]
         cell.imageView.image = image.thumbnail?.uiImage
         return cell
     }
