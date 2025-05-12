@@ -48,7 +48,7 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Reusable and universal [NetworkService][NetworkServiceLink] based on URLSession
 - Reusable and universal [SQLite][SQLiteAdapterLink] wrapper around SQLite3
 - [Image caching service][ImageCachingServiceLink]
-- Configurable use of [UIKit][UIKitViewLink] or [SwiftUI][SwiftUIViewLink] example
+- Configurable use of [UIKit][UIKitViewLink] or [SwiftUI][SwiftUIViewLink] for the same screen
 - Advanced error handling
 - Unit and integration tests for a number of components from all layers
 
