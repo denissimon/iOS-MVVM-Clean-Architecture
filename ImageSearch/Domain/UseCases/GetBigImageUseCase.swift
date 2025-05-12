@@ -6,7 +6,7 @@ protocol GetBigImageUseCase {
     func execute(for image: Image) async -> Data?
 }
 
-struct DefaultGetBigImageUseCase: GetBigImageUseCase {
+class DefaultGetBigImageUseCase: GetBigImageUseCase {
     
     private let imageRepository: ImageRepository
     

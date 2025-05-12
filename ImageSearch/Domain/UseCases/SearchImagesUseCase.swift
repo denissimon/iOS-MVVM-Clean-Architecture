@@ -6,7 +6,7 @@ protocol SearchImagesUseCase {
     func execute(_ imageQuery: ImageQuery) async -> Result<ImageSearchResults?, CustomError>
 }
 
-struct DefaultSearchImagesUseCase: SearchImagesUseCase {
+class DefaultSearchImagesUseCase: SearchImagesUseCase {
     
     private let imageRepository: ImageRepository
     
