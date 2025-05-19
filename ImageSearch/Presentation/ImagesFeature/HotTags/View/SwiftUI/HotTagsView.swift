@@ -10,7 +10,7 @@ struct HotTagsView: View {
         VStack {
             Picker("", selection: $viewModelBridgeWrapper.selectedSegment) {
                 ForEach(TagsSegmentType.allCases, id: \.self) { option in
-                    Text(option.rawValue)
+                    Text(NSLocalizedString(option.rawValue, comment: ""))
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
