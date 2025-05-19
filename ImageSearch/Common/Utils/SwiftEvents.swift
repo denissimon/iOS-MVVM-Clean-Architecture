@@ -30,7 +30,7 @@ final public class Event<T> {
     public var subscribersCount: Int { subscribers.count }
     
     /// The number of times the Event was triggered
-    private(set) public var triggersCount = Int()
+    public private(set) var triggersCount = Int()
     
     public init() {}
     
