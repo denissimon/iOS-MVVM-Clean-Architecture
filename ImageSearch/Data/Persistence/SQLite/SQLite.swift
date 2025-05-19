@@ -75,7 +75,7 @@ class SQLite: SQLiteType {
     
     private let queue = DispatchQueue(label: "SQLite Queue")
     
-    var dateFormatter = DateFormatter()
+    let dateFormatter = DateFormatter ()
     
     var lastInsertID: Int {
         var id = 0
@@ -527,7 +527,7 @@ class SQLite: SQLiteType {
         let columnCount = sqlite3_column_count(sqlStatement)
         for index in 0..<columnCount {
             if let columnName = sqlite3_column_name(sqlStatement, index) {
-                if let validatedColumnName = String(validatingUTF8: columnName) {
+                if let validatedColumnName = String(validatingCString: columnName) {
                     columnNamesToReturn.append(validatedColumnName)
                 } else {
                     throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
