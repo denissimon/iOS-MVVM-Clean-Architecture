@@ -270,6 +270,33 @@ class NetworkServiceTests: XCTestCase {
         await fulfillment(of: [promise], timeout: 5)
     }
     
+    func testRequestWithStatusCodeGet_withErrorReturned_andChangingGlobalAutoValidation_asyncAwaitAPI() async throws {
+        let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned_andChangingGlobalAutoValidation")
+        
+        let networkService = NetworkService(urlSession: URLSession(configuration: .default))
+        XCTAssertEqual(networkService.autoValidation, true)
+            
+        networkService.autoValidation = false
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let request = RequestFactory.request(endpoint) else {
+            XCTFail()
+            return
+        }
+        
+        do {
+            let response = try await networkService.requestWithStatusCode(request)
+            XCTAssertEqual(response.result, "{}".data(using: .utf8))
+            XCTAssertEqual(response.statusCode, 404)
+            promise.fulfill()
+        } catch {
+            XCTFail() // shouldn't happen
+        }
+        
+        await fulfillment(of: [promise], timeout: 5)
+    }
+    
     // JSONPlaceholderAPI.createPost:
     
     func testRequestPost_withDecodedResult_asyncAwaitAPI() async throws {
@@ -785,6 +812,35 @@ class NetworkServiceTests: XCTestCase {
         }
         
         let _ = networkService.requestWithStatusCode(request) { response in
+            switch response {
+            case .success(let result):
+                XCTAssertEqual(result.result, "{}".data(using: .utf8))
+                XCTAssertEqual(result.statusCode, 404)
+                promise.fulfill()
+            case .failure(_):
+                break
+            }
+        }
+        
+        wait(for: [promise], timeout: 5)
+    }
+    
+    func testRequestWithStatusCodeGet_withErrorReturned_andChangingGlobalAutoValidation_callbacksAPI() {
+        let promise = expectation(description: "testRequestWithStatusCodeGet_withErrorReturned_andChangingGlobalAutoValidation")
+        
+        let networkService = NetworkService(urlSession: URLSession(configuration: .default))
+        XCTAssertEqual(networkService.autoValidation, true)
+        
+        networkService.autoValidation = false
+        
+        let endpoint = JSONPlaceholderAPI.getPost(id: 102)
+        
+        guard let request = RequestFactory.request(endpoint) else {
+            XCTFail()
+            return
+        }
+        
+        let _ = networkService.requestWithStatusCode(request, config: RequestConfig(autoValidation: false)) { response in
             switch response {
             case .success(let result):
                 XCTAssertEqual(result.result, "{}".data(using: .utf8))
