@@ -1,6 +1,6 @@
 import Foundation
 
-enum CustomError: Error, LocalizedError {
+enum CustomError: LocalizedError {
     case app(_ type: AppError? = nil, description: String? = nil)
     case server(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
     case internetConnection(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
