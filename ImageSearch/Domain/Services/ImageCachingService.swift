@@ -71,7 +71,7 @@ actor DefaultImageCachingService: ImageCachingService {
                         search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .big)
                         if !imagesAreCached {
                             // Cache the thumbnail if it's not already cached
-                            let _ = await self.imageRepository.saveImage(image, searchId: search.id, sortId: index+1)
+                            let _ = await self.imageRepository.saveImage(search.searchResults[index], searchId: search.id, sortId: index+1)
                         }
                         search.searchResults[index] = ImageBehavior.updateImage(image, newWrapper: nil, for: .thumbnail)
                     }
