@@ -39,7 +39,7 @@ class ImageBehaviorTests: XCTestCase {
     
     func testDeepCopy() {
         let image = ImageBehaviorTests.testImageStub
-        let imageCopy = ImageBehavior.deepCopy(image)
+        let imageCopy = image.copy()
         XCTAssertTrue(image == imageCopy)
         XCTAssertFalse(image === imageCopy)
     }

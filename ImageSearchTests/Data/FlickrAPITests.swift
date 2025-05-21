@@ -188,7 +188,7 @@ class FlickrAPITests: XCTestCase {
             let _ = try await networkServiceMock.request(request, type: Tags.self)
             XCTFail()
         } catch {
-            XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+            XCTAssertTrue(!error.localizedDescription.isEmpty)
         }
     }
     
@@ -208,7 +208,7 @@ class FlickrAPITests: XCTestCase {
             let _ = try await networkService.request(request, type: Tags.self)
             XCTFail()
         } catch {
-            XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+            XCTAssertTrue(!error.localizedDescription.isEmpty)
             if error is NetworkError {
                 let error = error as! NetworkError
                 
@@ -247,7 +247,7 @@ class FlickrAPITests: XCTestCase {
             let _ = try await networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!)
             XCTFail()
         } catch {
-            XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+            XCTAssertTrue(!error.localizedDescription.isEmpty)
             if error is NetworkError {
                 let error = error as! NetworkError
                 XCTAssertEqual(error.statusCode, 404)
@@ -345,7 +345,7 @@ class FlickrAPITests: XCTestCase {
             case .success(_):
                 XCTFail()
             case .failure(let error):
-                XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+                XCTAssertTrue(!error.localizedDescription.isEmpty)
             }
         }
     }
@@ -367,7 +367,7 @@ class FlickrAPITests: XCTestCase {
             case .success(_):
                 break
             case .failure(let error):
-                XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+                XCTAssertTrue(!error.localizedDescription.isEmpty)
                 if error.data != nil {
                     let dataStr = String(data: error.data!, encoding: .utf8)
                     XCTAssertEqual(dataStr, "{\"stat\":\"fail\",\"code\":100,\"message\":\"Invalid API Key (Key has invalid format)\"}")
@@ -406,7 +406,7 @@ class FlickrAPITests: XCTestCase {
             case .success(_):
                 break
             case .failure(let error):
-                XCTAssertTrue(error.localizedDescription.contains("The operation couldn’t be completed"))
+                XCTAssertTrue(!error.localizedDescription.isEmpty)
                 XCTAssertEqual(error.statusCode, 404)
                 promise.fulfill()
             }

@@ -132,7 +132,7 @@ class ImageDetailsViewModelTests: XCTestCase {
     func testSharedImage() async throws {
         imageDetailsViewModel.onShareButton()
         XCTAssertTrue(imageDetailsViewModel.shareImage.value.isEmpty)
-        XCTAssertEqual(imageDetailsViewModel.makeToast.value, "No image to share")
+        XCTAssertEqual(imageDetailsViewModel.makeToast.value, NSLocalizedString("No image to share", comment: ""))
         
         imageDetailsViewModel.loadBigImage()
         
