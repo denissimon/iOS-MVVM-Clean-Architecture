@@ -8,7 +8,6 @@ protocol ImageType: AnyObject {
 
 protocol ImageListItemVM: AnyObject {
     var thumbnail: ImageWrapper? { get }
-    var bigImage: ImageWrapper? { get }
 }
 
 class Image: Codable, ImageType, ImageListItemVM {
@@ -40,6 +39,18 @@ class Image: Codable, ImageType, ImageListItemVM {
               }
         let flickr = FlickrImageParameters(imageID: imageID, farm: farm, server: server, secret: secret)
         self.init(title: title, flickr: flickr)
+    }
+    
+    // Another way to make a deep copy is to use DeepCopier.copy(of:)
+    func copy() -> Image {
+        let newImage = Image(title: title, flickr: flickr)
+        if thumbnail != nil {
+            newImage.thumbnail = ImageWrapper(uiImage: thumbnail!.uiImage)
+        }
+        if bigImage != nil {
+            newImage.bigImage = ImageWrapper(uiImage: bigImage!.uiImage)
+        }
+        return newImage
     }
 }
 
