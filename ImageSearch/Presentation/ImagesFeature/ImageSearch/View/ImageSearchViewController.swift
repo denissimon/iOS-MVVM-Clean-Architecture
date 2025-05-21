@@ -59,9 +59,8 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             self.collectionView.reloadSections(data.1)
         }
         
-        viewModel.scrollTop.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.scrollTop()
+        viewModel.scrollTop.bind(self, queue: .main) { [weak self] _ in
+            self?.scrollTop()
         }
         
         viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
@@ -110,15 +109,9 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         searchBar.layer.borderColor = UIColor.lightGray.cgColor
         searchBar.layer.borderWidth = 0.5
         
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.refreshControl = refreshControl
         
-        if #available(iOS 11.0, *) {
-            navigationItem.backButtonTitle = ""
-        }
+        navigationItem.backButtonTitle = ""
     }
     
     private func scrollTop() {
@@ -133,13 +126,13 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let didSelect = Event<ImageQuery>()
-        didSelect.subscribe(self) { [weak self] (query) in self?.viewModel.searchImage(for: query) }
+        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImage(for: query) }
         coordinatorActions?.showHotTags(didSelect)
     }
     
     // MARK: - Other methods
     
-    @objc func deviceOrientationDidChange(_ notification: Notification) {
+    @objc func deviceOrientationDidChange(_: Notification) {
         collectionView.reloadData()
     }
     
@@ -149,13 +142,13 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
                 self.refreshControl.endRefreshing()
             }
         }
-        guard let lastSearchQuery = viewModel.lastSearchQuery else {
+        guard let lastQuery = viewModel.lastQuery else {
             let imageQuery = ImageQuery(query: "random")
             viewModel.searchImage(for: imageQuery)
             endRefreshing()
             return
         }
-        viewModel.searchImage(for: lastSearchQuery)
+        viewModel.searchImage(for: lastQuery)
         endRefreshing()
     }
 }
@@ -200,14 +193,14 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedImage = viewModel.data.value[indexPath.section].searchResults_[indexPath.row]
+        let selectedImage = viewModel.data.value[indexPath.section]._searchResults[indexPath.row]
         if selectedImage.thumbnail == nil { return }
         coordinatorActions?.showImageDetails(selectedImage, viewModel.data.value[indexPath.section].searchQuery)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let section = viewModel.data.value[indexPath.section]
-        if section.searchResults_[indexPath.row].thumbnail == nil {
+        if section._searchResults[indexPath.row].thumbnail == nil {
             viewModel.updateSection(section.id)
         }
     }
@@ -218,8 +211,8 @@ extension ImageSearchViewController: UICollectionViewDelegate {
 extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView,
-                          layout collectionViewLayout: UICollectionViewLayout,
-                          sizeForItemAt indexPath: IndexPath) -> CGSize {
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         var itemsPerRow = CGFloat()
         if UIWindow.isLandscape {
             itemsPerRow = AppConfiguration.ImageCollection.itemsPerRowInHorizOrient
@@ -237,9 +230,9 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView,
-                      layout collectionViewLayout: UICollectionViewLayout,
-                      insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(
             top: AppConfiguration.ImageCollection.verticleSpace,
             left: AppConfiguration.ImageCollection.horizontalSpace,
             bottom: AppConfiguration.ImageCollection.verticleSpace,
@@ -248,8 +241,8 @@ extension ImageSearchViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView,
-                      layout collectionViewLayout: UICollectionViewLayout,
-                      minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return AppConfiguration.ImageCollection.horizontalSpace
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        AppConfiguration.ImageCollection.horizontalSpace
     }
 }
