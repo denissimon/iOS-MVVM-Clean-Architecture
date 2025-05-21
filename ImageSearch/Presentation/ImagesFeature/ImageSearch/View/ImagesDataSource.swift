@@ -17,19 +17,19 @@ class ImagesDataSource: NSObject {
 // MARK: UICollectionViewDataSource
 
 extension ImagesDataSource: UICollectionViewDataSource {
-        
+    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return data.count
+        data.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data[section].searchResults_.count
+        data[section]._searchResults.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
-        let image = data[indexPath.section].searchResults_[indexPath.row]
+        let image = data[indexPath.section]._searchResults[indexPath.row]
         cell.imageView.image = image.thumbnail?.uiImage
         return cell
     }
@@ -44,7 +44,6 @@ extension ImagesDataSource: UICollectionViewDataSource {
                 return headerView
             }
         }
-
         return UICollectionReusableView()
     }
 }
