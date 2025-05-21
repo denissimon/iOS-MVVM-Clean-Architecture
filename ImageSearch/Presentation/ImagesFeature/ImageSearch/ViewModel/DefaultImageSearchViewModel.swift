@@ -7,13 +7,13 @@ import Foundation
  */
 
 protocol ImageSearchViewModelInput {
-    func searchImage(for searchQuery: ImageQuery)
-    func getDataSource() -> ImagesDataSource
-    func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery)
+    func searchImage(for query: ImageQuery)
+    func searchBarSearchButtonClicked(with query: ImageQuery)
     func scrollUp()
     func scrollDown(_ searchBarHeight: Float)
     func updateSection(_ searchId: String)
     func getHeightOfCell(width: Float) -> Float
+    func getDataSource() -> ImagesDataSource
 }
 
 protocol ImageSearchViewModelOutput {
@@ -24,7 +24,7 @@ protocol ImageSearchViewModelOutput {
     var resetSearchBar: Observable<Bool?> { get }
     var activityIndicatorVisibility: Observable<Bool> { get }
     var collectionViewTopConstraint: Observable<Float> { get }
-    var lastSearchQuery: ImageQuery? { get }
+    var lastQuery: ImageQuery? { get }
     var screenTitle: String { get }
 }
 
@@ -35,7 +35,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private let searchImagesUseCase: SearchImagesUseCase
     private let imageCachingService: ImageCachingService
     
-    var lastSearchQuery: ImageQuery?
+    var lastQuery: ImageQuery?
     
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
@@ -61,8 +61,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     private func setup() {
         Task {
-            await imageCachingService.subscribeToDidProcess(self) { result in
-                self.data.value = result
+            await imageCachingService.subscribeToDidProcess(self) { [weak self] data in
+                self?.data.value = data
             }
         }
     }
@@ -84,56 +84,53 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
     
-    func searchImage(for searchQuery: ImageQuery) {
-        let searchString = searchQuery.query.trimmingCharacters(in: .whitespacesAndNewlines)
+    func searchImage(for query: ImageQuery) {
+        let searchString = query.query.trimmingCharacters(in: .whitespacesAndNewlines)
         if searchString.isEmpty {
             makeToast.value = NSLocalizedString("Empty search query", comment: "")
             resetSearchBar.value = nil
             return
         }
         
-        if activityIndicatorVisibility.value && searchQuery == lastSearchQuery { return }
+        if activityIndicatorVisibility.value && query == lastQuery { return }
         activityIndicatorVisibility.value = true
         
-        imagesLoadTask = Task.detached {
-            
+        imagesLoadTask = Task.detached { [self] in 
             defer {
-                self.memorySafetyCheck(data: self.data.value as! [ImageSearchResults])
+                memorySafetyCheck(data: data.value as! [ImageSearchResults])
             }
             
             let imageQuery = ImageQuery(query: searchString)
-            let result = await self.searchImagesUseCase.execute(imageQuery)
+            let result = await searchImagesUseCase.execute(imageQuery)
             
-            if self.imagesLoadTask != nil { guard !self.imagesLoadTask!.isCancelled else { return } }
+            if Task.isCancelled { return }
             
             switch result {
             case .success(let searchResults):
-                guard !Task.isCancelled else { return }
-                
                 guard let searchResults = searchResults else {
-                    self.activityIndicatorVisibility.value = false
+                    activityIndicatorVisibility.value = false
                     return
                 }
                 
-                self.data.value.insert(searchResults, at: 0)
-                self.lastSearchQuery = searchQuery
+                data.value.insert(searchResults, at: 0)
+                lastQuery = query
                 
-                self.activityIndicatorVisibility.value = false
-                self.scrollTop.value = nil
+                activityIndicatorVisibility.value = false
+                scrollTop.value = nil
             case .failure(let error):
                 let defaultMessage = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
                 switch error {
                 case CustomError.app(_, let customMessage):
-                    self.showError(customMessage ?? defaultMessage)
+                    showError(customMessage ?? defaultMessage)
                 default:
-                    self.showError(defaultMessage)
+                    showError(defaultMessage)
                 }
             }
         }
     }
     
-    func searchBarSearchButtonClicked(with searchBarQuery: ImageQuery) {
-        searchImage(for: searchBarQuery)
+    func searchBarSearchButtonClicked(with query: ImageQuery) {
+        searchImage(for: query)
         resetSearchBar.value = nil
     }
     
@@ -160,24 +157,21 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     func updateSection(_ searchId: String) {
         Task {
-            if let images = await imageCachingService.getCachedImages(searchId: searchId) {
-                guard !images.isEmpty else { return }
-                
-                let dataCopy = data.value
-                var sectionIndex = Int()
-                for (index, var search) in dataCopy.enumerated() {
-                    if search.id == searchId {
-                        if let image = search.searchResults_.first {
-                            if image.thumbnail != nil { return }
-                        }
-                        search.searchResults_ = images
-                        sectionIndex = index
-                        break
-                    }
+            guard let images = await imageCachingService.getCachedImages(searchId: searchId) else { return }
+            guard !images.isEmpty else { return }
+                        
+            var sectionIndex = Int()
+            
+            for (index, search) in data.value.enumerated() {
+                if search.id == searchId {
+                    if let image = search._searchResults.first, image.thumbnail != nil { return }
+                    search._searchResults = images
+                    sectionIndex = index
+                    break
                 }
-                
-                sectionData.value = (dataCopy, [sectionIndex])
             }
+            
+            sectionData.value = (data.value, [sectionIndex])
         }
     }
 }

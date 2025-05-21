@@ -33,7 +33,9 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     let makeToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable<Bool>(false)
     
-    private var imageLoadTask: Task<Void, Never>?
+    private var imageLoadTask: Task<Void, Never>? {
+        willSet { imageLoadTask?.cancel() }
+    }
     
     init(getBigImageUseCase: GetBigImageUseCase, image: Image, imageQuery: ImageQuery) {
         self.getBigImageUseCase = getBigImageUseCase
@@ -58,30 +60,35 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         
         activityIndicatorVisibility.value = true
         
-        imageLoadTask = Task.detached { [weak self] in
-            guard let image = self?.image else { return }
-            if let imageData = await self?.getBigImageUseCase.execute(for: image) {
+        imageLoadTask = Task.detached { [self] in 
+            if let imageData = await getBigImageUseCase.execute(for: image) {
+                
+                if Task.isCancelled { return }
+                
                 guard !imageData.isEmpty else {
-                    self?.showError()
+                    showError()
                     return
                 }
+                
                 if let bigImage = Supportive.toUIImage(from: imageData) {
                     let imageWrapper = ImageWrapper(uiImage: bigImage)
-                    self?.image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
-                    self?.data.value = imageWrapper
+                    image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
+                    data.value = imageWrapper
                     
-                    self?.activityIndicatorVisibility.value = false
+                    activityIndicatorVisibility.value = false
                 } else {
-                    self?.showError()
+                    showError()
                 }
             } else {
-                self?.showError()
+                if !Task.isCancelled {
+                    showError()
+                }
             }
         }
     }
     
     func getTitle() -> String {
-        return imageQuery.query
+        imageQuery.query
     }
     
     func onShareButton() {

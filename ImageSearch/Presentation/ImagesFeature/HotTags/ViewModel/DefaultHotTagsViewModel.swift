@@ -9,11 +9,11 @@ enum TagsSegmentType: String, CaseIterable {
  * getHotTagsUseCase.execute()
  */
 
-protocol HotTagsViewModelInput {    
-    func triggerDidSelect(with imageQuery: ImageQuery)
+protocol HotTagsViewModelInput {
     func getHotTags()
-    func getDataSource() -> TagsDataSource
+    func triggerDidSelect(with imageQuery: ImageQuery)
     func onSelectedSegmentChange(_ index: Int)
+    func getDataSource() -> TagsDataSource
 }
 
 protocol HotTagsViewModelOutput {
@@ -41,7 +41,9 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     let makeToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
-    private var hotTagsLoadTask: Task<Void, Never>?
+    private var hotTagsLoadTask: Task<Void, Never>? {
+        willSet { hotTagsLoadTask?.cancel() }
+    }
     
     init(getHotTagsUseCase: GetHotTagsUseCase, didSelect: Event<ImageQuery>) {
         self.getHotTagsUseCase = getHotTagsUseCase
@@ -71,28 +73,26 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     private func getFlickrHotTags() {
         activityIndicatorVisibility.value = true
-                
-        hotTagsLoadTask = Task.detached { [weak self] in
+        
+        hotTagsLoadTask = Task.detached { [self] in
+            let result = await getHotTagsUseCase.execute()
             
-            let result = await self?.getHotTagsUseCase.execute()
+            if Task.isCancelled { return }
             
             var allHotTags = [Tag]()
             
             switch result {
             case .success(let tags):
-                let receivedHotTags = self?.composeHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
-                allHotTags = receivedHotTags ?? []
-                self?.dataForWeekTags = allHotTags
-                self?.activityIndicatorVisibility.value = false
+                allHotTags = composeHotTags(type: .week, weekHotTags: tags.tags as? [Tag])
+                dataForWeekTags = allHotTags
+                activityIndicatorVisibility.value = false
             case .failure(let error):
                 let msg = ((error.errorDescription ?? "") + " " + (error.recoverySuggestion ?? "")).trimmingCharacters(in: .whitespacesAndNewlines)
-                self?.showError(msg)
-            case .none:
-                return
+                showError(msg)
             }
             
-            if self?.selectedSegment == .week {
-                self?.data.value = allHotTags
+            if selectedSegment == .week {
+                data.value = allHotTags
             }
         }
     }
