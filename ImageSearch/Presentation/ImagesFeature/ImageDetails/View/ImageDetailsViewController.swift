@@ -27,32 +27,31 @@ class ImageDetailsViewController: UIViewController, Storyboarded, Alertable {
     private func setup() {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] bigImage in
-            if let bigImage = bigImage {
-                self?.imageView.image = bigImage.uiImage
-            }
+            guard let self, let bigImage else { return }
+            imageView.image = bigImage.uiImage
         }
         
-        viewModel.shareImage.bind(self) { [weak self] imageWrapperArray in
-            guard let self = self else { return }
-            let activityVC = UIActivityViewController(activityItems: imageWrapperArray.toUIImageArray(), applicationActivities: nil)
-            activityVC.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
+        viewModel.shareImage.bind(self) { [weak self] imageWrappers in
+            guard let self else { return }
+            let activityVC = UIActivityViewController(activityItems: imageWrappers.toUIImageArray(), applicationActivities: nil)
+            activityVC.popoverPresentationController?.barButtonItem = navigationItem.leftBarButtonItem
             activityVC.popoverPresentationController?.permittedArrowDirections = .up
-            self.present(activityVC, animated: true, completion: nil)
+            present(activityVC, animated: true, completion: nil)
         }
         
-        viewModel.makeToast.bind(self, queue: .main) { [weak self] (message) in
-            guard !message.isEmpty else { return }
-            self?.makeToast(message: message)
+        viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
+            guard let self, !message.isEmpty else { return }
+            makeToast(message: message)
         }
         
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
-            guard let self = self else { return }
+            guard let self else { return }
             if value {
-                self.activityIndicator.isHidden = false
-                self.activityIndicator.startAnimating()
+                activityIndicator.isHidden = false
+                activityIndicator.startAnimating()
             } else {
-                self.activityIndicator.isHidden = true
-                self.activityIndicator.stopAnimating()
+                activityIndicator.isHidden = true
+                activityIndicator.stopAnimating()
             }
         }
     }

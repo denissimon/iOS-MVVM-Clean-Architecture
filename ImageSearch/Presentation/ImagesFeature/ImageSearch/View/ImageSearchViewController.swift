@@ -34,7 +34,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         
         // Get some random images at the app's start
         let imageQuery = ImageQuery(query: "random")
-        viewModel.searchImage(for: imageQuery)
+        viewModel.searchImages(for: imageQuery)
     }
     
     private func setup() {
@@ -45,18 +45,18 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.dataSource?.updateData(data)
-            self.collectionView.reloadData()
-            if self.refreshControl.isRefreshing {
-                self.refreshControl.endRefreshing()
+            guard let self else { return }
+            dataSource?.updateData(data)
+            collectionView.reloadData()
+            if refreshControl.isRefreshing {
+                refreshControl.endRefreshing()
             }
         }
         
         viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.dataSource?.updateData(data.0)
-            self.collectionView.reloadSections(data.1)
+            guard let self else { return }
+            dataSource?.updateData(data.0)
+            collectionView.reloadSections(data.1)
         }
         
         viewModel.scrollTop.bind(self, queue: .main) { [weak self] _ in
@@ -64,32 +64,32 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         }
         
         viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
-            guard !message.isEmpty else { return }
-            self?.makeToast(message: message)
+            guard let self, !message.isEmpty else { return }
+            makeToast(message: message)
         }
         
         viewModel.resetSearchBar.bind(self) { [weak self] _ in
-            guard let self = self else { return }
-            self.searchBar.text = nil
-            self.searchBar.resignFirstResponder()
+            guard let self else { return }
+            searchBar.text = nil
+            searchBar.resignFirstResponder()
         }
         
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
-            guard let self = self else { return }
+            guard let self else { return }
             if value {
-                self.makeToastActivity()
-                self.searchBar.isUserInteractionEnabled = false
-                self.searchBar.placeholder = "..."
+                makeToastActivity()
+                searchBar.isUserInteractionEnabled = false
+                searchBar.placeholder = "..."
             } else {
-                self.hideToastActivity()
-                self.searchBar.isUserInteractionEnabled = true
-                self.searchBar.placeholder = NSLocalizedString("Search", comment: "")
+                hideToastActivity()
+                searchBar.isUserInteractionEnabled = true
+                searchBar.placeholder = NSLocalizedString("Search", comment: "")
             }
         }
         
         viewModel.collectionViewTopConstraint.bind(self) { [weak self] value in
-            guard let self = self else { return }
-            self.collectionViewTopConstraint.constant = CGFloat(value)
+            guard let self else { return }
+            collectionViewTopConstraint.constant = CGFloat(value)
             UIView.animate(withDuration: 0.25) {
                 self.view.layoutIfNeeded()
             }
@@ -115,9 +115,9 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func scrollTop() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let attributes = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
-                self.collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - self.collectionView.contentInset.top), animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+            if let attributes = collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) {
+                collectionView.setContentOffset(CGPoint(x: 0, y: attributes.frame.origin.y - collectionView.contentInset.top), animated: true)
             }
         }
     }
@@ -126,7 +126,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let didSelect = Event<ImageQuery>()
-        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImage(for: query) }
+        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImages(for: query) }
         coordinatorActions?.showHotTags(didSelect)
     }
     
@@ -138,17 +138,17 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @objc private func refreshImageData(_ sender: Any) {
         func endRefreshing() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.refreshControl.endRefreshing()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+                refreshControl.endRefreshing()
             }
         }
         guard let lastQuery = viewModel.lastQuery else {
             let imageQuery = ImageQuery(query: "random")
-            viewModel.searchImage(for: imageQuery)
+            viewModel.searchImages(for: imageQuery)
             endRefreshing()
             return
         }
-        viewModel.searchImage(for: lastQuery)
+        viewModel.searchImages(for: lastQuery)
         endRefreshing()
     }
 }
@@ -175,8 +175,8 @@ extension ImageSearchViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-      searchBar.text = nil
-      searchBar.resignFirstResponder()
+        searchBar.text = nil
+        searchBar.resignFirstResponder()
     }
 }
 

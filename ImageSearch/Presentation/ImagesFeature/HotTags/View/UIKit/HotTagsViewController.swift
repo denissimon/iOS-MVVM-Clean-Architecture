@@ -36,22 +36,22 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
         
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
-            guard let self = self else { return }
-            self.dataSource?.updateData(data)
-            self.tableView.reloadData()
+            guard let self else { return }
+            dataSource?.updateData(data)
+            tableView.reloadData()
         }
         
         viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
-            guard !message.isEmpty else { return }
-            self?.makeToast(message: message)
+            guard let self, !message.isEmpty else { return }
+            makeToast(message: message)
         }
         
         viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
-            guard let self = self else { return }
+            guard let self else { return }
             if value {
-                self.makeToastActivity()
+                makeToastActivity()
             } else {
-                self.hideToastActivity()
+                hideToastActivity()
             }
         }
     }
