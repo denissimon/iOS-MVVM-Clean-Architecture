@@ -109,8 +109,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         XCTAssertNil(imageDetailsViewModel.data.value)
         
         imageDetailsViewModel.loadBigImage()
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await (imageDetailsViewModel as! DefaultImageDetailsViewModel).toTestImageLoadTask?.value
         
         XCTAssertNotNil(imageDetailsViewModel.image.bigImage)
         XCTAssertNotNil(imageDetailsViewModel.data.value)
@@ -135,8 +134,7 @@ class ImageDetailsViewModelTests: XCTestCase {
         XCTAssertEqual(imageDetailsViewModel.makeToast.value, NSLocalizedString("No image to share", comment: ""))
         
         imageDetailsViewModel.loadBigImage()
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await (imageDetailsViewModel as! DefaultImageDetailsViewModel).toTestImageLoadTask?.value
         
         imageDetailsViewModel.onShareButton()
         XCTAssertFalse(imageDetailsViewModel.shareImage.value.isEmpty)

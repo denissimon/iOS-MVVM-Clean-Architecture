@@ -149,11 +149,11 @@ class ImageSearchViewModelTests: XCTestCase {
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
         bind(imageSearchViewModel)
         
-        imageSearchViewModel.searchImage(for: ImageQuery(query: ""))
+        imageSearchViewModel.searchImages(for: ImageQuery(query: ""))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, NSLocalizedString("Empty search query", comment: ""))
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
-        imageSearchViewModel.searchImage(for: ImageQuery(query: " "))
+        imageSearchViewModel.searchImages(for: ImageQuery(query: " "))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, NSLocalizedString("Empty search query", comment: ""))
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
@@ -172,10 +172,9 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
         
         let query = ImageQuery(query: "random")
-        imageSearchViewModel.searchImage(for: query)
+        imageSearchViewModel.searchImages(for: query)
         XCTAssertEqual(imageSearchViewModel.makeToast.value, "")
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await imageSearchViewModel.toTestImagesLoadTask?.value
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
         XCTAssertTrue((imageSearchViewModel.data.value[0]._searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
@@ -197,10 +196,9 @@ class ImageSearchViewModelTests: XCTestCase {
         
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         
-        imageSearchViewModel.searchImage(for: ImageQuery(query: "random"))
+        imageSearchViewModel.searchImages(for: ImageQuery(query: "random"))
         XCTAssertEqual(imageSearchViewModel.makeToast.value, "")
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await imageSearchViewModel.toTestImagesLoadTask?.value
         
         XCTAssertTrue(imageSearchViewModel.data.value.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastQuery)
@@ -219,16 +217,14 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertEqual(imageSearchViewModel.data.value.count, 0)
         
         let query = ImageQuery(query: "query")
-        imageSearchViewModel.searchImage(for: query)
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        imageSearchViewModel.searchImages(for: query)
+        await imageSearchViewModel.toTestImagesLoadTask?.value
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 1)
         
         let query1 = ImageQuery(query: "query1")
-        imageSearchViewModel.searchImage(for: query1)
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        imageSearchViewModel.searchImages(for: query1)
+        await imageSearchViewModel.toTestImagesLoadTask?.value
         
         XCTAssertEqual(imageSearchViewModel.data.value.count, 2)
         XCTAssertTrue((imageSearchViewModel.data.value[0]._searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))

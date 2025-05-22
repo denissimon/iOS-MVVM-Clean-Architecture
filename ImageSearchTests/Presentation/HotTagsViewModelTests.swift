@@ -54,19 +54,16 @@ class HotTagsViewModelTests: XCTestCase {
     }
     
     func testGetHotTags_whenResultIsSuccess() async throws {
-        let hotTagsViewModel: HotTagsViewModel!
-        
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
+        let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         
         hotTagsViewModel.getHotTags()
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await hotTagsViewModel.toTestHotTagsLoadTask?.value
         
         XCTAssertEqual(hotTagsViewModel.data.value.count, 3)
         XCTAssertEqual(hotTagsViewModel.makeToast.value, "")
@@ -76,19 +73,16 @@ class HotTagsViewModelTests: XCTestCase {
     }
     
     func testGetHotTags_whenResultIsFailure() async throws {
-        let hotTagsViewModel: HotTagsViewModel!
-        
         let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
+        let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         
         hotTagsViewModel.getHotTags()
-        
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        await hotTagsViewModel.toTestHotTagsLoadTask?.value
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         XCTAssertNotEqual(hotTagsViewModel.makeToast.value, "")
@@ -98,12 +92,10 @@ class HotTagsViewModelTests: XCTestCase {
     }
     
     func testOnSelectedSegmentChange_whenAllTimesSelected() {
-        let hotTagsViewModel: HotTagsViewModel!
-        
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
+        let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
@@ -118,33 +110,31 @@ class HotTagsViewModelTests: XCTestCase {
     }
     
     func testOnSelectedSegmentChange_whenWeekSelected() async throws {
-        let hotTagsViewModel: HotTagsViewModel!
-        
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<ImageQuery>()
-        hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
+        let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         
-        hotTagsViewModel.onSelectedSegmentChange(1)
-        hotTagsViewModel.onSelectedSegmentChange(0)
+        hotTagsViewModel.onSelectedSegmentChange(1) // triggers 'data'
+        XCTAssertEqual(hotTagsViewModel.data.value[0].name, "sunset")
         
+        hotTagsViewModel.onSelectedSegmentChange(0) // triggers 'data' (data.value = []), 'activityIndicatorVisibility', 'activityIndicatorVisibility', 'data'
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
+        await hotTagsViewModel.toTestHotTagsLoadTask?.value
+        XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         
-        hotTagsViewModel.getHotTags()
-        try await Task.sleep(nanoseconds: 1 * 500_000_000)
+        hotTagsViewModel.onSelectedSegmentChange(1) // triggers 'data'
+        XCTAssertEqual(hotTagsViewModel.data.value[0].name, "sunset")
         
+        hotTagsViewModel.onSelectedSegmentChange(0) // triggers 'data'
         XCTAssertFalse(hotTagsViewModel.data.value.isEmpty)
         XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         
-        hotTagsViewModel.onSelectedSegmentChange(1)
-        hotTagsViewModel.onSelectedSegmentChange(0)
-        
-        XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         HotTagsViewModelTests.syncQueue.sync {
-            XCTAssertEqual(observablesTriggerCount, 10) // data 6 times, activityIndicatorVisibility 4 times
+            XCTAssertEqual(observablesTriggerCount, 7) // data, data, activityIndicatorVisibility, activityIndicatorVisibility, data, data, data
         }
     }
 }
