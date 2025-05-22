@@ -25,7 +25,7 @@ class HotTagsViewModelBridgeWrapper: ObservableObject {
     
     init(viewModel: HotTagsViewModel?) {
         self.viewModel = viewModel
-        self.bind()
+        bind()
     }
     
     private func bind() {
@@ -33,8 +33,8 @@ class HotTagsViewModelBridgeWrapper: ObservableObject {
             self?.data = data
         }
         viewModel?.makeToast.bind(self, queue: .main) { [weak self] message in
-            guard !message.isEmpty else { return }
-            self?.hostingController?.view.makeToast(message)
+            guard let self, !message.isEmpty else { return }
+            hostingController?.view.makeToast(message)
         }
         viewModel?.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
             guard let hostingController = self?.hostingController else { return }
