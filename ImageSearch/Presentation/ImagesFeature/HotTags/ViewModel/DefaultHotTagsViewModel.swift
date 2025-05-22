@@ -74,10 +74,12 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     private func getFlickrHotTags() {
         activityIndicatorVisibility.value = true
         
-        hotTagsLoadTask = Task.detached { [self] in
-            let result = await getHotTagsUseCase.execute()
+        hotTagsLoadTask = Task { [weak self] in            
+            let result = await self?.getHotTagsUseCase.execute()
             
             if Task.isCancelled { return }
+            
+            guard let self, let result else { return }
             
             var allHotTags = [Tag]()
             
@@ -125,5 +127,11 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
             selectedSegment = .allTimes
             data.value = composeHotTags(type: .allTimes)
         }
+    }
+}
+
+extension DefaultHotTagsViewModel {
+    var toTestHotTagsLoadTask: Task<Void, Never>? {
+        hotTagsLoadTask
     }
 }

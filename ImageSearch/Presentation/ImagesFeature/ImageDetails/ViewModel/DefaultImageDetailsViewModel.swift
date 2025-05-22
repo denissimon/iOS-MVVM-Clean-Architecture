@@ -60,11 +60,14 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         
         activityIndicatorVisibility.value = true
         
-        imageLoadTask = Task.detached { [self] in 
-            if let imageData = await getBigImageUseCase.execute(for: image) {
+        imageLoadTask = Task { [weak self] in
+            guard let image = self?.image else { return }
+            
+            if let imageData = await self?.getBigImageUseCase.execute(for: image) {
                 
                 if Task.isCancelled { return }
                 
+                guard let self else { return }
                 guard !imageData.isEmpty else {
                     showError()
                     return
@@ -72,7 +75,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
                 
                 if let bigImage = Supportive.toUIImage(from: imageData) {
                     let imageWrapper = ImageWrapper(uiImage: bigImage)
-                    image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
+                    self.image = ImageBehavior.updateImage(image, newWrapper: imageWrapper, for: .big)
                     data.value = imageWrapper
                     
                     activityIndicatorVisibility.value = false
@@ -81,7 +84,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
                 }
             } else {
                 if !Task.isCancelled {
-                    showError()
+                    self?.showError()
                 }
             }
         }
@@ -97,5 +100,11 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         } else {
             makeToast.value = NSLocalizedString("No image to share", comment: "")
         }
+    }
+}
+
+extension DefaultImageDetailsViewModel {
+    var toTestImageLoadTask: Task<Void, Never>? {
+        imageLoadTask
     }
 }

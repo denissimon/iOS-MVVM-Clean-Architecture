@@ -7,7 +7,7 @@ import Foundation
  */
 
 protocol ImageSearchViewModelInput {
-    func searchImage(for query: ImageQuery)
+    func searchImages(for query: ImageQuery)
     func searchBarSearchButtonClicked(with query: ImageQuery)
     func scrollUp()
     func scrollDown(_ searchBarHeight: Float)
@@ -84,7 +84,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
     
-    func searchImage(for query: ImageQuery) {
+    func searchImages(for query: ImageQuery) {
         let searchString = query.query.trimmingCharacters(in: .whitespacesAndNewlines)
         if searchString.isEmpty {
             makeToast.value = NSLocalizedString("Empty search query", comment: "")
@@ -95,7 +95,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         if activityIndicatorVisibility.value && query == lastQuery { return }
         activityIndicatorVisibility.value = true
         
-        imagesLoadTask = Task.detached { [self] in 
+        imagesLoadTask = Task {
+            
             defer {
                 memorySafetyCheck(data: data.value as! [ImageSearchResults])
             }
@@ -130,7 +131,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func searchBarSearchButtonClicked(with query: ImageQuery) {
-        searchImage(for: query)
+        searchImages(for: query)
         resetSearchBar.value = nil
     }
     
@@ -173,5 +174,11 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
             
             sectionData.value = (data.value, [sectionIndex])
         }
+    }
+}
+
+extension DefaultImageSearchViewModel {
+    var toTestImagesLoadTask: Task<Void, Never>? {
+        imagesLoadTask
     }
 }
