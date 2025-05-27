@@ -3,7 +3,7 @@ import UIKit
 protocol MainCoordinatorDIContainer {
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController
-    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> UIViewController
+    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<String>) -> UIViewController
 }
 
 class MainCoordinator: FlowCoordinator {
@@ -34,7 +34,7 @@ class MainCoordinator: FlowCoordinator {
         navigationController.pushViewController(imageDetailsVC, animated: true)
     }
     
-    private func showHotTags(didSelect: Event<ImageQuery>) {
+    private func showHotTags(didSelect: Event<String>) {
         let actions = HotTagsCoordinatorActions(
             closeHotTags: closeHotTags
         )

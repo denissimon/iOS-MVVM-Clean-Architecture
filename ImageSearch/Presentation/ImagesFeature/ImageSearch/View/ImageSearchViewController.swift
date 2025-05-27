@@ -2,7 +2,7 @@ import UIKit
 
 struct ImageSearchCoordinatorActions {
     let showImageDetails: (ImageListItemVM, ImageQuery) -> ()
-    let showHotTags: (Event<ImageQuery>) -> ()
+    let showHotTags: (Event<String>) -> ()
 }
 
 class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
@@ -33,8 +33,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         prepareUI()
         
         // Get some random images at the app's start
-        let imageQuery = ImageQuery(query: "random")
-        viewModel.searchImages(for: imageQuery)
+        viewModel.searchImages(for: "random")
     }
     
     private func setup() {
@@ -125,7 +124,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     // MARK: - Actions
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
-        let didSelect = Event<ImageQuery>()
+        let didSelect = Event<String>()
         didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImages(for: query) }
         coordinatorActions?.showHotTags(didSelect)
     }
@@ -143,12 +142,11 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             }
         }
         guard let lastQuery = viewModel.lastQuery else {
-            let imageQuery = ImageQuery(query: "random")
-            viewModel.searchImages(for: imageQuery)
+            viewModel.searchImages(for: "random")
             endRefreshing()
             return
         }
-        viewModel.searchImages(for: lastQuery)
+        viewModel.searchImages(for: lastQuery.query)
         endRefreshing()
     }
 }
@@ -159,8 +157,7 @@ extension ImageSearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchBarText = searchBar.text {
-            let imageQuery = ImageQuery(query: searchBarText)
-            viewModel.searchBarSearchButtonClicked(with: imageQuery)
+            viewModel.searchBarSearchButtonClicked(with: searchBarText)
         }
     }
     

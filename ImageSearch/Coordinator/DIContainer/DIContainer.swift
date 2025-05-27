@@ -70,7 +70,7 @@ extension DIContainer: MainCoordinatorDIContainer {
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     
-    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<ImageQuery>) -> UIViewController {
+    func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<String>) -> UIViewController {
         
         // Configurable use of UIKit or SwiftUI
         

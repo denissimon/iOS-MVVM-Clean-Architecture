@@ -79,8 +79,7 @@ extension HotTagsViewController: UITableViewDelegate {
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tagName = viewModel.data.value[indexPath.row].name
-        let imageQuery = ImageQuery(query: tagName)
-        viewModel.triggerDidSelect(with: imageQuery)
+        viewModel.triggerDidSelect(tagName: tagName)
         coordinatorActions?.closeHotTags(self)
     }
 }

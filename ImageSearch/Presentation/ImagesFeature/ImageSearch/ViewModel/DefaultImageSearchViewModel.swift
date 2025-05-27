@@ -7,8 +7,8 @@ import Foundation
  */
 
 protocol ImageSearchViewModelInput {
-    func searchImages(for query: ImageQuery)
-    func searchBarSearchButtonClicked(with query: ImageQuery)
+    func searchImages(for query: String)
+    func searchBarSearchButtonClicked(with query: String)
     func scrollUp()
     func scrollDown(_ searchBarHeight: Float)
     func updateSection(_ searchId: String)
@@ -84,15 +84,14 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
     
-    func searchImages(for query: ImageQuery) {
-        let searchString = query.query.trimmingCharacters(in: .whitespacesAndNewlines)
-        if searchString.isEmpty {
-            makeToast.value = NSLocalizedString("Empty search query", comment: "")
+    func searchImages(for query: String) {
+        guard let imageQuery = ImageQuery(query: query) else {
+            makeToast.value = NSLocalizedString("Search query error", comment: "")
             resetSearchBar.value = nil
             return
         }
         
-        if activityIndicatorVisibility.value && query == lastQuery { return }
+        if activityIndicatorVisibility.value && query == lastQuery?.query { return }
         activityIndicatorVisibility.value = true
         
         imagesLoadTask = Task {
@@ -101,7 +100,6 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 memorySafetyCheck(data: data.value as! [ImageSearchResults])
             }
             
-            let imageQuery = ImageQuery(query: searchString)
             let result = await searchImagesUseCase.execute(imageQuery)
             
             if Task.isCancelled { return }
@@ -114,7 +112,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 }
                 
                 data.value.insert(searchResults, at: 0)
-                lastQuery = query
+                lastQuery = imageQuery
                 
                 activityIndicatorVisibility.value = false
                 scrollTop.value = nil
@@ -130,7 +128,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         }
     }
     
-    func searchBarSearchButtonClicked(with query: ImageQuery) {
+    func searchBarSearchButtonClicked(with query: String) {
         searchImages(for: query)
         resetSearchBar.value = nil
     }
