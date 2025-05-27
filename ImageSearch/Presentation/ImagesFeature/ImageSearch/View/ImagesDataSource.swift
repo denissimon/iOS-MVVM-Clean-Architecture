@@ -28,7 +28,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! CollectionViewCell
         let image = data[indexPath.section]._searchResults[indexPath.row]
         cell.imageView.image = image.thumbnail?.uiImage
         return cell
@@ -38,7 +38,7 @@ extension ImagesDataSource: UICollectionViewDataSource {
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "CollectionViewHeader", for: indexPath) as? CollectionViewHeader {
+            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "ImageSectionHeader", for: indexPath) as? CollectionViewHeader {
                 let searchQuery = data[indexPath.section].searchQuery.query
                 headerView.label.text = searchQuery
                 return headerView
