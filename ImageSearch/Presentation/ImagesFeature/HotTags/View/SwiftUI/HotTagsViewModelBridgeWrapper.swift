@@ -32,10 +32,12 @@ class HotTagsViewModelBridgeWrapper: ObservableObject {
         viewModel?.data.bind(self, queue: .main) { [weak self] data in
             self?.data = data
         }
+        
         viewModel?.makeToast.bind(self, queue: .main) { [weak self] message in
             guard let self, !message.isEmpty else { return }
             hostingController?.view.makeToast(message)
         }
+        
         viewModel?.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
             guard let hostingController = self?.hostingController else { return }
             if value {
