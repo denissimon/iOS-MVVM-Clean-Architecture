@@ -26,6 +26,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     var image: Image
     let imageQuery: ImageQuery
+    private let didFinish: Event<Image>
     
     // Bindings
     let data: Observable<ImageWrapper?> = Observable(nil)
@@ -37,14 +38,16 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
         willSet { imageLoadTask?.cancel() }
     }
     
-    init(getBigImageUseCase: GetBigImageUseCase, image: Image, imageQuery: ImageQuery) {
+    init(getBigImageUseCase: GetBigImageUseCase, image: Image, imageQuery: ImageQuery, didFinish: Event<Image>) {
         self.getBigImageUseCase = getBigImageUseCase
         self.image = image
         self.imageQuery = imageQuery
+        self.didFinish = didFinish
     }
     
     deinit {
         imageLoadTask?.cancel()
+        didFinish.notify(image)
     }
     
     private func showError(_ msg: String = "") {

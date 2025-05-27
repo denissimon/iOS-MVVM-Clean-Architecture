@@ -12,6 +12,7 @@ protocol ImageSearchViewModelInput {
     func scrollUp()
     func scrollDown(_ searchBarHeight: Float)
     func updateSection(_ searchId: String)
+    func updateImage(_ image: Image, indexPath: IndexPath)
     func getHeightOfCell(width: Float) -> Float
     func getDataSource() -> ImagesDataSource
 }
@@ -171,6 +172,20 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
             }
             
             sectionData.value = (data.value, [sectionIndex])
+        }
+    }
+    
+    func updateImage(_ image: Image, indexPath: IndexPath) {
+        for (sectionIndex, search) in data.value.enumerated() {
+            if sectionIndex == indexPath.section {
+                for (rowIndex, _) in search._searchResults.enumerated() {
+                    if rowIndex == indexPath.row {
+                        search._searchResults[rowIndex] = image
+                        break
+                    }
+                }
+                break
+            }
         }
     }
 }

@@ -65,8 +65,8 @@ extension DIContainer: MainCoordinatorDIContainer {
         return ImageSearchViewController.instantiate(viewModel: viewModel, actions: actions)
     }
     
-    func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController {
-        let viewModel = DefaultImageDetailsViewModel(getBigImageUseCase: makeGetBigImageUseCase(), image: image, imageQuery: imageQuery)
+    func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery, didFinish: Event<Image>) -> ImageDetailsViewController {
+        let viewModel = DefaultImageDetailsViewModel(getBigImageUseCase: makeGetBigImageUseCase(), image: image, imageQuery: imageQuery, didFinish: didFinish)
         return ImageDetailsViewController.instantiate(viewModel: viewModel)
     }
     

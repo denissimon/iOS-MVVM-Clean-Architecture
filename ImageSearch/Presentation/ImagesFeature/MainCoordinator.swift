@@ -2,7 +2,7 @@ import UIKit
 
 protocol MainCoordinatorDIContainer {
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController
-    func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery) -> ImageDetailsViewController
+    func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery, didFinish: Event<Image>) -> ImageDetailsViewController
     func makeHotTagsViewController(actions: HotTagsCoordinatorActions, didSelect: Event<String>) -> UIViewController
 }
 
@@ -29,8 +29,8 @@ class MainCoordinator: FlowCoordinator {
         navigationController.pushViewController(imageSearchVC, animated: false)
     }
     
-    private func showImageDetails(image: ImageListItemVM, imageQuery: ImageQuery) {
-        let imageDetailsVC = dependencyContainer.makeImageDetailsViewController(image: image as! Image, imageQuery: imageQuery)
+    private func showImageDetails(image: ImageListItemVM, imageQuery: ImageQuery, didFinish: Event<Image>) {
+        let imageDetailsVC = dependencyContainer.makeImageDetailsViewController(image: image as! Image, imageQuery: imageQuery, didFinish: didFinish)
         navigationController.pushViewController(imageDetailsVC, animated: true)
     }
     

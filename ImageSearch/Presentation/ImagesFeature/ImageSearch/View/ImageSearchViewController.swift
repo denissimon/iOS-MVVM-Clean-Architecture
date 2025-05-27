@@ -1,7 +1,7 @@
 import UIKit
 
 struct ImageSearchCoordinatorActions {
-    let showImageDetails: (ImageListItemVM, ImageQuery) -> ()
+    let showImageDetails: (ImageListItemVM, ImageQuery, Event<Image>) -> ()
     let showHotTags: (Event<String>) -> ()
 }
 
@@ -192,7 +192,13 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedImage = viewModel.data.value[indexPath.section]._searchResults[indexPath.row]
         if selectedImage.thumbnail == nil { return }
-        coordinatorActions?.showImageDetails(selectedImage, viewModel.data.value[indexPath.section].searchQuery)
+        
+        let query = viewModel.data.value[indexPath.section].searchQuery
+        
+        let didFinish = Event<Image>()
+        didFinish.subscribe(self) { [weak self] image in self?.viewModel.updateImage(image, indexPath: indexPath) }
+        
+        coordinatorActions?.showImageDetails(selectedImage, query, didFinish)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
