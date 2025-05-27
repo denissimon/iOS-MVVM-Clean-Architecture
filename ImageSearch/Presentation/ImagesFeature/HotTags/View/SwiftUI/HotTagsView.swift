@@ -8,28 +8,33 @@ struct HotTagsView: View {
         
     var body: some View {
         VStack {
-            Picker("", selection: $viewModelBridgeWrapper.selectedSegment) {
-                ForEach(TagsSegmentType.allCases, id: \.self) { option in
-                    Text(NSLocalizedString(option.rawValue, comment: ""))
-                }
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
-            
             List {
+                HStack {
+                    Spacer()
+                    Picker("", selection: $viewModelBridgeWrapper.selectedSegment) {
+                        ForEach(TagsSegmentType.allCases, id: \.self) { option in
+                            Text(NSLocalizedString(option.rawValue, comment: ""))
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 152)
+                    .padding(.vertical, 4)
+                    Spacer()
+                }
+                .listRowSeparator(.hidden)
+                
                 ForEach(viewModelBridgeWrapper.data as! [Tag]) { tag in
                     TagCell(tag: tag)
-                        .frame(height: 38)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            let imageQuery = ImageQuery(query: tag.name)
-                            viewModelBridgeWrapper.viewModel?.triggerDidSelect(with: imageQuery)
+                            viewModelBridgeWrapper.viewModel?.triggerDidSelect(tagName: tag.name)
                             if let hostingController = viewModelBridgeWrapper.hostingController {
                                 coordinatorActions?.closeHotTags(hostingController)
                             }
                     }
                 }
             }
+            .listStyle(.plain)
             .navigationTitle(viewModelBridgeWrapper.screenTitle)
             .toolbar {
                 Button {
@@ -56,6 +61,13 @@ struct TagCell: View {
         HStack {
             Text("\(tag.name)")
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.system(size: 18))
         }
+        .padding(8)
     }
+}
+
+#Preview {
+    let viewModelBridgeWrapper = HotTagsViewModelBridgeWrapper(viewModel: DefaultHotTagsViewModel(getHotTagsUseCase: DefaultGetHotTagsUseCase(tagRepository: DefaultTagRepository(apiInteractor: URLSessionAPIInteractor(with: NetworkService()))), didSelect: Event<String>()))
+    HotTagsView(viewModelBridgeWrapper: viewModelBridgeWrapper)
 }
