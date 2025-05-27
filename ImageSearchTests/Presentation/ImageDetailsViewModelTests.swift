@@ -70,7 +70,8 @@ class ImageDetailsViewModelTests: XCTestCase {
         let imageRepository = ImageRepositoryMock()
         let getBigImageUseCase = DefaultGetBigImageUseCase(imageRepository: imageRepository)
         
-        imageDetailsViewModel = DefaultImageDetailsViewModel(getBigImageUseCase: getBigImageUseCase, image: ImageDetailsViewModelTests.testImageStub, imageQuery: ImageQuery(query: "random")!)
+        let didFinish = Event<Image>()
+        imageDetailsViewModel = DefaultImageDetailsViewModel(getBigImageUseCase: getBigImageUseCase, image: ImageDetailsViewModelTests.testImageStub, imageQuery: ImageQuery(query: "random")!, didFinish: didFinish)
         
         imageDetailsViewModel.data.bind(self) { [weak self] _ in
             ImageDetailsViewModelTests.syncQueue.sync {
