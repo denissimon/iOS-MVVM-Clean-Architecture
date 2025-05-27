@@ -126,7 +126,7 @@ class FlickrAPITests: XCTestCase {
     // MARK: - async/await API
     
     func testSearch_asyncAwaitAPI() async throws {
-        let endpoint = FlickrAPI.search(ImageQuery(query: "random"))
+        let endpoint = FlickrAPI.search(ImageQuery(query: "random")!)
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
         let networkServiceMock = NetworkServiceAsyncAwaitMock(responseData: expectedData)
         
@@ -277,7 +277,7 @@ class FlickrAPITests: XCTestCase {
     // MARK: - callbacks API
     
     func testSearch_callbacksAPI() async {
-        let endpoint = FlickrAPI.search(ImageQuery(query: "random"))
+        let endpoint = FlickrAPI.search(ImageQuery(query: "random")!)
         let expectedData = FlickrAPITests.searchResultJsonStub.data(using: .utf8)!
         let networkServiceMock = NetworkServiceCallbacksMock(responseData: expectedData)
         

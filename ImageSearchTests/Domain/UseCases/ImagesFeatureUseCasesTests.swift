@@ -10,8 +10,8 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     ]
     
     static var testImageStub: Image {
-        let testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
-        testImage.thumbnail = ImageWrapper(uiImage: UIImage(systemName: "heart.fill"))
+        var testImage = Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1"))
+        testImage = ImageBehavior.updateImage(testImage, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
         return testImage
     }
     
@@ -101,7 +101,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         let imageRepository = ImageRepositoryMock(result: .success(ImagesFeatureUseCasesTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
-        let imageQuery = ImageQuery(query: "random")
+        let imageQuery = ImageQuery(query: "random")!
         let result = await searchImagesUseCase.execute(imageQuery)
         let images = (try? result.get())?.searchResults
         
@@ -130,7 +130,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
-        let imageQuery = ImageQuery(query: "random")
+        let imageQuery = ImageQuery(query: "random")!
         let result = await searchImagesUseCase.execute(imageQuery)
         let images = (try? result.get())?.searchResults
         

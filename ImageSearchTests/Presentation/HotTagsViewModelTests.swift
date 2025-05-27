@@ -56,7 +56,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testGetHotTags_whenResultIsSuccess() async throws {
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
-        let didSelect = Event<ImageQuery>()
+        let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
@@ -75,7 +75,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testGetHotTags_whenResultIsFailure() async throws {
         let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
-        let didSelect = Event<ImageQuery>()
+        let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
@@ -94,7 +94,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testOnSelectedSegmentChange_whenAllTimesSelected() {
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
-        let didSelect = Event<ImageQuery>()
+        let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         
@@ -112,7 +112,7 @@ class HotTagsViewModelTests: XCTestCase {
     func testOnSelectedSegmentChange_whenWeekSelected() async throws {
         let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
-        let didSelect = Event<ImageQuery>()
+        let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
         bind(hotTagsViewModel)
         

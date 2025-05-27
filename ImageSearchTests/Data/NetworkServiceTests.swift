@@ -32,7 +32,7 @@ class NetworkServiceTests: XCTestCase {
         static func createPost(_ post: Post) -> EndpointType {
             let path = "/posts"
             
-            let params = defaultParams
+            var params = defaultParams
             params.httpBody = post.encode()
             
             return Endpoint(
@@ -45,7 +45,7 @@ class NetworkServiceTests: XCTestCase {
         static func updatePost(_ post: Post) -> EndpointType {
             let path = "/posts/\(post.id!)"
             
-            let params = defaultParams
+            var params = defaultParams
             params.httpBody = post.encode()
             
             return Endpoint(
@@ -58,7 +58,7 @@ class NetworkServiceTests: XCTestCase {
         static func patchPost(id: Int, title: String) -> EndpointType {
             let path = "/posts/\(id)"
             
-            let params = defaultParams
+            var params = defaultParams
             params.httpBody = "{\"title\": \"\(title)\"}".data(using: .utf8)
             
             return Endpoint(
