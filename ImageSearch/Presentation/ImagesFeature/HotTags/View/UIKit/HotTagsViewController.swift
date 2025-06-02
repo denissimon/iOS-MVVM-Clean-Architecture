@@ -37,7 +37,7 @@ class HotTagsViewController: UIViewController, Storyboarded, Alertable {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
             guard let self else { return }
-            dataSource?.updateData(data)
+            dataSource?.update(data)
             tableView.reloadData()
         }
         

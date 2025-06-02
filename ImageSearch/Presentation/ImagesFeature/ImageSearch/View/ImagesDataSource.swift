@@ -9,7 +9,7 @@ class ImagesDataSource: NSObject {
         self.data = data
     }
     
-    func updateData(_ data: [ImageSearchResultsListItemVM]) {
+    func update(_ data: [ImageSearchResultsListItemVM]) {
         self.data = data
     }
 }

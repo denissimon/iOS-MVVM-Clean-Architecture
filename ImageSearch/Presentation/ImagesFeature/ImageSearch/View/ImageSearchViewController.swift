@@ -45,7 +45,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         // Bindings
         viewModel.data.bind(self, queue: .main) { [weak self] data in
             guard let self else { return }
-            dataSource?.updateData(data)
+            dataSource?.update(data)
             collectionView.reloadData()
             if refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
@@ -54,7 +54,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         
         viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
             guard let self else { return }
-            dataSource?.updateData(data.0)
+            dataSource?.update(data.0)
             collectionView.reloadSections(data.1)
         }
         

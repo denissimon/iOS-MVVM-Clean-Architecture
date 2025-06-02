@@ -9,7 +9,7 @@ class TagsDataSource: NSObject {
         self.data = data
     }
     
-    func updateData(_ data: [TagListItemVM]) {
+    func update(_ data: [TagListItemVM]) {
         self.data = data
     }
 }
