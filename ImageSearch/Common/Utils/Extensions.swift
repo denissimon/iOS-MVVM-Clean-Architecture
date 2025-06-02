@@ -38,4 +38,4 @@ extension UIWindow {
     }
 }
 
-extension UIHostingController: Alertable { }
+extension UIHostingController: Alertable {}
