@@ -24,7 +24,7 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     private let getBigImageUseCase: GetBigImageUseCase
     
-    var image: Image
+    private(set) var image: Image
     let imageQuery: ImageQuery
     private let didFinish: Event<Image>
     
