@@ -36,7 +36,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private let searchImagesUseCase: SearchImagesUseCase
     private let imageCachingService: ImageCachingService
     
-    var lastQuery: ImageQuery?
+    private(set) var lastQuery: ImageQuery?
     
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
@@ -176,17 +176,10 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func updateImage(_ image: Image, indexPath: IndexPath) {
-        for (sectionIndex, search) in data.value.enumerated() {
-            if sectionIndex == indexPath.section {
-                for (rowIndex, _) in search._searchResults.enumerated() {
-                    if rowIndex == indexPath.row {
-                        search._searchResults[rowIndex] = image
-                        break
-                    }
-                }
-                break
-            }
-        }
+        guard data.value.indices.contains(indexPath.section) else { return }
+        let search = data.value[indexPath.section]
+        guard search._searchResults.indices.contains(indexPath.row) else { return }
+        search._searchResults[indexPath.row] = image
     }
 }
 
