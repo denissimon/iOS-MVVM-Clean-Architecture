@@ -7,6 +7,10 @@ Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurr
 
 The app retrieves images for any search query or tag via the Flickr API. It has three modules: ImageSearch, ImageDetails, HotTags.
 
+Swift 6 version can be found in [swift6][Swift6Link] branch.
+
+[Swift6Link]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/swift6
+
 <table> 
   <tr>
     <td> <img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
