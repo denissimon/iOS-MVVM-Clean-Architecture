@@ -12,7 +12,7 @@ class ImageBehavior {
     }
     
     static func updateImage(_ image: Image, newWrapper: ImageWrapper?, for size: ImageSize) -> Image {
-        let resultImage = image.copy()
+        var resultImage = image
         switch size {
         case .thumbnail:
             resultImage.thumbnail = newWrapper
