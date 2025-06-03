@@ -1,12 +1,12 @@
 import Foundation
 
-protocol ImageSearchResultsListItemVM: AnyObject {
+protocol ImageSearchResultsListItemVM {
     var id: String { get }
     var searchQuery: ImageQuery { get }
     var _searchResults: [ImageListItemVM] { get set }
 }
 
-class ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
+struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
     let id: String
     let searchQuery: ImageQuery
     var searchResults: [Image]
