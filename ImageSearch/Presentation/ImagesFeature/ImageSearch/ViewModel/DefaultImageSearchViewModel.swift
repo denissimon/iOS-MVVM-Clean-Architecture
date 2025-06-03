@@ -14,12 +14,11 @@ protocol ImageSearchViewModelInput {
     func updateSection(_ searchId: String)
     func updateImage(_ image: Image, indexPath: IndexPath)
     func getHeightOfCell(width: Float) -> Float
-    func getDataSource() -> ImagesDataSource
 }
 
 protocol ImageSearchViewModelOutput {
     var data: Observable<[ImageSearchResultsListItemVM]> { get }
-    var sectionData: Observable<([ImageSearchResultsListItemVM], IndexSet)> { get }
+    var sectionData: Observable<IndexSet> { get }
     var scrollTop: Observable<Bool?> { get }
     var makeToast: Observable<String> { get }
     var resetSearchBar: Observable<Bool?> { get }
@@ -42,7 +41,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     // Bindings
     let data: Observable<[ImageSearchResultsListItemVM]> = Observable([])
-    let sectionData: Observable<([ImageSearchResultsListItemVM], IndexSet)> = Observable(([],[]))
+    let sectionData: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")
     let resetSearchBar: Observable<Bool?> = Observable(nil)
@@ -66,10 +65,6 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 self?.data.value = data
             }
         }
-    }
-    
-    func getDataSource() -> ImagesDataSource {
-        ImagesDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {
@@ -171,7 +166,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 }
             }
             
-            sectionData.value = (data.value, [sectionIndex])
+            sectionData.value = [sectionIndex]
         }
     }
     

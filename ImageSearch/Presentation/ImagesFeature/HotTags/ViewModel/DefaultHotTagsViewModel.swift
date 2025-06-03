@@ -13,7 +13,6 @@ protocol HotTagsViewModelInput {
     func getHotTags()
     func triggerDidSelect(tagName: String)
     func onSelectedSegmentChange(_ index: Int)
-    func getDataSource() -> TagsDataSource
 }
 
 protocol HotTagsViewModelOutput {
@@ -56,10 +55,6 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     
     func triggerDidSelect(tagName: String) {
         didSelect.notify(tagName)
-    }
-    
-    func getDataSource() -> TagsDataSource {
-        TagsDataSource(with: data.value)
     }
     
     private func showError(_ msg: String = "") {

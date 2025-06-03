@@ -13,8 +13,6 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     private var viewModel: ImageSearchViewModel!
     
-    private var dataSource: ImagesDataSource?
-    
     private let refreshControl = UIRefreshControl()
     
     private var coordinatorActions: ImageSearchCoordinatorActions?
@@ -37,15 +35,13 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     }
     
     private func setup() {
-        dataSource = viewModel.getDataSource()
-        collectionView.dataSource = dataSource
+        collectionView.dataSource = self
         collectionView.delegate = self
         searchBar.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] data in
+        viewModel.data.bind(self, queue: .main) { [weak self] _ in
             guard let self else { return }
-            dataSource?.update(data)
             collectionView.reloadData()
             if refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
@@ -54,8 +50,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         
         viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
             guard let self else { return }
-            dataSource?.update(data.0)
-            collectionView.reloadSections(data.1)
+            collectionView.reloadSections(data)
         }
         
         viewModel.scrollTop.bind(self, queue: .main) { [weak self] _ in
@@ -174,6 +169,40 @@ extension ImageSearchViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension ImageSearchViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        viewModel.data.value.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.data.value[section]._searchResults.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! CollectionViewCell
+        let image = viewModel.data.value[indexPath.section]._searchResults[indexPath.row]
+        cell.imageView.image = image.thumbnail?.uiImage
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "ImageSectionHeader", for: indexPath) as? CollectionViewHeader {
+                let searchQuery = viewModel.data.value[indexPath.section].searchQuery.query
+                headerView.label.text = searchQuery
+                return headerView
+            }
+        }
+        return UICollectionReusableView()
     }
 }
 
