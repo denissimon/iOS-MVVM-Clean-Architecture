@@ -1,16 +1,16 @@
 import Foundation
 
-protocol ImageType: AnyObject {
+protocol ImageType {
     var thumbnail: ImageWrapper? { get set }
     var bigImage: ImageWrapper? { get set }
     var title: String { get }
 }
 
-protocol ImageListItemVM: AnyObject {
+protocol ImageListItemVM {
     var thumbnail: ImageWrapper? { get }
 }
 
-class Image: Codable, ImageType, ImageListItemVM {
+struct Image: Codable, ImageType, ImageListItemVM {
     
     struct FlickrImageParameters: Codable {
         let imageID: String
@@ -29,7 +29,7 @@ class Image: Codable, ImageType, ImageListItemVM {
         self.flickr = flickr
     }
     
-    convenience init?(flickrParams: [String: AnyObject]) {
+    init?(flickrParams: [String: AnyObject]) {
         guard let imageID = flickrParams["id"] as? String,
               let farm = flickrParams["farm"] as? Int,
               let server = flickrParams["server"] as? String,
@@ -39,18 +39,6 @@ class Image: Codable, ImageType, ImageListItemVM {
               }
         let flickr = FlickrImageParameters(imageID: imageID, farm: farm, server: server, secret: secret)
         self.init(title: title, flickr: flickr)
-    }
-    
-    // Another way to make a deep copy is to use DeepCopier.copy(of:)
-    func copy() -> Image {
-        let newImage = Image(title: title, flickr: flickr)
-        if thumbnail != nil {
-            newImage.thumbnail = ImageWrapper(uiImage: thumbnail!.uiImage)
-        }
-        if bigImage != nil {
-            newImage.bigImage = ImageWrapper(uiImage: bigImage!.uiImage)
-        }
-        return newImage
     }
 }
 
