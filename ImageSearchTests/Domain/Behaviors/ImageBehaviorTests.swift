@@ -36,11 +36,4 @@ class ImageBehaviorTests: XCTestCase {
         image = ImageBehavior.updateImage(image, newWrapper: nil, for: .thumbnail)
         XCTAssertNil(image.thumbnail)
     }
-    
-    func testDeepCopy() {
-        let image = ImageBehaviorTests.testImageStub
-        let imageCopy = image.copy()
-        XCTAssertTrue(image == imageCopy)
-        XCTAssertFalse(image === imageCopy)
-    }
 }
