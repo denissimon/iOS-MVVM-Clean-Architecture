@@ -40,8 +40,8 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         searchBar.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] _ in
-            guard let self else { return }
+        viewModel.data.bind(self, queue: .main) { [weak self] data in
+            guard let self, data.reload else { return }
             collectionView.reloadData()
             if refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
@@ -177,17 +177,17 @@ extension ImageSearchViewController: UISearchBarDelegate {
 extension ImageSearchViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        viewModel.data.value.count
+        viewModel.data.value.searches.count
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.data.value[section]._searchResults.count
+        viewModel.data.value.searches[section]._searchResults.count
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! CollectionViewCell
-        let image = viewModel.data.value[indexPath.section]._searchResults[indexPath.row]
+        let image = viewModel.data.value.searches[indexPath.section]._searchResults[indexPath.row]
         cell.imageView.image = image.thumbnail?.uiImage
         return cell
     }
@@ -197,7 +197,7 @@ extension ImageSearchViewController: UICollectionViewDataSource {
                         at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
             if let headerView =  collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "ImageSectionHeader", for: indexPath) as? CollectionViewHeader {
-                let searchQuery = viewModel.data.value[indexPath.section].searchQuery.query
+                let searchQuery = viewModel.data.value.searches[indexPath.section].searchQuery.query
                 headerView.label.text = searchQuery
                 return headerView
             }
@@ -219,10 +219,10 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedImage = viewModel.data.value[indexPath.section]._searchResults[indexPath.row]
+        let selectedImage = viewModel.data.value.searches[indexPath.section]._searchResults[indexPath.row]
         if selectedImage.thumbnail == nil { return }
         
-        let query = viewModel.data.value[indexPath.section].searchQuery
+        let query = viewModel.data.value.searches[indexPath.section].searchQuery
         
         let didFinish = Event<Image>()
         didFinish.subscribe(self) { [weak self] image in self?.viewModel.updateImage(image, indexPath: indexPath) }
@@ -231,7 +231,7 @@ extension ImageSearchViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let section = viewModel.data.value[indexPath.section]
+        let section = viewModel.data.value.searches[indexPath.section]
         if section._searchResults[indexPath.row].thumbnail == nil {
             viewModel.updateSection(section.id)
         }
