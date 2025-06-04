@@ -22,7 +22,7 @@ struct RequestConfig {
     }
 }
 
-protocol NetworkServiceAsyncAwaitType {
+protocol NetworkServiceAsyncAwaitType: Sendable {
     var urlSession: URLSession { get }
     
     func request(_ request: URLRequest, config: RequestConfig?) async throws -> Data
@@ -36,31 +36,39 @@ protocol NetworkServiceAsyncAwaitType {
     func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig?) async throws -> (result: Bool, statusCode: Int?)
 }
 
-protocol NetworkServiceCallbacksType {
+protocol NetworkServiceCallbacksType: Sendable {
     var urlSession: URLSession { get }
     
-    func request(_ request: URLRequest, config: RequestConfig?, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
-    func request<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig?, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
-    func fetchFile(url: URL, config: RequestConfig?, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
-    func downloadFile(url: URL, to localUrl: URL, config: RequestConfig?, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable?
+    func request(_ request: URLRequest, config: RequestConfig?, completion: @Sendable @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
+    func request<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig?, completion: @Sendable @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable?
+    func fetchFile(url: URL, config: RequestConfig?, completion: @Sendable @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable?
+    func downloadFile(url: URL, to localUrl: URL, config: RequestConfig?, completion: @Sendable @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable?
     
-    func requestWithStatusCode(_ request: URLRequest, config: RequestConfig?, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
-    func requestWithStatusCode<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig?, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
-    func fetchFileWithStatusCode(url: URL, config: RequestConfig?, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
-    func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig?, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func requestWithStatusCode(_ request: URLRequest, config: RequestConfig?, completion: @Sendable @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func requestWithStatusCode<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig?, completion: @Sendable @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func fetchFileWithStatusCode(url: URL, config: RequestConfig?, completion: @Sendable @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
+    func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig?, completion: @Sendable @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable?
 }
 
 typealias NetworkServiceType = NetworkServiceAsyncAwaitType & NetworkServiceCallbacksType
 
-class NetworkService: NetworkServiceType {
+final class NetworkService: NetworkServiceType {
     
     let urlSession: URLSession
-    var autoValidation: Bool
+    
+    private let lock = NSLock()
+    
+    nonisolated(unsafe) var autoValidation: Bool {
+        get { lock.withLock { _autoValidation } }
+        set { lock.withLock { _autoValidation = newValue } }
+    }
+    nonisolated(unsafe) private var _autoValidation: Bool
+    
     private let defaultConfig = RequestConfig(uploadTask: false, autoValidation: true)
     
     init(urlSession: URLSession = URLSession.shared, autoValidation: Bool = true) {
         self.urlSession = urlSession
-        self.autoValidation = autoValidation
+        self._autoValidation = autoValidation
     }
     
     private func log(_ str: String) {
@@ -72,7 +80,7 @@ class NetworkService: NetworkServiceType {
     @discardableResult
     private func validate(_ statusCode: Int?, data: Data? = nil, requestValidation: Bool) throws -> Bool {
         if !requestValidation { return true } // If validation is disabled for a given request (by default is enabled), then this automatic validation will not occur, even if global validation is enabled
-        if !autoValidation { return true } // Next, we check the global validation rule: when validation is enabled for a given request (this is by default), but global validation is disabled, then this automatic validation will not occur
+        if !_autoValidation { return true } // Next, we check the global validation rule: when validation is enabled for a given request (this is by default), but global validation is disabled, then this automatic validation will not occur
         guard statusCode != nil, !(statusCode! >= 400 && statusCode! <= 599) else {
             throw NetworkError(statusCode: statusCode, data: data)
         }
@@ -333,7 +341,7 @@ class NetworkService: NetworkServiceType {
     // MARK: - callbacks API
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
-    func request(_ request: URLRequest, config: RequestConfig? = nil, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
+    func request(_ request: URLRequest, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         let configUploadTask: Bool = config?.uploadTask ?? defaultConfig.uploadTask!
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
@@ -380,7 +388,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
-    func request<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig? = nil, completion: @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
+    func request<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<T, NetworkError>) -> Void) -> NetworkCancellable? {
         let configUploadTask: Bool = config?.uploadTask ?? defaultConfig.uploadTask!
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
@@ -435,7 +443,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// Fetches a file into memory
-    func fetchFile(url: URL, config: RequestConfig? = nil, completion: @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
+    func fetchFile(url: URL, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<Data?, NetworkError>) -> Void) -> NetworkCancellable? {
         log("\nNetworkService fetchFile: \(url)")
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
@@ -464,7 +472,7 @@ class NetworkService: NetworkServiceType {
     
     /// Downloads a file to disk, and supports background downloads.
     /// - Returns:.success(true), if successful
-    func downloadFile(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
+    func downloadFile(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<Bool, NetworkError>) -> Void) -> NetworkCancellable? {
         log("\nNetworkService downloadFile, url: \(url), to: \(localUrl)")
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
@@ -497,7 +505,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
-    func requestWithStatusCode(_ request: URLRequest, config: RequestConfig? = nil, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    func requestWithStatusCode(_ request: URLRequest, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         let configUploadTask: Bool = config?.uploadTask ?? defaultConfig.uploadTask!
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
@@ -548,7 +556,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// - Parameter uploadTask: To support uploading files, including background uploads. In other POST/PUT cases (e.g. with a json as httpBody), uploadTask can be false and dataTask will be used.
-    func requestWithStatusCode<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig? = nil, completion: @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    func requestWithStatusCode<T: Decodable>(_ request: URLRequest, type: T.Type, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<(result: T, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         let configUploadTask: Bool = config?.uploadTask ?? defaultConfig.uploadTask!
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
         
@@ -607,7 +615,7 @@ class NetworkService: NetworkServiceType {
     }
     
     /// Fetches a file into memory
-    func fetchFileWithStatusCode(url: URL, config: RequestConfig? = nil, completion: @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    func fetchFileWithStatusCode(url: URL, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<(result: Data?, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         log("\nNetworkService fetchFileWithStatusCode: \(url)")
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!
@@ -636,7 +644,7 @@ class NetworkService: NetworkServiceType {
     
     /// Downloads a file to disk, and supports background downloads.
     /// - Returns:.success(true), if successful
-    func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
+    func downloadFileWithStatusCode(url: URL, to localUrl: URL, config: RequestConfig? = nil, completion: @Sendable @escaping (Result<(result: Bool, statusCode: Int?), NetworkError>) -> Void) -> NetworkCancellable? {
         log("\nNetworkService downloadFileWithStatusCode, url: \(url), to: \(localUrl)")
         
         let configAutoValidation: Bool = config?.autoValidation ?? defaultConfig.autoValidation!

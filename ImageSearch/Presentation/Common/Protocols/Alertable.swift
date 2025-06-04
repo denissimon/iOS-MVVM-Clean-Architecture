@@ -1,6 +1,8 @@
 import UIKit
 
+@MainActor
 protocol Alertable {}
+
 extension Alertable where Self: UIViewController {
     
     func showAlert(title: String, message: String, style: UIAlertController.Style = .alert, okHandler: (() -> Void)? = nil) {

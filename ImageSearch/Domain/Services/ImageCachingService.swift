@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ImageCachingService: Actor {
-    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping ([ImageSearchResults]) -> ())
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @Sendable @escaping ([ImageSearchResults]) -> ())
     func cacheIfNecessary(_ data: [ImageSearchResults]) async
     func getCachedImages(searchId: String) async -> [Image]?
 }
@@ -30,7 +30,7 @@ actor DefaultImageCachingService: ImageCachingService {
         await imageRepository.deleteAllImages()
     }
     
-    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping ([ImageSearchResults]) -> ()) {
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @Sendable @escaping ([ImageSearchResults]) -> ()) {
         didProcess.subscribe(subscriber) { result in
             handler(result)
         }
@@ -38,13 +38,14 @@ actor DefaultImageCachingService: ImageCachingService {
     
     // Called after each new search
     func cacheIfNecessary(_ data: [ImageSearchResults]) async {
-        if data.count <= AppConfiguration.MemorySafety.cacheAfterSearches { return }
+        let cacheAfterSearches = await AppConfiguration.MemorySafety.cacheAfterSearches
+        if data.count <= cacheAfterSearches { return }
         if cachingTask != nil { return }
         
         cachingTask = Task {
             searchIdsFromCache = []
-            let dataPart1 = Array(data.prefix(AppConfiguration.MemorySafety.cacheAfterSearches))
-            let dataPart2 = Array(data.suffix(data.count - AppConfiguration.MemorySafety.cacheAfterSearches))
+            let dataPart1 = Array(data.prefix(cacheAfterSearches))
+            let dataPart2 = Array(data.suffix(data.count - cacheAfterSearches))
             let processedPart2 = await processData(dataPart2)
             let newData = dataPart1 + processedPart2
             didProcess.notify(newData)

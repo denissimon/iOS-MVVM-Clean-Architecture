@@ -1,6 +1,6 @@
 import Foundation
 
-class SQLiteImageDBInteractor: ImageDBInteractor {
+final class SQLiteImageDBInteractor: ImageDBInteractor {
     
     private let sqliteAdapter: SQLite?
     

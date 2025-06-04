@@ -1,6 +1,6 @@
 import Foundation
 
-class DefaultImageRepository: ImageRepository {
+final class DefaultImageRepository: ImageRepository {
     
     private let apiInteractor: APIInteractor
     private let imageDBInteractor: ImageDBInteractor

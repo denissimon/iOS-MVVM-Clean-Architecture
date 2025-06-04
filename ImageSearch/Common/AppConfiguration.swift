@@ -17,6 +17,7 @@ struct AppConfiguration {
         static let horizontalSpace: CGFloat = 20
     }
     
+    @MainActor
     struct MemorySafety {
         static var enabled = true
         static var cacheAfterSearches = 3

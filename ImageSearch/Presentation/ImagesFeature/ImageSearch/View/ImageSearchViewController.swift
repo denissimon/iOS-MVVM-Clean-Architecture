@@ -40,52 +40,66 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
         searchBar.delegate = self
         
         // Bindings
-        viewModel.data.bind(self, queue: .main) { [weak self] data in
-            guard let self, data.reload else { return }
-            collectionView.reloadData()
-            if refreshControl.isRefreshing {
-                refreshControl.endRefreshing()
+        viewModel.data.bind(self) { [weak self] data in
+            guard data.reload else { return }
+            Task { @MainActor in
+                guard let self else { return }
+                self.collectionView.reloadData()
+                if self.refreshControl.isRefreshing {
+                    self.refreshControl.endRefreshing()
+                }
             }
         }
         
-        viewModel.sectionData.bind(self, queue: .main) { [weak self] data in
-            guard let self else { return }
-            collectionView.reloadSections(data)
+        viewModel.sectionData.bind(self) { [weak self] index in
+            Task { @MainActor in
+                self?.collectionView.reloadSections(index)
+            }
         }
         
-        viewModel.scrollTop.bind(self, queue: .main) { [weak self] _ in
-            self?.scrollTop()
+        viewModel.scrollTop.bind(self) { [weak self] _ in
+            Task { @MainActor in
+                self?.scrollTop()
+            }
         }
         
-        viewModel.makeToast.bind(self, queue: .main) { [weak self] message in
-            guard let self, !message.isEmpty else { return }
-            makeToast(message: message)
+        viewModel.makeToast.bind(self) { [weak self] message in
+            guard !message.isEmpty else { return }
+            Task { @MainActor in
+                self?.makeToast(message: message)
+            }
         }
         
         viewModel.resetSearchBar.bind(self) { [weak self] _ in
-            guard let self else { return }
-            searchBar.text = nil
-            searchBar.resignFirstResponder()
+            Task { @MainActor in
+                guard let self else { return }
+                self.searchBar.text = nil
+                self.searchBar.resignFirstResponder()
+            }
         }
         
-        viewModel.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
-            guard let self else { return }
-            if value {
-                makeToastActivity()
-                searchBar.isUserInteractionEnabled = false
-                searchBar.placeholder = "..."
-            } else {
-                hideToastActivity()
-                searchBar.isUserInteractionEnabled = true
-                searchBar.placeholder = NSLocalizedString("Search", comment: "")
+        viewModel.activityIndicatorVisibility.bind(self) { [weak self] value in
+            Task { @MainActor in
+                guard let self else { return }
+                if value {
+                    self.makeToastActivity()
+                    self.searchBar.isUserInteractionEnabled = false
+                    self.searchBar.placeholder = "..."
+                } else {
+                    self.hideToastActivity()
+                    self.searchBar.isUserInteractionEnabled = true
+                    self.searchBar.placeholder = NSLocalizedString("Search", comment: "")
+                }
             }
         }
         
         viewModel.collectionViewTopConstraint.bind(self) { [weak self] value in
-            guard let self else { return }
-            collectionViewTopConstraint.constant = CGFloat(value)
-            UIView.animate(withDuration: 0.25) {
-                self.view.layoutIfNeeded()
+            Task { @MainActor in
+                guard let self else { return }
+                self.collectionViewTopConstraint.constant = CGFloat(value)
+                UIView.animate(withDuration: 0.25) {
+                    self.view.layoutIfNeeded()
+                }
             }
         }
         
@@ -98,6 +112,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     private func prepareUI() {
         title = viewModel.screenTitle
+        
         searchBar.isUserInteractionEnabled = false
         searchBar.placeholder = "..."
         searchBar.layer.borderColor = UIColor.lightGray.cgColor
@@ -120,7 +135,11 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let didSelect = Event<String>()
-        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImages(for: query) }
+        didSelect.subscribe(self) { [weak self] query in
+            Task { @MainActor in
+                self?.viewModel.searchImages(for: query)
+            }
+        }
         coordinatorActions?.showHotTags(didSelect)
     }
     
@@ -225,7 +244,11 @@ extension ImageSearchViewController: UICollectionViewDelegate {
         let query = viewModel.data.value.searches[indexPath.section].searchQuery
         
         let didFinish = Event<Image>()
-        didFinish.subscribe(self) { [weak self] image in self?.viewModel.updateImage(image, indexPath: indexPath) }
+        didFinish.subscribe(self) { [weak self] image in
+            Task { @MainActor in
+                self?.viewModel.updateImage(image, indexPath: indexPath)
+            }
+        }
         
         coordinatorActions?.showImageDetails(selectedImage, query, didFinish)
     }

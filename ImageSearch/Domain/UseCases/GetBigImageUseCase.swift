@@ -2,11 +2,11 @@ import Foundation
 
 // callAsFunction() can be used instead of execute() to call instances of the use case class as if they were functions
 
-protocol GetBigImageUseCase {
+protocol GetBigImageUseCase: Sendable {
     func execute(for image: Image) async -> Data?
 }
 
-class DefaultGetBigImageUseCase: GetBigImageUseCase {
+final class DefaultGetBigImageUseCase: GetBigImageUseCase {
     
     private let imageRepository: ImageRepository
     

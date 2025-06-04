@@ -2,11 +2,11 @@ import Foundation
 
 // callAsFunction() can be used instead of execute() to call instances of the use case class as if they were functions
 
-protocol SearchImagesUseCase {
+protocol SearchImagesUseCase: Sendable {
     func execute(_ imageQuery: ImageQuery) async -> Result<ImageSearchResults?, CustomError>
 }
 
-class DefaultSearchImagesUseCase: SearchImagesUseCase {
+final class DefaultSearchImagesUseCase: SearchImagesUseCase {
     
     private let imageRepository: ImageRepository
     

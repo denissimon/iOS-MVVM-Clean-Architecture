@@ -1,6 +1,7 @@
 import UIKit
 import SwiftUI
 
+@MainActor
 class DIContainer {
   
     // MARK: - Network

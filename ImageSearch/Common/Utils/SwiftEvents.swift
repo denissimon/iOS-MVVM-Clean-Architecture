@@ -8,15 +8,15 @@ protocol Unbindable: AnyObject {
     func unbind(_ target: AnyObject)
 }
 
-final public class Event<T> {
+final public class Event<T: Sendable> {
     
     struct Subscriber: Identifiable {
         weak var target: AnyObject?
         let queue: DispatchQueue?
-        let handler: (T) -> ()
+        let handler: @Sendable (T) -> ()
         let id: ObjectIdentifier
         
-        init(target: AnyObject, queue: DispatchQueue?, handler: @escaping (T) -> ()) {
+        init(target: AnyObject, queue: DispatchQueue?, handler: @Sendable @escaping (T) -> ()) {
             self.target = target
             self.queue = queue
             self.handler = handler
@@ -37,7 +37,7 @@ final public class Event<T> {
     /// - Parameter target: The target object that subscribes to the Event
     /// - Parameter queue: The queue in which the handler should be executed when the Event triggers
     /// - Parameter handler: The closure you want executed when the Event triggers
-    public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) {
+    public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @Sendable @escaping (T) -> ()) {
         let subscriber = Subscriber(target: target, queue: queue, handler: handler)
         subscribers.append(subscriber)
     }
@@ -58,7 +58,7 @@ final public class Event<T> {
     }
     
     /// Executes the handler with provided data
-    private func callHandler(on queue: DispatchQueue?, data: T, handler: @escaping (T) -> ()) {
+    private func callHandler(on queue: DispatchQueue?, data: T, handler: @Sendable @escaping (T) -> ()) {
         guard let queue = queue else {
             handler(data)
             return
@@ -83,7 +83,7 @@ final public class Event<T> {
     }
 }
 
-final public class Observable<T> {
+final public class Observable<T: Sendable> {
     
     private let didChanged = Event<T>()
     
@@ -109,7 +109,7 @@ extension Observable {
     /// - Parameter target: The target object that binds to the Observable
     /// - Parameter queue: The queue in which the handler should be executed when the Observable's value changes
     /// - Parameter handler: The closure you want executed when the Observable's value changes
-    public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) {
+    public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @Sendable @escaping (T) -> ()) {
         didChanged.subscribe(target, queue: queue, handler: handler)
     }
     
@@ -134,15 +134,15 @@ extension Observable: Unbindable {}
 
 /* ****************** Thread-safe Event & Observable ****************** */
 
-final public class EventTS<T> {
+final public class EventTS<T: Sendable> {
     
     struct Subscriber: Identifiable {
         weak var target: AnyObject?
         let queue: DispatchQueue?
-        let handler: (T) -> ()
+        let handler: @Sendable (T) -> ()
         let id: ObjectIdentifier
         
-        init(target: AnyObject, queue: DispatchQueue?, handler: @escaping (T) -> ()) {
+        init(target: AnyObject, queue: DispatchQueue?, handler: @Sendable @escaping (T) -> ()) {
             self.target = target
             self.queue = queue
             self.handler = handler
@@ -171,7 +171,7 @@ final public class EventTS<T> {
     /// - Parameter target: The target object that subscribes to the Event
     /// - Parameter queue: The queue in which the handler should be executed when the Event triggers
     /// - Parameter handler: The closure you want executed when the Event triggers
-    public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) {
+    public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @Sendable @escaping (T) -> ()) {
         let subscriber = Subscriber(target: target, queue: queue, handler: handler)
         serialQueue.sync {
             self.subscribers.append(subscriber)
@@ -199,7 +199,7 @@ final public class EventTS<T> {
     }
     
     /// Executes the handler with provided data
-    private func callHandler(on queue: DispatchQueue?, data: T, handler: @escaping (T) -> ()) {
+    private func callHandler(on queue: DispatchQueue?, data: T, handler: @Sendable @escaping (T) -> ()) {
         guard let queue = queue else {
             handler(data)
             return
@@ -240,7 +240,7 @@ final public class EventTS<T> {
     }
 }
 
-final public class ObservableTS<T> {
+final public class ObservableTS<T: Sendable> {
     
     private let didChanged = EventTS<T>()
     
@@ -276,7 +276,7 @@ extension ObservableTS {
     /// - Parameter target: The target object that binds to the Observable
     /// - Parameter queue: The queue in which the handler should be executed when the Observable's value changes
     /// - Parameter handler: The closure you want executed when the Observable's value changes
-    public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) {
+    public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @Sendable @escaping (T) -> ()) {
         didChanged.subscribe(target, queue: queue, handler: handler)
     }
     

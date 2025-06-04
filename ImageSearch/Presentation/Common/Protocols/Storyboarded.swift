@@ -6,6 +6,7 @@ enum StoryboardName: String {
     case hotTags = "HotTags"
 }
 
+@MainActor
 protocol Storyboarded {
     static var className: String { get }
     static func instantiate(_ bundle: Bundle?, from storyboardName: StoryboardName) -> Self

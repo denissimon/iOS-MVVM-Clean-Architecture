@@ -9,12 +9,14 @@ enum TagsSegmentType: String, CaseIterable {
  * getHotTagsUseCase.execute()
  */
 
+@MainActor
 protocol HotTagsViewModelInput {
     func getHotTags()
     func triggerDidSelect(tagName: String)
     func onSelectedSegmentChange(_ index: Int)
 }
 
+@MainActor
 protocol HotTagsViewModelOutput {
     var data: Observable<[TagListItemVM]> { get }
     var makeToast: Observable<String> { get }

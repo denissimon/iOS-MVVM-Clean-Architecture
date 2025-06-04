@@ -37,7 +37,7 @@ enum SQLOrder {
 typealias SQLTableColums = [(name: String, type: SQLType)]
 typealias SQLValues = [(type: SQLType, value: Any?)]
 
-protocol SQLiteType {
+protocol SQLiteType: Sendable {
     var lastInsertID: Int { get }
     var changes: Int { get }
     var totalChanges: Int { get }
@@ -65,17 +65,17 @@ protocol SQLiteType {
     func query(sql: String, params: [Any]?) throws -> Int
 }
 
-class SQLite: SQLiteType {
+final class SQLite: SQLiteType {
     
-    private(set) var dbPointer: OpaquePointer?
-    private(set) var dbPath: String!
+    nonisolated(unsafe) private(set) var dbPointer: OpaquePointer?
+    nonisolated(unsafe) private(set) var dbPath: String!
     
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
     private let queue = DispatchQueue(label: "SQLite Queue")
     
-    let dateFormatter = DateFormatter ()
+    let dateFormatter = DateFormatter()
     
     var lastInsertID: Int {
         var id = 0

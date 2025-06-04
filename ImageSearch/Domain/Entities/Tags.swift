@@ -1,6 +1,6 @@
 import Foundation
 
-protocol TagsType {
+protocol TagsType: Sendable {
     var tags: [TagType] { get }
 }
 

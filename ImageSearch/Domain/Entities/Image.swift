@@ -1,12 +1,12 @@
 import Foundation
 
-protocol ImageType {
+protocol ImageType: Sendable {
     var thumbnail: ImageWrapper? { get set }
     var bigImage: ImageWrapper? { get set }
     var title: String { get }
 }
 
-protocol ImageListItemVM {
+protocol ImageListItemVM: Sendable {
     var thumbnail: ImageWrapper? { get }
 }
 

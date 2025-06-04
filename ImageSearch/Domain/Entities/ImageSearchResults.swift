@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ImageSearchResultsListItemVM {
+protocol ImageSearchResultsListItemVM: Sendable {
     var id: String { get }
     var searchQuery: ImageQuery { get }
     var _searchResults: [ImageListItemVM] { get set }

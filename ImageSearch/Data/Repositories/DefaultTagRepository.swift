@@ -1,6 +1,6 @@
 import Foundation
 
-class DefaultTagRepository: TagRepository {
+final class DefaultTagRepository: TagRepository {
     
     private let apiInteractor: APIInteractor
     

@@ -5,7 +5,9 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     
     override func awakeFromNib() {
-      super.awakeFromNib()
-      containerView.layer.masksToBounds = true
+        super.awakeFromNib()
+        MainActor.assumeIsolated {
+            containerView.layer.masksToBounds = true
+        }
     }
 }

@@ -1,6 +1,6 @@
 import UIKit
 
-class ImageWrapper: Codable {
+final class ImageWrapper: Codable, Sendable {
     
     let uiImage: UIImage?
     

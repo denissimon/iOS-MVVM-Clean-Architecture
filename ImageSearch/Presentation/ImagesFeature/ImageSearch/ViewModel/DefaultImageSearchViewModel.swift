@@ -6,6 +6,7 @@ import Foundation
  * imageCachingService.getCachedImages(searchId: searchId)
  */
 
+@MainActor
 protocol ImageSearchViewModelInput {
     func searchImages(for query: String)
     func searchBarSearchButtonClicked(with query: String)
@@ -16,6 +17,7 @@ protocol ImageSearchViewModelInput {
     func getHeightOfCell(width: Float) -> Float
 }
 
+@MainActor
 protocol ImageSearchViewModelOutput {
     var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> { get }
     var sectionData: Observable<IndexSet> { get }
@@ -42,7 +44,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
     // Bindings
-    var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([], true))
+    let data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([], true))
     let sectionData: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")
@@ -64,9 +66,11 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private func setup() {
         Task {
             await imageCachingService.subscribeToDidProcess(self) { [weak self] data in
-                guard let self else { return }
-                imageSearchResults = data
-                self.data.value = (data, true)
+                Task { @MainActor in
+                    guard let self else { return }
+                    self.imageSearchResults = data
+                    self.data.value = (data, true)
+                }
             }
         }
     }

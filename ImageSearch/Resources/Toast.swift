@@ -41,6 +41,7 @@ public extension UIView {
     /**
      Keys used for associated objects.
      */
+    @MainActor
     private struct ToastKeys {
         static var timer = malloc(1)
         static var duration = malloc(1)
@@ -717,7 +718,7 @@ public class ToastManager {
      The `ToastManager` singleton instance.
      
      */
-    public static let shared = ToastManager()
+    @MainActor public static let shared = ToastManager()
     
     /**
      The shared style. Used whenever toastViewForMessage(message:title:image:style:) is called
@@ -767,6 +768,7 @@ public enum ToastPosition {
     case center
     case bottom
     
+    @MainActor
     fileprivate func centerPoint(forToast toast: UIView, inSuperview superview: UIView) -> CGPoint {
         let topPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.top
         let bottomPadding: CGFloat = ToastManager.shared.style.verticalPadding + superview.csSafeAreaInsets.bottom

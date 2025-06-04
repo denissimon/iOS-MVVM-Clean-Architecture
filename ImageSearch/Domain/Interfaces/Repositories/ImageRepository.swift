@@ -1,6 +1,6 @@
 import Foundation
 
-protocol ImageRepository {
+protocol ImageRepository: Sendable {
     func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError>
     func getImage(url: URL) async -> Data?
     

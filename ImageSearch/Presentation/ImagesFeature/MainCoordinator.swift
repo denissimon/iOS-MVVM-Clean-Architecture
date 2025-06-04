@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 protocol MainCoordinatorDIContainer {
     func makeImageSearchViewController(actions: ImageSearchCoordinatorActions) -> ImageSearchViewController
     func makeImageDetailsViewController(image: Image, imageQuery: ImageQuery, didFinish: Event<Image>) -> ImageDetailsViewController

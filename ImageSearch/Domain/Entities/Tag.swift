@@ -1,6 +1,6 @@
 import Foundation
 
-protocol TagType {
+protocol TagType: Sendable {
     var id: UUID { get }
     var name: String { get }
 }

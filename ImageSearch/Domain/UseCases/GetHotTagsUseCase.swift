@@ -2,11 +2,11 @@ import Foundation
 
 // callAsFunction() can be used instead of execute() to call instances of the use case class as if they were functions
 
-protocol GetHotTagsUseCase {
+protocol GetHotTagsUseCase: Sendable {
     func execute() async -> Result<Tags, CustomError>
 }
 
-class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
+final class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
     
     private let tagRepository: TagRepository
     

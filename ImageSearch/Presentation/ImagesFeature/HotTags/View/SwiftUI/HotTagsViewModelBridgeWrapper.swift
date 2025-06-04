@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class HotTagsViewModelBridgeWrapper: ObservableObject {
     
     var viewModel: HotTagsViewModel?
@@ -29,21 +30,27 @@ class HotTagsViewModelBridgeWrapper: ObservableObject {
     }
     
     private func bind() {
-        viewModel?.data.bind(self, queue: .main) { [weak self] data in
-            self?.data = data
+        viewModel?.data.bind(self) { [weak self] data in
+            Task { @MainActor in
+                self?.data = data
+            }
         }
         
-        viewModel?.makeToast.bind(self, queue: .main) { [weak self] message in
-            guard let self, !message.isEmpty else { return }
-            hostingController?.view.makeToast(message)
+        viewModel?.makeToast.bind(self) { [weak self] message in
+            guard !message.isEmpty else { return }
+            Task { @MainActor in
+                self?.hostingController?.view.makeToast(message)
+            }
         }
         
-        viewModel?.activityIndicatorVisibility.bind(self, queue: .main) { [weak self] value in
-            guard let hostingController = self?.hostingController else { return }
-            if value {
-                hostingController.view.makeToastActivity(.center)
-            } else {
-                hostingController.view.hideToastActivity()
+        viewModel?.activityIndicatorVisibility.bind(self) { [weak self] value in
+            Task { @MainActor in
+                guard let hostingController = self?.hostingController else { return }
+                if value {
+                    hostingController.view.makeToastActivity(.center)
+                } else {
+                    hostingController.view.hideToastActivity()
+                }
             }
         }
     }

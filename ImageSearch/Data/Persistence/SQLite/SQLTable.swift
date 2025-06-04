@@ -1,4 +1,4 @@
-class SQLTable {
+final class SQLTable: Sendable {
     
     let name: String
     let columns: SQLTableColums

@@ -1,6 +1,6 @@
 import Foundation
 
-class URLSessionAPIInteractor: APIInteractor {
+final class URLSessionAPIInteractor: APIInteractor {
     
     private let urlSessionAdapter: NetworkService
     

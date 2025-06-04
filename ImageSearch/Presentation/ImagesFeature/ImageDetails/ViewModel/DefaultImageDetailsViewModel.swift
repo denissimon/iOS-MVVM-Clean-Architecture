@@ -4,12 +4,14 @@ import Foundation
  * getBigImageUseCase.execute(for: image)
  */
 
+@MainActor
 protocol ImageDetailsViewModelInput {
     func loadBigImage()
     func getTitle() -> String
     func onShareButton()
 }
 
+@MainActor
 protocol ImageDetailsViewModelOutput {
     var data: Observable<ImageWrapper?> { get }
     var shareImage: Observable<[ImageWrapper]> { get }
@@ -47,7 +49,9 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     
     deinit {
         imageLoadTask?.cancel()
-        didFinish.notify(image)
+        MainActor.assumeIsolated {
+            didFinish.notify(image)
+        }
     }
     
     private func showError(_ msg: String = "") {
