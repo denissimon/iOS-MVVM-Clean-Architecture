@@ -17,7 +17,7 @@ protocol ImageSearchViewModelInput {
 }
 
 protocol ImageSearchViewModelOutput {
-    var data: Observable<[ImageSearchResultsListItemVM]> { get }
+    var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> { get }
     var sectionData: Observable<IndexSet> { get }
     var scrollTop: Observable<Bool?> { get }
     var makeToast: Observable<String> { get }
@@ -37,10 +37,12 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     private(set) var lastQuery: ImageQuery?
     
+    private var imageSearchResults: [ImageSearchResults] = []
+    
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
     // Bindings
-    let data: Observable<[ImageSearchResultsListItemVM]> = Observable([])
+    var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([], true))
     let sectionData: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")
@@ -62,7 +64,9 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private func setup() {
         Task {
             await imageCachingService.subscribeToDidProcess(self) { [weak self] data in
-                self?.data.value = data
+                guard let self else { return }
+                imageSearchResults = data
+                self.data.value = (data, true)
             }
         }
     }
@@ -93,7 +97,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         imagesLoadTask = Task {
             
             defer {
-                memorySafetyCheck(data: data.value as! [ImageSearchResults])
+                memorySafetyCheck(data: imageSearchResults)
             }
             
             let result = await searchImagesUseCase.execute(imageQuery)
@@ -107,7 +111,8 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                     return
                 }
                 
-                data.value.insert(searchResults, at: 0)
+                imageSearchResults.insert(searchResults, at: 0)
+                data.value.searches.insert(searchResults, at: 0)
                 lastQuery = imageQuery
                 
                 activityIndicatorVisibility.value = false
@@ -154,13 +159,14 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         Task {
             guard let images = await imageCachingService.getCachedImages(searchId: searchId) else { return }
             guard !images.isEmpty else { return }
-                        
+            
             var sectionIndex = Int()
             
-            for (index, search) in data.value.enumerated() {
+            for (index, search) in imageSearchResults.enumerated() {
                 if search.id == searchId {
-                    if let image = search._searchResults.first, image.thumbnail != nil { return }
-                    search._searchResults = images
+                    if let image = search.searchResults.first, image.thumbnail != nil { return }
+                    imageSearchResults[index].searchResults = images
+                    data.value = (imageSearchResults, false)
                     sectionIndex = index
                     break
                 }
@@ -171,15 +177,21 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     }
     
     func updateImage(_ image: Image, indexPath: IndexPath) {
-        guard data.value.indices.contains(indexPath.section) else { return }
-        let search = data.value[indexPath.section]
-        guard search._searchResults.indices.contains(indexPath.row) else { return }
-        search._searchResults[indexPath.row] = image
+        guard imageSearchResults.indices.contains(indexPath.section) else { return }
+        guard imageSearchResults[indexPath.section]._searchResults.indices.contains(indexPath.row) else { return }
+        imageSearchResults[indexPath.section]._searchResults[indexPath.row] = image
+        data.value = (imageSearchResults, false)
     }
 }
 
 extension DefaultImageSearchViewModel {
+    
     var toTestImagesLoadTask: Task<Void, Never>? {
         imagesLoadTask
+    }
+    
+    var toTestImageSearchResults: [ImageSearchResults] {
+        get { imageSearchResults }
+        set { imageSearchResults = newValue }
     }
 }
