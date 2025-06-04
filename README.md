@@ -1,5 +1,5 @@
 # iOS-MVVM-Clean-Architecture
-[![Swift Version](https://img.shields.io/badge/Swift-5.5+-F16D39.svg?style=flat)](https://swift.org)
+[![Swift Version](https://img.shields.io/badge/Swift-6-F16D39.svg?style=flat)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/LICENSE)
 
@@ -97,4 +97,4 @@ HotTags module:
 
 ### Requirements
 
-iOS version support: 15.0+. Xcode 13.0+, Swift 5.5+
+iOS version support: 16.0+. Xcode 14.0+, Swift 5.5+
