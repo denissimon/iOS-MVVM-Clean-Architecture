@@ -13,7 +13,7 @@ class FlickrAPITests: XCTestCase {
     {"period":"day","count":2,"hottags":{"tag":[{"_content":"digital","thm_data":{"photos":{"photo":[{"id":"30239309451","secret":"10f9bdfddd","server":"8273","farm":9,"owner":"135037635@N03","username":null,"title":"Fire on the sky","ispublic":1,"isfriend":0,"isfamily":0}]}}},{"_content":"shine","thm_data":{"photos":{"photo":[{"id":"26695870685","secret":"0e25f93ea0","server":"1641","farm":2,"owner":"76458369@N07","username":null,"title":"#Storm","ispublic":1,"isfriend":0,"isfamily":0}]}}}]},"stat":"ok"}
     """
     
-    class NetworkServiceAsyncAwaitMock: NetworkServiceAsyncAwaitType {
+    final class NetworkServiceAsyncAwaitMock: NetworkServiceAsyncAwaitType {
            
         let urlSession: URLSession
         
@@ -63,7 +63,7 @@ class FlickrAPITests: XCTestCase {
         }
     }
     
-    class NetworkServiceCallbacksMock: NetworkServiceCallbacksType {
+    final class NetworkServiceCallbacksMock: NetworkServiceCallbacksType {
            
         let urlSession: URLSession
         
@@ -143,8 +143,12 @@ class FlickrAPITests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
         
-        let diContainer = DIContainer()
-        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
+        #if swift(>=6.0.0)
+            let diContainer = DIContainer()
+        #else
+            let diContainer = await DIContainer()
+        #endif
+        let imageRepository = await DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
         
         let images = imageRepository.toTestPrepareImages(resultData)
         
@@ -297,8 +301,12 @@ class FlickrAPITests: XCTestCase {
             }
         }
         
-        let diContainer = DIContainer()
-        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
+        #if swift(>=6.0.0)
+            let diContainer = DIContainer()
+        #else
+            let diContainer = await DIContainer()
+        #endif
+        let imageRepository = await DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
         
         let images = imageRepository.toTestPrepareImages(resultData)
         

@@ -1,7 +1,8 @@
 import XCTest
 @testable import ImageSearch
 
-class HotTagsViewModelTests: XCTestCase {
+@MainActor
+final class HotTagsViewModelTests: XCTestCase, Sendable {
     
     var observablesTriggerCount = 0
     
@@ -9,9 +10,7 @@ class HotTagsViewModelTests: XCTestCase {
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2"), Tag(name: "tag3")]),
         stat: "ok")
     
-    static let syncQueue = DispatchQueue(label: "HotTagsViewModelTests")
-    
-    class TagRepositoryMock: TagRepository {
+    final class TagRepositoryMock: TagRepository, @unchecked Sendable {
         
         let result: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
@@ -21,7 +20,7 @@ class HotTagsViewModelTests: XCTestCase {
         }
         
         func getHotTags() async -> Result<TagsType, CustomError> {
-            HotTagsViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return result
@@ -30,24 +29,24 @@ class HotTagsViewModelTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
-        HotTagsViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             observablesTriggerCount = 0
         }
     }
     
     private func bind(_ hotTagsViewModel: HotTagsViewModel) {
         hotTagsViewModel.data.bind(self) { [weak self] _ in
-            HotTagsViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         hotTagsViewModel.makeToast.bind(self) { [weak self] _ in
-            HotTagsViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         hotTagsViewModel.activityIndicatorVisibility.bind(self) { [weak self] _ in
-            HotTagsViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
@@ -67,7 +66,7 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertEqual(hotTagsViewModel.data.value.count, 3)
         XCTAssertEqual(hotTagsViewModel.makeToast.value, "")
-        HotTagsViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, activityIndicatorVisibility, data
         }
     }
@@ -86,7 +85,7 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertTrue(hotTagsViewModel.data.value.isEmpty)
         XCTAssertNotEqual(hotTagsViewModel.makeToast.value, "")
-        HotTagsViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 4) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility, data
         }
     }
@@ -104,7 +103,7 @@ class HotTagsViewModelTests: XCTestCase {
         
         XCTAssertFalse(hotTagsViewModel.data.value.isEmpty)
         XCTAssertEqual(hotTagsViewModel.data.value[5].name, "nature")
-        HotTagsViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 1) // data
         }
     }
@@ -133,7 +132,7 @@ class HotTagsViewModelTests: XCTestCase {
         XCTAssertFalse(hotTagsViewModel.data.value.isEmpty)
         XCTAssertEqual(hotTagsViewModel.data.value[0].name, "tag1")
         
-        HotTagsViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 7) // data, data, activityIndicatorVisibility, activityIndicatorVisibility, data, data, data
         }
     }

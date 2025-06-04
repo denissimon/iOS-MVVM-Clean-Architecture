@@ -1,7 +1,8 @@
 import XCTest
 @testable import ImageSearch
 
-class ImageSearchViewModelTests: XCTestCase {
+@MainActor
+final class ImageSearchViewModelTests: XCTestCase, Sendable {
     
     var observablesTriggerCount = 0
     
@@ -30,9 +31,7 @@ class ImageSearchViewModelTests: XCTestCase {
         (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2)
     ]
     
-    static let syncQueue = DispatchQueue(label: "ImageSearchViewModelTests")
-    
-    class ImageRepositoryMock: ImageRepository {
+    final class ImageRepositoryMock: ImageRepository, @unchecked Sendable {
         
         let result: Result<[ImageType], CustomError>?
         var cachedImages: [(image: Image, searchId: String, sortId: Int)] = []
@@ -49,15 +48,15 @@ class ImageSearchViewModelTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
-            ImageSearchViewModelTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
+            Task { @MainActor in
+                self.apiMethodsCallsCount += 1
             }
             return result!
         }
         
         func getImage(url: URL) async -> Data? {
-            ImageSearchViewModelTests.syncQueue.sync {
-                apiMethodsCallsCount += 1
+            Task { @MainActor in
+                self.apiMethodsCallsCount += 1
             }
             return UIImage(systemName: "heart.fill")?.pngData()
         }
@@ -65,39 +64,39 @@ class ImageSearchViewModelTests: XCTestCase {
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            ImageSearchViewModelTests.syncQueue.sync {
-                dbMethodsCallsCount += 1
-                cachedImages.append((image, searchId, sortId))
+            Task { @MainActor in
+                self.dbMethodsCallsCount += 1
+                self.cachedImages.append((image, searchId, sortId))
             }
             return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
-            ImageSearchViewModelTests.syncQueue.sync {
-                dbMethodsCallsCount += 1
-            }
-            var images: [ImageType] = []
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    ImageSearchViewModelTests.syncQueue.sync {
+            let task = Task { @MainActor in
+                self.dbMethodsCallsCount += 1
+                
+                var images: [ImageType] = []
+                for image in cachedImages {
+                    if image.searchId == searchId {
                         images.append(image.image)
                     }
                 }
+                return images
             }
-            ImageSearchViewModelTests.syncQueue.sync {}
-            return images
+            return await task.value
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            ImageSearchViewModelTests.syncQueue.sync {
+            let task = Task { @MainActor in
                 dbMethodsCallsCount += 1
-            }
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    return true
+                for image in cachedImages {
+                    if image.searchId == searchId {
+                        return true
+                    }
                 }
+                return false
             }
-            return false
+            return await task.value
         }
         
         // Called once when initializing the ImageCachingService to clear the Image table
@@ -106,37 +105,37 @@ class ImageSearchViewModelTests: XCTestCase {
     
     private func bind(_ imageSearchViewModel: ImageSearchViewModel) {
         imageSearchViewModel.data.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.sectionData.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.scrollTop.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.makeToast.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.resetSearchBar.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.activityIndicatorVisibility.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
         imageSearchViewModel.collectionViewTopConstraint.bind(self) { [weak self] _ in
-            ImageSearchViewModelTests.syncQueue.sync {
+            Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
         }
@@ -157,7 +156,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertEqual(imageSearchViewModel.makeToast.value, NSLocalizedString("Search query error", comment: ""))
         XCTAssertTrue(imageSearchViewModel.data.value.searches.isEmpty)
         
-        ImageSearchViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 4) // makeToast, resetSearchBar, makeToast, resetSearchBar
         }
     }
@@ -182,7 +181,7 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertEqual((imageSearchViewModel.data.value.searches[0]._searchResults as! [Image])[0].thumbnail?.uiImage?.pngData(), Supportive.toUIImage(from: expectedImageData)?.pngData())
         }
         XCTAssertEqual(imageSearchViewModel.lastQuery?.query, query)
-        ImageSearchViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 4) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
         }
     }
@@ -202,7 +201,7 @@ class ImageSearchViewModelTests: XCTestCase {
         
         XCTAssertTrue(imageSearchViewModel.data.value.searches.isEmpty)
         XCTAssertNil(imageSearchViewModel.lastQuery)
-        ImageSearchViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 3) // activityIndicatorVisibility, makeToast, activityIndicatorVisibility
         }
     }
@@ -229,7 +228,7 @@ class ImageSearchViewModelTests: XCTestCase {
         XCTAssertTrue((imageSearchViewModel.data.value.searches[0]._searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertTrue((imageSearchViewModel.data.value.searches[1]._searchResults as! [Image]).contains(ImageSearchViewModelTests.testImageStub))
         XCTAssertEqual(imageSearchViewModel.lastQuery?.query, query1)
-        ImageSearchViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 8) // activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop, activityIndicatorVisibility, data, activityIndicatorVisibility, scrollTop
         }
     }
@@ -276,7 +275,7 @@ class ImageSearchViewModelTests: XCTestCase {
             XCTAssertNotNil(image.thumbnail)
         }
         
-        ImageSearchViewModelTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(observablesTriggerCount, 5) // data, data, sectionData, data, sectionData
         }
     }

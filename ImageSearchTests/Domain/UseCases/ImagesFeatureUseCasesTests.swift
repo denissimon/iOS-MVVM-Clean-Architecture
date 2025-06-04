@@ -1,7 +1,8 @@
 import XCTest
 @testable import ImageSearch
 
-class ImagesFeatureUseCasesTests: XCTestCase {
+@MainActor
+final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     
     static let imagesStub = [
         Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1")),
@@ -23,9 +24,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         hottags: Tags.HotTags(tag: [Tag(name: "tag1"), Tag(name: "tag2")]),
         stat: "ok")
     
-    static let syncQueue = DispatchQueue(label: "ImagesFeatureUseCasesTests")
-    
-    class ImageRepositoryMock: ImageRepository {
+    final class ImageRepositoryMock: ImageRepository, @unchecked Sendable {
         
         let result: Result<[ImageType], CustomError>?
         var apiMethodsCallsCount = 0
@@ -38,14 +37,14 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return result!
         }
         
         func getImage(url: URL) async -> Data? {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return UIImage(systemName: "heart.fill")?.pngData()
@@ -54,21 +53,21 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 dbMethodsCallsCount += 1
             }
             return true
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 dbMethodsCallsCount += 1
             }
             return []
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 dbMethodsCallsCount += 1
             }
             return nil
@@ -78,7 +77,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         func deleteAllImages() async {}
     }
     
-    class TagRepositoryMock: TagRepository {
+    final class TagRepositoryMock: TagRepository, @unchecked Sendable {
         
         let result: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
@@ -88,7 +87,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         }
         
         func getHotTags() async -> Result<TagsType, CustomError> {
-            ImagesFeatureUseCasesTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return result
@@ -109,7 +108,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         XCTAssertEqual(images!.count, 3)
         XCTAssertTrue(images!.contains(ImagesFeatureUseCasesTests.testImageStub))
         
-        ImagesFeatureUseCasesTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 4) // searchImages(), and getImage() 3 times
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
         }
@@ -136,7 +135,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         
         XCTAssertNil(images)
         
-        ImagesFeatureUseCasesTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // searchImages()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
         }
@@ -155,7 +154,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
             XCTAssertEqual(bigImageData, expectedImageData)
         }
-        ImagesFeatureUseCasesTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
         }
@@ -173,7 +172,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
-        ImagesFeatureUseCasesTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
         }
     }
@@ -187,7 +186,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         let hotTags = try? tagsResult.get().tags
         
         XCTAssertNil(hotTags)
-        ImagesFeatureUseCasesTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
         }
     }

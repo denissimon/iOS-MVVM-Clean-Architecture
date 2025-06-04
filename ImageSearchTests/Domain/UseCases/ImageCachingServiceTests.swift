@@ -1,7 +1,8 @@
 import XCTest
 @testable import ImageSearch
 
-class ImageCachingServiceTests: XCTestCase {
+@MainActor
+final class ImageCachingServiceTests: XCTestCase, Sendable {
     
     static let searchResultsStub = [
         ImageSearchResults(id: "id5", searchQuery: ImageQuery(query: "query5")!, searchResults: [Image(title: "image1", flickr: nil), Image(title: "image2", flickr: nil), Image(title: "image3", flickr: nil), Image(title: "image4", flickr: nil)]),
@@ -16,9 +17,7 @@ class ImageCachingServiceTests: XCTestCase {
         (image: Image(title: "image1", flickr: nil), searchId: "id1", sortId: 1), (image: Image(title: "image2", flickr: nil), searchId: "id1", sortId: 2)
     ]
     
-    static let syncQueue = DispatchQueue(label: "ImageCachingServiceTests")
-    
-    class ImageRepositoryMock: ImageRepository {
+    final class ImageRepositoryMock: ImageRepository, @unchecked Sendable {
         
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
@@ -34,14 +33,14 @@ class ImageCachingServiceTests: XCTestCase {
         // API methods
         
         func searchImages(_ imageQuery: ImageQuery) async -> Result<[ImageType], CustomError> {
-            ImageCachingServiceTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return .success([])
         }
         
         func getImage(url: URL) async -> Data? {
-            ImageCachingServiceTests.syncQueue.sync {
+            Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
             return UIImage(systemName: "heart.fill")?.pngData()
@@ -50,7 +49,7 @@ class ImageCachingServiceTests: XCTestCase {
         // DB methods
         
         func saveImage(_ image: Image, searchId: String, sortId: Int) async -> Bool? {
-            ImageCachingServiceTests.syncQueue.sync {
+            Task { @MainActor in
                 dbMethodsCallsCount += 1
                 cachedImages.append((image, searchId, sortId))
             }
@@ -58,31 +57,30 @@ class ImageCachingServiceTests: XCTestCase {
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
-            ImageCachingServiceTests.syncQueue.sync {
+            let task = Task { @MainActor in
                 dbMethodsCallsCount += 1
-            }
-            var images: [ImageType] = []
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    ImageCachingServiceTests.syncQueue.sync {
+                var images: [ImageType] = []
+                for image in cachedImages {
+                    if image.searchId == searchId {
                         images.append(image.image)
                     }
                 }
+                return images
             }
-            ImageCachingServiceTests.syncQueue.sync {}
-            return images
+            return await task.value
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            ImageCachingServiceTests.syncQueue.sync {
+            let task = Task { @MainActor in
                 dbMethodsCallsCount += 1
-            }
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    return true
+                for image in cachedImages {
+                    if image.searchId == searchId {
+                        return true
+                    }
                 }
+                return false
             }
-            return false
+            return await task.value
         }
         
         // Called once when initializing the ImageCachingService to clear the Image table
@@ -96,15 +94,17 @@ class ImageCachingServiceTests: XCTestCase {
         let imageRepository = ImageRepositoryMock()
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         await imageCachingService.subscribeToDidProcess(self) { newData in
-            completionCallsCount += 1
-            precessedData = newData
+            Task { @MainActor in
+                completionCallsCount += 1
+                precessedData = newData
+            }
         }
         
         await imageCachingService.cacheIfNecessary(ImageCachingServiceTests.searchResultsStub)
         
         XCTAssertEqual(completionCallsCount, 1)
         XCTAssertEqual(precessedData.count, 5)
-        ImageCachingServiceTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.cachedImages.count, 0)
@@ -118,8 +118,10 @@ class ImageCachingServiceTests: XCTestCase {
         let imageRepository = ImageRepositoryMock()
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         await imageCachingService.subscribeToDidProcess(self) { newData in
-            completionCallsCount += 1
-            precessedData = newData
+            Task { @MainActor in
+                completionCallsCount += 1
+                precessedData = newData
+            }
         }
         
         var image1 = Image(title: "image1", flickr: nil)
@@ -140,19 +142,19 @@ class ImageCachingServiceTests: XCTestCase {
         
         await imageCachingService.cacheIfNecessary(testSearchResults)
         
-        XCTAssertEqual(completionCallsCount, 1)
-        ImageCachingServiceTests.syncQueue.sync {
+        Task { @MainActor in
+            XCTAssertEqual(completionCallsCount, 1)
+            
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 6) // checkImagesAreCached(), saveImage() 2 times, checkImagesAreCached(), and saveImage() 2 times
-        }
-        XCTAssertEqual(precessedData.count, 5)
-        for image in precessedData[3].searchResults {
-            XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
-        }
-        for image in precessedData[4].searchResults {
-            XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
-        }
-        ImageCachingServiceTests.syncQueue.sync {
+            XCTAssertEqual(precessedData.count, 5)
+            for image in precessedData[3].searchResults {
+                XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
+            }
+            for image in precessedData[4].searchResults {
+                XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
+            }
+            
             XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub have been cached
         }
     }
@@ -164,7 +166,7 @@ class ImageCachingServiceTests: XCTestCase {
         let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id2")
         
         XCTAssertNotNil(retrievedImagesFromCache)
-        ImageCachingServiceTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 1) // getImages()
         }
@@ -180,7 +182,7 @@ class ImageCachingServiceTests: XCTestCase {
         let retrievedImagesFromCache = await imageCachingService.getCachedImages(searchId: "id2")
         
         XCTAssertNotNil(retrievedImagesFromCache)
-        ImageCachingServiceTests.syncQueue.sync {
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 1) // getImages()
         }
