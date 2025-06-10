@@ -20,7 +20,7 @@ protocol ImageSearchViewModelInput {
 @MainActor
 protocol ImageSearchViewModelOutput {
     var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> { get }
-    var sectionData: Observable<IndexSet> { get }
+    var reloadSection: Observable<IndexSet> { get }
     var scrollTop: Observable<Bool?> { get }
     var makeToast: Observable<String> { get }
     var resetSearchBar: Observable<Bool?> { get }
@@ -45,7 +45,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     
     // Bindings
     let data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([], true))
-    let sectionData: Observable<IndexSet> = Observable([])
+    let reloadSection: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")
     let resetSearchBar: Observable<Bool?> = Observable(nil)
@@ -116,7 +116,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
                 }
                 
                 imageSearchResults.insert(searchResults, at: 0)
-                data.value.searches.insert(searchResults, at: 0)
+                data.value = (imageSearchResults, true)
                 lastQuery = imageQuery
                 
                 activityIndicatorVisibility.value = false
@@ -164,19 +164,15 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
             guard let images = await imageCachingService.getCachedImages(searchId: searchId) else { return }
             guard !images.isEmpty else { return }
             
-            var sectionIndex = Int()
-            
             for (index, search) in imageSearchResults.enumerated() {
                 if search.id == searchId {
                     if let image = search.searchResults.first, image.thumbnail != nil { return }
                     imageSearchResults[index].searchResults = images
                     data.value = (imageSearchResults, false)
-                    sectionIndex = index
+                    reloadSection.value = [index]
                     break
                 }
             }
-            
-            sectionData.value = [sectionIndex]
         }
     }
     
