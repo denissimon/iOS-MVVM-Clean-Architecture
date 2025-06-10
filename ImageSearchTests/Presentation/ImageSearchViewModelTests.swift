@@ -109,7 +109,7 @@ final class ImageSearchViewModelTests: XCTestCase, Sendable {
                 self?.observablesTriggerCount += 1
             }
         }
-        imageSearchViewModel.sectionData.bind(self) { [weak self] _ in
+        imageSearchViewModel.reloadSection.bind(self) { [weak self] _ in
             Task { @MainActor in
                 self?.observablesTriggerCount += 1
             }
@@ -276,7 +276,7 @@ final class ImageSearchViewModelTests: XCTestCase, Sendable {
         }
         
         Task { @MainActor in
-            XCTAssertEqual(observablesTriggerCount, 5) // data, data, sectionData, data, sectionData
+            XCTAssertEqual(observablesTriggerCount, 5) // data, data, reloadSection, data, reloadSection
         }
     }
 }
