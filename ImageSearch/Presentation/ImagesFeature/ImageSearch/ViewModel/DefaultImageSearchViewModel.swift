@@ -159,19 +159,15 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
         Task {
             guard let images = await imageCachingService.getCachedImages(searchId: searchId) else { return }
             guard !images.isEmpty else { return }
-                        
-            var sectionIndex = Int()
             
             for (index, search) in data.value.enumerated() {
                 if search.id == searchId {
                     if let image = search._searchResults.first, image.thumbnail != nil { return }
                     search._searchResults = images
-                    sectionIndex = index
+                    sectionData.value = (data.value, [index])
                     break
                 }
             }
-            
-            sectionData.value = (data.value, [sectionIndex])
         }
     }
     
