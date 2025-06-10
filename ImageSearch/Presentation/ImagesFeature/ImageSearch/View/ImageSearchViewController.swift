@@ -51,7 +51,7 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
             }
         }
         
-        viewModel.sectionData.bind(self) { [weak self] index in
+        viewModel.reloadSection.bind(self) { [weak self] index in
             Task { @MainActor in
                 self?.collectionView.reloadSections(index)
             }
