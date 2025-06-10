@@ -1,7 +1,7 @@
 # iOS-MVVM-Clean-Architecture
 [![Swift Version](https://img.shields.io/badge/Swift-6-F16D39.svg?style=flat)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/LICENSE)
 
 Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurrency.
 
@@ -31,16 +31,16 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 [CleanArchitectureLink]: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 [ExplicitArchitectureLink]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together
-[MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Presentation/ImagesFeature/ImageSearch
-[FlowCoordinatorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Coordinator
-[DIContainerLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Coordinator/DIContainer/DIContainer.swift
+[MVVMLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/swift6/ImageSearch/Presentation/ImagesFeature/ImageSearch
+[FlowCoordinatorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/swift6/ImageSearch/Coordinator
+[DIContainerLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Coordinator/DIContainer/DIContainer.swift
 [POPLink]: https://www.swiftanytime.com/blog/protocol-oriented-programming-in-swift
-[DataBindingLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/ImageSearch/ViewModel/DefaultImageSearchViewModel.swift
-[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift#L86
-[ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
-[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Common/Utils/SwiftEvents.swift
+[DataBindingLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Presentation/ImagesFeature/ImageSearch/ViewModel/DefaultImageSearchViewModel.swift
+[ObservableLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Common/Utils/SwiftEvents.swift#L86
+[ClosureBasedDelegationLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Presentation/ImagesFeature/HotTags/ViewModel/DefaultHotTagsViewModel.swift
+[EventLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Common/Utils/SwiftEvents.swift
 [PureFunctionalTransformationsLink]: https://blog.ploeh.dk/2020/03/02/impureim-sandwich
-[DelegatingEntityBehaviorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Entities/Behaviors/ImageBehavior.swift
+[DelegatingEntityBehaviorLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Domain/Entities/Behaviors/ImageBehavior.swift
 [AlternativeDTOApproachLink]: https://medium.com/geekculture/why-we-shouldnt-use-data-transfer-objects-in-swift-38dcef529a66
 
 ### Includes
@@ -52,11 +52,11 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 - Advanced error handling
 - Unit and integration tests for a number of components from all layers
 
-[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Data/Network/NetworkService/NetworkService.swift
-[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/master/ImageSearch/Data/Persistence/SQLite
-[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Domain/Services/ImageCachingService.swift
-[UIKitViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/View/UIKit/HotTagsViewController.swift
-[SwiftUIViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/ImageSearch/Presentation/ImagesFeature/HotTags/View/SwiftUI/HotTagsView.swift
+[NetworkServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Data/Network/NetworkService/NetworkService.swift
+[SQLiteAdapterLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/tree/swift6/ImageSearch/Data/Persistence/SQLite
+[ImageCachingServiceLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Domain/Services/ImageCachingService.swift
+[UIKitViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Presentation/ImagesFeature/HotTags/View/UIKit/HotTagsViewController.swift
+[SwiftUIViewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/swift6/ImageSearch/Presentation/ImagesFeature/HotTags/View/SwiftUI/HotTagsView.swift
 
 ### Main layers
 
