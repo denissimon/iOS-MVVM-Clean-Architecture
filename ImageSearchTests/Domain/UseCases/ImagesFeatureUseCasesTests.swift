@@ -1,8 +1,7 @@
 import XCTest
 @testable import ImageSearch
 
-@MainActor
-final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
+class ImagesFeatureUseCasesTests: XCTestCase {
     
     static let imagesStub = [
         Image(title: "random1", flickr: Image.FlickrImageParameters(imageID: "id1", farm: 1, server: "server", secret: "secret1")),
@@ -26,12 +25,12 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     
     final class ImageRepositoryMock: ImageRepository, @unchecked Sendable {
         
-        let result: Result<[ImageType], CustomError>?
+        let response: Result<[ImageType], CustomError>!
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<[ImageType], CustomError>? = nil) {
-            self.result = result
+        init(response: Result<[ImageType], CustomError>! = nil) {
+            self.response = response
         }
         
         // API methods
@@ -40,7 +39,7 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
             Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
-            return result!
+            return response
         }
         
         func getImage(url: URL) async -> Data? {
@@ -79,25 +78,25 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     
     final class TagRepositoryMock: TagRepository, @unchecked Sendable {
         
-        let result: Result<TagsType, CustomError>
+        let response: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, CustomError>) {
-            self.result = result
+        init(response: Result<TagsType, CustomError>) {
+            self.response = response
         }
         
         func getHotTags() async -> Result<TagsType, CustomError> {
             Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
-            return result
+            return response
         }
     }
     
     // MARK: - SearchImagesUseCase
     
     func testSearchImagesUseCase_whenResultIsSuccess() async {
-        let imageRepository = ImageRepositoryMock(result: .success(ImagesFeatureUseCasesTests.imagesStub))
+        let imageRepository = ImageRepositoryMock(response: .success(ImagesFeatureUseCasesTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")!
@@ -115,8 +114,12 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     }
     
     func testPrepareImages() async {
-        let diContainer = DIContainer()
-        let imageRepository = DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
+        #if swift(>=6.0.0)
+            let diContainer = DIContainer()
+        #else
+            let diContainer = await DIContainer()
+        #endif
+        let imageRepository = await DefaultImageRepository(apiInteractor: diContainer.apiInteractor, imageDBInteractor: diContainer.imageDBInteractor)
         
         let images = imageRepository.toTestPrepareImages(ImagesFeatureUseCasesTests.imagesDataStub)
         XCTAssertNotNil(images)
@@ -126,7 +129,7 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     }
     
     func testSearchImagesUseCase_whenResultIsFailure() async {
-        let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let imageRepository = ImageRepositoryMock(response: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")!
@@ -154,6 +157,7 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
             XCTAssertEqual(bigImageData, expectedImageData)
         }
+        
         Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -163,7 +167,7 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
     // MARK: - GetHotTagsUseCase
     
     func testGetHotTagsUseCase_whenResultIsSuccess() async {
-        let tagRepository = TagRepositoryMock(result: .success(ImagesFeatureUseCasesTests.tagsStub))
+        let tagRepository = TagRepositoryMock(response: .success(ImagesFeatureUseCasesTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         
         let tagsResult = await getHotTagsUseCase.execute()
@@ -172,13 +176,14 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
+        
         Task { @MainActor in
-            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1) // getHotTags()
         }
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
-        let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let tagRepository = TagRepositoryMock(response: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         
         let tagsResult = await getHotTagsUseCase.execute()
@@ -186,8 +191,9 @@ final class ImagesFeatureUseCasesTests: XCTestCase, Sendable {
         let hotTags = try? tagsResult.get().tags
         
         XCTAssertNil(hotTags)
+        
         Task { @MainActor in
-            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1) // getHotTags()
         }
     }
 }

@@ -1,7 +1,11 @@
 import XCTest
 @testable import ImageSearch
 
-@MainActor
+@globalActor actor ImageCachingService: GlobalActor {
+    static let shared = ImageCachingService()
+}
+
+@ImageCachingService
 final class ImageCachingServiceTests: XCTestCase, Sendable {
     
     static let searchResultsStub = [
@@ -142,19 +146,20 @@ final class ImageCachingServiceTests: XCTestCase, Sendable {
         
         await imageCachingService.cacheIfNecessary(testSearchResults)
         
-        Task { @MainActor in
-            XCTAssertEqual(completionCallsCount, 1)
+        XCTAssertEqual(completionCallsCount, 1)
             
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 6) // checkImagesAreCached(), saveImage() 2 times, checkImagesAreCached(), and saveImage() 2 times
-            XCTAssertEqual(precessedData.count, 5)
-            for image in precessedData[3].searchResults {
-                XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
-            }
-            for image in precessedData[4].searchResults {
-                XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
-            }
-            
+        }
+        XCTAssertEqual(precessedData.count, 5)
+        for image in precessedData[3].searchResults {
+            XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
+        }
+        for image in precessedData[4].searchResults {
+            XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
+        }
+        Task { @MainActor in
             XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub have been cached
         }
     }

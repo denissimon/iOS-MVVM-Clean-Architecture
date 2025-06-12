@@ -12,18 +12,18 @@ final class HotTagsViewModelTests: XCTestCase, Sendable {
     
     final class TagRepositoryMock: TagRepository, @unchecked Sendable {
         
-        let result: Result<TagsType, CustomError>
+        let response: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, CustomError>) {
-            self.result = result
+        init(response: Result<TagsType, CustomError>) {
+            self.response = response
         }
         
         func getHotTags() async -> Result<TagsType, CustomError> {
             Task { @MainActor in
                 apiMethodsCallsCount += 1
             }
-            return result
+            return response
         }
     }
     
@@ -53,7 +53,7 @@ final class HotTagsViewModelTests: XCTestCase, Sendable {
     }
     
     func testGetHotTags_whenResultIsSuccess() async throws {
-        let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let tagRepository = TagRepositoryMock(response: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
@@ -72,7 +72,7 @@ final class HotTagsViewModelTests: XCTestCase, Sendable {
     }
     
     func testGetHotTags_whenResultIsFailure() async throws {
-        let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let tagRepository = TagRepositoryMock(response: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
@@ -91,7 +91,7 @@ final class HotTagsViewModelTests: XCTestCase, Sendable {
     }
     
     func testOnSelectedSegmentChange_whenAllTimesSelected() {
-        let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let tagRepository = TagRepositoryMock(response: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
@@ -109,7 +109,7 @@ final class HotTagsViewModelTests: XCTestCase, Sendable {
     }
     
     func testOnSelectedSegmentChange_whenWeekSelected() async throws {
-        let tagRepository = TagRepositoryMock(result: .success(HotTagsViewModelTests.tagsStub))
+        let tagRepository = TagRepositoryMock(response: .success(HotTagsViewModelTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         let didSelect = Event<String>()
         let hotTagsViewModel = DefaultHotTagsViewModel(getHotTagsUseCase: getHotTagsUseCase, didSelect: didSelect)
