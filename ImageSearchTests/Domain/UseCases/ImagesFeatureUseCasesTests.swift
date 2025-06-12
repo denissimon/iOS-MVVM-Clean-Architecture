@@ -27,12 +27,12 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<[ImageType], CustomError>?
+        let response: Result<[ImageType], CustomError>!
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<[ImageType], CustomError>? = nil) {
-            self.result = result
+        init(response: Result<[ImageType], CustomError>! = nil) {
+            self.response = response
         }
         
         // API methods
@@ -41,7 +41,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
             ImagesFeatureUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
-            return result!
+            return response
         }
         
         func getImage(url: URL) async -> Data? {
@@ -80,25 +80,25 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     
     class TagRepositoryMock: TagRepository {
         
-        let result: Result<TagsType, CustomError>
+        let response: Result<TagsType, CustomError>
         var apiMethodsCallsCount = 0
         
-        init(result: Result<TagsType, CustomError>) {
-            self.result = result
+        init(response: Result<TagsType, CustomError>) {
+            self.response = response
         }
         
         func getHotTags() async -> Result<TagsType, CustomError> {
             ImagesFeatureUseCasesTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
-            return result
+            return response
         }
     }
     
     // MARK: - SearchImagesUseCase
     
     func testSearchImagesUseCase_whenResultIsSuccess() async {
-        let imageRepository = ImageRepositoryMock(result: .success(ImagesFeatureUseCasesTests.imagesStub))
+        let imageRepository = ImageRepositoryMock(response: .success(ImagesFeatureUseCasesTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")!
@@ -127,7 +127,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     }
     
     func testSearchImagesUseCase_whenResultIsFailure() async {
-        let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let imageRepository = ImageRepositoryMock(response: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         
         let imageQuery = ImageQuery(query: "random")!
@@ -155,6 +155,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         if let expectedImageData = UIImage(systemName: "heart.fill")?.pngData() {
             XCTAssertEqual(bigImageData, expectedImageData)
         }
+        
         ImagesFeatureUseCasesTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 1) // getImage()
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -164,7 +165,7 @@ class ImagesFeatureUseCasesTests: XCTestCase {
     // MARK: - GetHotTagsUseCase
     
     func testGetHotTagsUseCase_whenResultIsSuccess() async {
-        let tagRepository = TagRepositoryMock(result: .success(ImagesFeatureUseCasesTests.tagsStub))
+        let tagRepository = TagRepositoryMock(response: .success(ImagesFeatureUseCasesTests.tagsStub))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         
         let tagsResult = await getHotTagsUseCase.execute()
@@ -173,13 +174,14 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         
         XCTAssertNotNil(hotTags)
         XCTAssertEqual(hotTags!.count, 2)
+        
         ImagesFeatureUseCasesTests.syncQueue.sync {
-            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1) // getHotTags()
         }
     }
     
     func testGetHotTagsUseCase_whenResultIsFailure() async {
-        let tagRepository = TagRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let tagRepository = TagRepositoryMock(response: .failure(CustomError.internetConnection()))
         let getHotTagsUseCase = DefaultGetHotTagsUseCase(tagRepository: tagRepository)
         
         let tagsResult = await getHotTagsUseCase.execute()
@@ -187,8 +189,9 @@ class ImagesFeatureUseCasesTests: XCTestCase {
         let hotTags = try? tagsResult.get().tags
         
         XCTAssertNil(hotTags)
+        
         ImagesFeatureUseCasesTests.syncQueue.sync {
-            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1)
+            XCTAssertEqual(tagRepository.apiMethodsCallsCount, 1) // getHotTags()
         }
     }
 }

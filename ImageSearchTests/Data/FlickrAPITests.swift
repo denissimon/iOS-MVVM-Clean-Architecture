@@ -193,7 +193,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testNetworkError_whenInvalidAPIKey_asyncAwaitAPI() async throws {
-        let promise = expectation(description: "testNetworkError_whenInvalidAPIKey")
+        let promise = expectation(description: #function)
         
         var endpoint = FlickrAPI.getHotTags()
         endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
@@ -224,7 +224,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_asyncAwaitAPI() async throws {
-        let promise = expectation(description: "testFetchFile")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService()
         do {
@@ -240,7 +240,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_whenInvalidURL_asyncAwaitAPI() async throws {
-        let promise = expectation(description: "testFetchFile_whenInvalidURL")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService()
         do {
@@ -259,7 +259,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation_asyncAwaitAPI() async throws {
-        let promise = expectation(description: "testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService(autoValidation: false)
         do {
@@ -351,7 +351,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testNetworkError_whenInvalidAPIKey_callbacksAPI() {
-        let promise = expectation(description: "testNetworkError_whenInvalidAPIKey")
+        let promise = expectation(description: #function)
         
         var endpoint = FlickrAPI.getHotTags()
         endpoint.path = "?method=flickr.photos.search&api_key=12345&text=nice&per_page=20&format=json&nojsoncallback=1"
@@ -380,7 +380,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_callbacksAPI() {
-        let promise = expectation(description: "testFetchFile")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService()
         let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!) { response in
@@ -398,7 +398,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_whenInvalidURL_callbacksAPI() {
-        let promise = expectation(description: "testFetchFile_whenInvalidURL")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService()
         let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { response in
@@ -416,7 +416,7 @@ class FlickrAPITests: XCTestCase {
     }
     
     func testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation_callbacksAPI() {
-        let promise = expectation(description: "testFetchFile_whenInvalidURL_andDisabledGlobalAutoValidation")
+        let promise = expectation(description: #function)
         
         let networkService = NetworkService(autoValidation: false)
         let _ = networkService.fetchFileWithStatusCode(url: URL(string: "https://farm1.staticflickr.com/server/id1_secret1_m.jpg")!) { response in

@@ -34,13 +34,13 @@ class ImageSearchViewModelTests: XCTestCase {
     
     class ImageRepositoryMock: ImageRepository {
         
-        let result: Result<[ImageType], CustomError>?
+        let response: Result<[ImageType], CustomError>
         var cachedImages: [(image: Image, searchId: String, sortId: Int)] = []
         var apiMethodsCallsCount = 0
         var dbMethodsCallsCount = 0
         
-        init(result: Result<[ImageType], CustomError>? = nil, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
-            self.result = result
+        init(response: Result<[ImageType], CustomError>, cachedImages: [(image: Image, searchId: String, sortId: Int)] = []) {
+            self.response = response
             if !cachedImages.isEmpty {
                 self.cachedImages = cachedImages
             }
@@ -52,7 +52,7 @@ class ImageSearchViewModelTests: XCTestCase {
             ImageSearchViewModelTests.syncQueue.sync {
                 apiMethodsCallsCount += 1
             }
-            return result!
+            return response
         }
         
         func getImage(url: URL) async -> Data? {
@@ -73,31 +73,29 @@ class ImageSearchViewModelTests: XCTestCase {
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
-            ImageSearchViewModelTests.syncQueue.sync {
-                dbMethodsCallsCount += 1
-            }
             var images: [ImageType] = []
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    ImageSearchViewModelTests.syncQueue.sync {
+            ImageCachingServiceTests.syncQueue.sync {
+                dbMethodsCallsCount += 1
+                for image in cachedImages {
+                    if image.searchId == searchId {
                         images.append(image.image)
                     }
                 }
             }
-            ImageSearchViewModelTests.syncQueue.sync {}
             return images
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
-            ImageSearchViewModelTests.syncQueue.sync {
+            var result: Bool = false
+            ImageCachingServiceTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
-            }
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    return true
+                for image in cachedImages {
+                    if image.searchId == searchId {
+                        result = true
+                    }
                 }
             }
-            return false
+            return result
         }
         
         // Called once when initializing the ImageCachingService to clear the Image table
@@ -143,7 +141,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsNotValid() {
-        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
+        let imageRepository = ImageRepositoryMock(response: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -163,7 +161,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsSuccess() async throws {
-        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
+        let imageRepository = ImageRepositoryMock(response: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -188,7 +186,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchQueryIsValid_andWhenResultIsFailure() async throws {
-        let imageRepository = ImageRepositoryMock(result: .failure(CustomError.internetConnection()))
+        let imageRepository = ImageRepositoryMock(response: .failure(CustomError.internetConnection()))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -208,7 +206,7 @@ class ImageSearchViewModelTests: XCTestCase {
     }
     
     func testSearchImage_whenSearchIsRunTwice() async throws {
-        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub))
+        let imageRepository = ImageRepositoryMock(response: .success(ImageSearchViewModelTests.imagesStub))
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)
@@ -240,7 +238,7 @@ class ImageSearchViewModelTests: XCTestCase {
             cachedImagesStub[index].image = ImageBehavior.updateImage(image.image, newWrapper: ImageWrapper(uiImage: UIImage(systemName: "heart.fill")), for: .thumbnail)
         }
         
-        let imageRepository = ImageRepositoryMock(result: .success(ImageSearchViewModelTests.imagesStub), cachedImages: cachedImagesStub)
+        let imageRepository = ImageRepositoryMock(response: .success(ImageSearchViewModelTests.imagesStub), cachedImages: cachedImagesStub)
         let searchImagesUseCase = DefaultSearchImagesUseCase(imageRepository: imageRepository)
         let imageCachingService = DefaultImageCachingService(imageRepository: imageRepository)
         let imageSearchViewModel = DefaultImageSearchViewModel(searchImagesUseCase: searchImagesUseCase, imageCachingService: imageCachingService)

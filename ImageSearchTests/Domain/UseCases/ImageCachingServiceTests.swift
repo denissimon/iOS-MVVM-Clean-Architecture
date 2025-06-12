@@ -58,31 +58,29 @@ class ImageCachingServiceTests: XCTestCase {
         }
         
         func getImages(searchId: String) async -> [ImageType]? {
+            var images: [ImageType] = []
             ImageCachingServiceTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
-            }
-            var images: [ImageType] = []
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    ImageCachingServiceTests.syncQueue.sync {
+                for image in cachedImages {
+                    if image.searchId == searchId {
                         images.append(image.image)
                     }
                 }
             }
-            ImageCachingServiceTests.syncQueue.sync {}
             return images
         }
         
         func checkImagesAreCached(searchId: String) async -> Bool? {
+            var result: Bool = false
             ImageCachingServiceTests.syncQueue.sync {
                 dbMethodsCallsCount += 1
-            }
-            for image in cachedImages {
-                if image.searchId == searchId {
-                    return true
+                for image in cachedImages {
+                    if image.searchId == searchId {
+                        result = true
+                    }
                 }
             }
-            return false
+            return result
         }
         
         // Called once when initializing the ImageCachingService to clear the Image table
