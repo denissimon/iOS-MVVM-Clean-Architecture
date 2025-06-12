@@ -23,7 +23,7 @@ struct HotTagsView: View {
                 }
                 .listRowSeparator(.hidden)
                 
-                ForEach(viewModelBridgeWrapper.data as! [Tag]) { tag in
+                ForEach(viewModelBridgeWrapper.data, id: \.id) { tag in
                     TagCell(tag: tag)
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -46,16 +46,16 @@ struct HotTagsView: View {
                         .bold()
                 }
             }
-            .onAppear( perform: {
+            .onAppear {
                 viewModelBridgeWrapper.viewModel?.getHotTags()
-            })
+            }
         }
     }
 }
 
 struct TagCell: View {
     
-    var tag: Tag
+    var tag: TagListItemVM
     
     var body: some View {
         HStack {
