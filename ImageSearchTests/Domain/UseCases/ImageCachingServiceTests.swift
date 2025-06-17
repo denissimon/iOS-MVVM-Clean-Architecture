@@ -102,6 +102,7 @@ class ImageCachingServiceTests: XCTestCase {
         
         XCTAssertEqual(completionCallsCount, 1)
         XCTAssertEqual(precessedData.count, 5)
+        
         ImageCachingServiceTests.syncQueue.sync {
             XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
             XCTAssertEqual(imageRepository.dbMethodsCallsCount, 0)
@@ -139,10 +140,6 @@ class ImageCachingServiceTests: XCTestCase {
         await imageCachingService.cacheIfNecessary(testSearchResults)
         
         XCTAssertEqual(completionCallsCount, 1)
-        ImageCachingServiceTests.syncQueue.sync {
-            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
-            XCTAssertEqual(imageRepository.dbMethodsCallsCount, 6) // checkImagesAreCached(), saveImage() 2 times, checkImagesAreCached(), and saveImage() 2 times
-        }
         XCTAssertEqual(precessedData.count, 5)
         for image in precessedData[3].searchResults {
             XCTAssertNil(image.thumbnail) // thumbnails of the 2nd search have been cleared from memory
@@ -150,7 +147,10 @@ class ImageCachingServiceTests: XCTestCase {
         for image in precessedData[4].searchResults {
             XCTAssertNil(image.thumbnail) // thumbnails of the 1st search have been cleared from memory
         }
+        
         ImageCachingServiceTests.syncQueue.sync {
+            XCTAssertEqual(imageRepository.apiMethodsCallsCount, 0)
+            XCTAssertEqual(imageRepository.dbMethodsCallsCount, 6) // checkImagesAreCached(), saveImage() 2 times, checkImagesAreCached(), saveImage() 2 times
             XCTAssertEqual(imageRepository.cachedImages.count, 4) // 2 images of the 1st search and 2 images of the 2nd search in ImageCachingServiceTests.searchResultsStub have been cached
         }
     }
