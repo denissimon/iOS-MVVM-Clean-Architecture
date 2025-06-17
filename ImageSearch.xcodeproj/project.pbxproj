@@ -46,6 +46,7 @@
 		41500DB52BAC100E00ABD258 /* HotTagsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */; };
 		41500DB72BAC496D00ABD258 /* ImageSearchViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */; };
 		416F900B2C5199BF006BD114 /* GetBigImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416F900A2C5199BF006BD114 /* GetBigImageUseCase.swift */; };
+		41782E322E006A03007448D2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41782E312E006A03007448D2 /* SceneDelegate.swift */; };
 		417C1CCC2BF3CCAD005E2232 /* NetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417C1CCB2BF3CCAD005E2232 /* NetworkServiceTests.swift */; };
 		417D76E92BE0156C005D9C1E /* ImageSearch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 417D76E82BE0156C005D9C1E /* ImageSearch.storyboard */; };
 		418BF6922BC89F1F0002F360 /* SQLTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418BF6912BC89F1F0002F360 /* SQLTable.swift */; };
@@ -130,6 +131,7 @@
 		41500DB42BAC100E00ABD258 /* HotTagsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsViewModelTests.swift; sourceTree = "<group>"; };
 		41500DB62BAC496D00ABD258 /* ImageSearchViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewModelTests.swift; sourceTree = "<group>"; };
 		416F900A2C5199BF006BD114 /* GetBigImageUseCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetBigImageUseCase.swift; sourceTree = "<group>"; };
+		41782E312E006A03007448D2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		417C1CCB2BF3CCAD005E2232 /* NetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceTests.swift; sourceTree = "<group>"; };
 		417D76E82BE0156C005D9C1E /* ImageSearch.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ImageSearch.storyboard; sourceTree = "<group>"; };
 		418BF6912BC89F1F0002F360 /* SQLTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLTable.swift; sourceTree = "<group>"; };
@@ -581,6 +583,7 @@
 			isa = PBXGroup;
 			children = (
 				4111D56123FDAEFF00B74B83 /* AppDelegate.swift */,
+				41782E312E006A03007448D2 /* SceneDelegate.swift */,
 				41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */,
 				412AE79D2C5453AA00C56A1C /* Utils */,
 			);
@@ -773,6 +776,7 @@
 				41CC2480241490570053F23E /* FlickrAPI.swift in Sources */,
 				4145C7C42B2CFEA3001DD403 /* ImageQuery.swift in Sources */,
 				413931432DBBC76F0094BDF5 /* HotTagsView.swift in Sources */,
+				41782E322E006A03007448D2 /* SceneDelegate.swift in Sources */,
 				413931452DBBCDA50094BDF5 /* HotTagsViewModelBridgeWrapper.swift in Sources */,
 				416F900B2C5199BF006BD114 /* GetBigImageUseCase.swift in Sources */,
 				4145C7E62B39CDC4001DD403 /* TagRepository.swift in Sources */,
