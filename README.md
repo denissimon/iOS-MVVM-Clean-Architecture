@@ -97,4 +97,4 @@ HotTags module:
 
 ### Requirements
 
-iOS version support: 16.0+. Xcode 14.0+, Swift 5.5+
+iOS 16.0+, Xcode 14.0+, Swift 5.5+
