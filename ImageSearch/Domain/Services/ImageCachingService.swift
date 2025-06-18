@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ImageCachingService: Actor {
-    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @Sendable @escaping ([ImageSearchResults]) -> ())
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping @Sendable ([ImageSearchResults]) -> ())
     func cacheIfNecessary(_ data: [ImageSearchResults]) async
     func getCachedImages(searchId: String) async -> [Image]?
 }
@@ -30,7 +30,7 @@ actor DefaultImageCachingService: ImageCachingService {
         await imageRepository.deleteAllImages()
     }
     
-    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @Sendable @escaping ([ImageSearchResults]) -> ()) {
+    func subscribeToDidProcess(_ subscriber: AnyObject, handler: @escaping @Sendable ([ImageSearchResults]) -> ()) {
         didProcess.subscribe(subscriber) { result in
             handler(result)
         }
