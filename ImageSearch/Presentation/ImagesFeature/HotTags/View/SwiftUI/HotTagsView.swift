@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HotTagsView: View {
     
-    @StateObject var viewModelBridgeWrapper: HotTagsViewModelBridgeWrapper
+    @ObservedObject var viewModelBridgeWrapper: HotTagsViewModelBridgeWrapper
     
     var coordinatorActions: HotTagsCoordinatorActions?
         
