@@ -830,11 +830,10 @@ class SQLiteTests: XCTestCase {
         try sqlite.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
         try sqlite.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
         try sqlite.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
-        let (_, returnedLastId) = try sqlite.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
+        let (_, lastId) = try sqlite.insertRow(sql: sqlStatement, params: ["searchId", 1, "jsonString"])
         
-        let lastInsertId = sqlite.lastInsertID
-        XCTAssertEqual(lastInsertId, 5)
-        XCTAssertEqual(returnedLastId, lastInsertId)
+        XCTAssertEqual(sqlite.lastInsertID, 5)
+        XCTAssertEqual(lastId, sqlite.lastInsertID)
     }
     
     func testGetChangesAndGetTotalChanges() throws {
