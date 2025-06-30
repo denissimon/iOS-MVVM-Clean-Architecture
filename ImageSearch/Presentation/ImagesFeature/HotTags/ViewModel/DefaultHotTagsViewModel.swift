@@ -17,7 +17,7 @@ protocol HotTagsViewModelInput {
 }
 
 protocol HotTagsViewModelOutput {
-    var data: Observable<[TagListItemVM]> { get }
+    var data: Observable<[TagVM]> { get }
     var makeToast: Observable<String> { get }
     var activityIndicatorVisibility: Observable<Bool> { get }
     var screenTitle: String { get }
@@ -37,7 +37,7 @@ class DefaultHotTagsViewModel: HotTagsViewModel {
     let screenTitle = NSLocalizedString("Hot Tags", comment: "")
     
     // Bindings
-    let data: Observable<[TagListItemVM]> = Observable([])
+    let data: Observable<[TagVM]> = Observable([])
     let makeToast: Observable<String> = Observable("")
     let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     

@@ -6,11 +6,11 @@ protocol ImageType: AnyObject {
     var title: String { get }
 }
 
-protocol ImageListItemVM: AnyObject {
+protocol ImageVM: AnyObject {
     var thumbnail: ImageWrapper? { get }
 }
 
-class Image: Codable, ImageType, ImageListItemVM {
+class Image: Codable, ImageType, ImageVM {
     
     struct FlickrImageParameters: Codable {
         let imageID: String

@@ -5,7 +5,7 @@ protocol TagType {
     var name: String { get }
 }
 
-typealias TagListItemVM = TagType
+typealias TagVM = TagType
 
 struct Tag: Decodable, Identifiable, TagType {
     let id = UUID()

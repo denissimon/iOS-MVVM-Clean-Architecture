@@ -2,14 +2,14 @@ import UIKit
 
 class ImagesDataSource: NSObject {
     
-    private(set) var data = [ImageSearchResultsListItemVM]()
+    private(set) var data = [ImageSearchResultsVM]()
     
-    init(with data: [ImageSearchResultsListItemVM]) {
+    init(with data: [ImageSearchResultsVM]) {
         super.init()
         self.data = data
     }
     
-    func update(_ data: [ImageSearchResultsListItemVM]) {
+    func update(_ data: [ImageSearchResultsVM]) {
         self.data = data
     }
 }

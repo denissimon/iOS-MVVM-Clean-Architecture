@@ -1,12 +1,12 @@
 import Foundation
 
-protocol ImageSearchResultsListItemVM: AnyObject {
+protocol ImageSearchResultsVM: AnyObject {
     var id: String { get }
     var searchQuery: ImageQuery { get }
-    var _searchResults: [ImageListItemVM] { get set }
+    var _searchResults: [ImageVM] { get set }
 }
 
-class ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
+class ImageSearchResults: Identifiable, ImageSearchResultsVM {
     let id: String
     let searchQuery: ImageQuery
     var searchResults: [Image]
@@ -19,7 +19,7 @@ class ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
 }
 
 extension ImageSearchResults {
-    var _searchResults: [ImageListItemVM] {
+    var _searchResults: [ImageVM] {
         get { searchResults }
         set { searchResults = newValue as! [Image] }
     }
