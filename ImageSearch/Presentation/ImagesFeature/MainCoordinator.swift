@@ -30,7 +30,7 @@ class MainCoordinator: FlowCoordinator {
         navigationController.pushViewController(imageSearchVC, animated: false)
     }
     
-    private func showImageDetails(image: ImageListItemVM, imageQuery: ImageQuery, didFinish: Event<Image>) {
+    private func showImageDetails(image: ImageVM, imageQuery: ImageQuery, didFinish: Event<Image>) {
         let imageDetailsVC = dependencyContainer.makeImageDetailsViewController(image: image as! Image, imageQuery: imageQuery, didFinish: didFinish)
         navigationController.pushViewController(imageDetailsVC, animated: true)
     }

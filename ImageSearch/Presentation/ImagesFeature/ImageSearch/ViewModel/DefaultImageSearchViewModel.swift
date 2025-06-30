@@ -19,7 +19,7 @@ protocol ImageSearchViewModelInput {
 
 @MainActor
 protocol ImageSearchViewModelOutput {
-    var data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> { get }
+    var data: Observable<(searches: [ImageSearchResultsVM], reload: Bool)> { get }
     var reloadSection: Observable<IndexSet> { get }
     var scrollTop: Observable<Bool?> { get }
     var makeToast: Observable<String> { get }
@@ -44,7 +44,7 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
     // Bindings
-    let data: Observable<(searches: [ImageSearchResultsListItemVM], reload: Bool)> = Observable(([], true))
+    let data: Observable<(searches: [ImageSearchResultsVM], reload: Bool)> = Observable(([], true))
     let reloadSection: Observable<IndexSet> = Observable([])
     let scrollTop: Observable<Bool?> = Observable(nil)
     let makeToast: Observable<String> = Observable("")

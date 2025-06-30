@@ -1,12 +1,12 @@
 import Foundation
 
-protocol ImageSearchResultsListItemVM: Sendable {
+protocol ImageSearchResultsVM: Sendable {
     var id: String { get }
     var searchQuery: ImageQuery { get }
-    var _searchResults: [ImageListItemVM] { get set }
+    var _searchResults: [ImageVM] { get set }
 }
 
-struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
+struct ImageSearchResults: Identifiable, ImageSearchResultsVM {
     let id: String
     let searchQuery: ImageQuery
     var searchResults: [Image]
@@ -19,7 +19,7 @@ struct ImageSearchResults: Identifiable, ImageSearchResultsListItemVM {
 }
 
 extension ImageSearchResults {
-    var _searchResults: [ImageListItemVM] {
+    var _searchResults: [ImageVM] {
         get { searchResults }
         set { searchResults = newValue as! [Image] }
     }

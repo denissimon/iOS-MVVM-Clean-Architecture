@@ -55,7 +55,7 @@ struct HotTagsView: View {
 
 struct TagCell: View {
     
-    var tag: TagListItemVM
+    var tag: TagVM
     
     var body: some View {
         HStack {

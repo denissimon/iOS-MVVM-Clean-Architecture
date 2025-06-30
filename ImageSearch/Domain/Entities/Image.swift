@@ -6,11 +6,11 @@ protocol ImageType: Sendable {
     var title: String { get }
 }
 
-protocol ImageListItemVM: Sendable {
+protocol ImageVM: Sendable {
     var thumbnail: ImageWrapper? { get }
 }
 
-struct Image: Codable, ImageType, ImageListItemVM {
+struct Image: Codable, ImageType, ImageVM {
     
     struct FlickrImageParameters: Codable {
         let imageID: String

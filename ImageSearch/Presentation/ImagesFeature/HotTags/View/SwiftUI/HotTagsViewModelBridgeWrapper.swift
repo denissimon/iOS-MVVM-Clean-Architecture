@@ -7,7 +7,7 @@ class HotTagsViewModelBridgeWrapper: ObservableObject {
     
     weak var hostingController: UIViewController?
     
-    @Published private(set) var data = [TagListItemVM]()
+    @Published private(set) var data: [TagVM] = []
     
     var screenTitle: String {
         viewModel?.screenTitle ?? ""
