@@ -30,7 +30,7 @@ class URLSessionAPIInteractor: APIInteractor {
     func request(_ endpoint: EndpointType) async throws -> Data {
         guard let request = RequestFactory.request(endpoint) else { throw customError() }
         do {
-            return try await urlSessionAdapter.request(request).value
+            return try await urlSessionAdapter.request(request).data
         } catch {
             throw customError(error)
         }
@@ -39,7 +39,7 @@ class URLSessionAPIInteractor: APIInteractor {
     func request<T: Decodable>(_ endpoint: EndpointType, type: T.Type) async throws -> T {
         guard let request = RequestFactory.request(endpoint) else { throw customError() }
         do {
-            return try await urlSessionAdapter.request(request, type: type).value
+            return try await urlSessionAdapter.request(request, type: type).decoded
         } catch {
             throw customError(error)
         }
@@ -47,7 +47,7 @@ class URLSessionAPIInteractor: APIInteractor {
     
     func fetchFile(url: URL) async throws -> Data? {
         do {
-            return try await urlSessionAdapter.fetchFile(url: url).value
+            return try await urlSessionAdapter.fetchFile(url: url).data
         } catch {
             return nil
         }
