@@ -18,6 +18,9 @@ final class DefaultSearchImagesUseCase: SearchImagesUseCase {
         UUID().uuidString
     }
     
+    #if swift(>=6.2.0)
+    @concurrent
+    #endif
     func execute(_ imageQuery: ImageQuery) async -> Result<ImageSearchResults?, CustomError> {
         
         let result = await imageRepository.searchImages(imageQuery)
