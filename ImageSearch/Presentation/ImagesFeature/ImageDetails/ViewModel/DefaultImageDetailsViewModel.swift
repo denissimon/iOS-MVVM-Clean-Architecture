@@ -25,14 +25,14 @@ class DefaultImageDetailsViewModel: ImageDetailsViewModel {
     private let getBigImageUseCase: GetBigImageUseCase
     
     private(set) var image: Image
-    let imageQuery: ImageQuery
+    private let imageQuery: ImageQuery
     private let didFinish: Event<Image>
     
     // Bindings
     let data: Observable<ImageWrapper?> = Observable(nil)
     let shareImage: Observable<[ImageWrapper]> = Observable([])
     let makeToast: Observable<String> = Observable("")
-    let activityIndicatorVisibility: Observable<Bool> = Observable<Bool>(false)
+    let activityIndicatorVisibility: Observable<Bool> = Observable(false)
     
     private var imageLoadTask: Task<Void, Never>? {
         willSet { imageLoadTask?.cancel() }
