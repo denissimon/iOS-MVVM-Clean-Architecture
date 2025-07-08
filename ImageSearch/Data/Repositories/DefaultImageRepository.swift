@@ -51,7 +51,7 @@ final class DefaultImageRepository: ImageRepository {
     
     func getImage(url: URL) async -> Data? {
         do {
-            return try await apiInteractor.fetchFile(url: url)
+            return try await apiInteractor.fetchFile(url)
         } catch {
             return nil
         }
