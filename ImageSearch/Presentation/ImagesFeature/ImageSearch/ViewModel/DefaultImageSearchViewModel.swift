@@ -37,9 +37,9 @@ class DefaultImageSearchViewModel: ImageSearchViewModel {
     private let searchImagesUseCase: SearchImagesUseCase
     private let imageCachingService: ImageCachingService
     
-    private(set) var lastQuery: ImageQuery?
-    
     private var imageSearchResults: [ImageSearchResults] = []
+    
+    private(set) var lastQuery: ImageQuery?
     
     let screenTitle = NSLocalizedString("Image Search", comment: "")
     
