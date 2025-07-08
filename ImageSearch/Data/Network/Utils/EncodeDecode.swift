@@ -1,12 +1,11 @@
 import Foundation
 
 struct RequestEncodable {
-    static func encode<T: Encodable>(_ value: T) -> Data?  {
-        let jsonEncoder = JSONEncoder()
+    static func encode<T: Encodable>(_ value: T, encoder: JSONEncoder? = nil) -> Data?  {
+        let jsonEncoder = encoder ?? JSONEncoder()
         do {
-            let data = try jsonEncoder.encode(value)
-            return data
-        } catch _ {
+            return try jsonEncoder.encode(value)
+        } catch {
             return nil
         }
     }
@@ -17,12 +16,11 @@ extension Encodable {
 }
 
 struct ResponseDecodable {
-    static func decode<T: Decodable>(_ type: T.Type, data: Data) -> T? {
-        let jsonDecoder = JSONDecoder()
+    static func decode<T: Decodable>(_ type: T.Type, from data: Data, decoder: JSONDecoder? = nil) -> T? {
+        let jsonDecoder = decoder ?? JSONDecoder()
         do {
-            let response = try jsonDecoder.decode(T.self, from: data)
-            return response
-        } catch _ {
+            return try jsonDecoder.decode(T.self, from: data)
+        } catch {
             return nil
         }
     }
