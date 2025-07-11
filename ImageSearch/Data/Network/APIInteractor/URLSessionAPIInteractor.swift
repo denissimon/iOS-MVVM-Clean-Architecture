@@ -16,7 +16,7 @@ class URLSessionAPIInteractor: APIInteractor {
             if error is NetworkError {
                 let networkError = error as! NetworkError
                 if let statusCode = networkError.statusCode {
-                    if statusCode >= 400 && statusCode <= 599 {
+                    if statusCode >= 300 && statusCode <= 599 {
                         return CustomError.server(networkError.error, statusCode: statusCode, data: networkError.data)
                     } else {
                         return CustomError.internetConnection(networkError.error, statusCode: statusCode, data: networkError.data)
