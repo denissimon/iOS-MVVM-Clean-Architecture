@@ -30,10 +30,10 @@ struct RequestConfiguration {
 protocol NetworkServiceAsyncAwaitType: Sendable {
     var urlSession: URLSession { get }
     
-    func request(_ request: URLRequest, configuration: RequestConfiguration?) async throws -> (data: Data, response: URLResponse)
-    func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration?) async throws -> (decoded: T, response: URLResponse)
-    func fetchFile(_ url: URL, configuration: RequestConfiguration?) async throws -> (data: Data?, response: URLResponse)
-    func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration?) async throws -> (result: Bool, response: URLResponse)
+    func request(_ request: URLRequest, configuration: RequestConfiguration?, delegate: URLSessionDataDelegate?) async throws -> (data: Data, response: URLResponse)
+    func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration?, delegate: URLSessionDataDelegate?) async throws -> (decoded: T, response: URLResponse)
+    func fetchFile(_ url: URL, configuration: RequestConfiguration?, delegate: URLSessionDataDelegate?) async throws -> (data: Data?, response: URLResponse)
+    func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration?, delegate: URLSessionDataDelegate?) async throws -> (result: Bool, response: URLResponse)
 }
 
 protocol NetworkServiceCallbacksType: Sendable {
@@ -75,7 +75,7 @@ final class NetworkService: NetworkServiceType {
     private func validate(_ statusCode: Int?, requestValidation: Bool, data: Data? = nil) throws -> Bool {
         if !requestValidation { return true } // If validation is disabled for a given request (enabled by default), then this automatic validation will not be performed even if global validation is enabled
         if !_autoValidation { return true } // Next, we check the global validation rule: when validation is enabled for a given request, but global validation is disabled, then this automatic validation will not be performed
-        guard statusCode != nil, !(statusCode! >= 400 && statusCode! <= 599) else {
+        guard statusCode != nil, !(statusCode! >= 300 && statusCode! <= 599) else {
             throw NetworkError(statusCode: statusCode, data: data)
         }
         return true
@@ -83,7 +83,7 @@ final class NetworkService: NetworkServiceType {
     
     // MARK: - async/await API
     
-    func request(_ request: URLRequest, configuration: RequestConfiguration? = nil) async throws -> (data: Data, response: URLResponse) {
+    func request(_ request: URLRequest, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data, response: URLResponse) {
         let isUploadTask = configuration?.uploadTask ?? defaultConfiguration.uploadTask
         
         var msg = "\nNetworkService request \(request.httpMethod ?? "")"
@@ -97,7 +97,8 @@ final class NetworkService: NetworkServiceType {
         case false:
             log(msg)
             (data, response) = try await urlSession.data(
-                for: request
+                for: request,
+                delegate: delegate
             )
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
@@ -108,7 +109,8 @@ final class NetworkService: NetworkServiceType {
             updatedRequest.httpBody = nil
             (data, response) = try await urlSession.upload(
                 for: updatedRequest,
-                from: httpBody
+                from: httpBody,
+                delegate: delegate
             )
         }
         
@@ -119,7 +121,7 @@ final class NetworkService: NetworkServiceType {
         return (data, response)
     }
     
-    func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil) async throws -> (decoded: T, response: URLResponse) {
+    func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (decoded: T, response: URLResponse) {
         let isUploadTask = configuration?.uploadTask ?? defaultConfiguration.uploadTask
         
         var msg = "\nNetworkService request<T: Decodable> \(request.httpMethod ?? "")"
@@ -133,7 +135,8 @@ final class NetworkService: NetworkServiceType {
         case false:
             log(msg)
             (data, response) = try await urlSession.data(
-                for: request
+                for: request,
+                delegate: delegate
             )
         case true:
             guard let httpBody = request.httpBody, ["POST", "PUT"].contains(request.httpMethod) else {
@@ -144,7 +147,8 @@ final class NetworkService: NetworkServiceType {
             updatedRequest.httpBody = nil
             (data, response) = try await urlSession.upload(
                 for: updatedRequest,
-                from: httpBody
+                from: httpBody,
+                delegate: delegate
             )
         }
         
@@ -160,10 +164,13 @@ final class NetworkService: NetworkServiceType {
     }
     
     /// Fetches a file into memory
-    func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil) async throws -> (data: Data?, response: URLResponse) {
+    func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data?, response: URLResponse) {
         log("\nNetworkService fetchFile, url: \(url)")
         
-        let (data, response) = try await urlSession.data(from: url)
+        let (data, response) = try await urlSession.data(
+            from: url,
+            delegate: delegate
+        )
         
         let statusCode = (response as? HTTPURLResponse)?.statusCode
         let requestValidation = configuration?.validation ?? defaultConfiguration.validation
@@ -177,10 +184,13 @@ final class NetworkService: NetworkServiceType {
     }
     
     /// Downloads a file to disk. Supports background downloads.
-    func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil) async throws -> (result: Bool, response: URLResponse) {
+    func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (result: Bool, response: URLResponse) {
         log("\nNetworkService downloadFile, url: \(url), to: \(localUrl)")
         
-        let (tempLocalUrl, response) = try await urlSession.download(from: url)
+        let (tempLocalUrl, response) = try await urlSession.download(
+            from: url,
+            delegate: delegate
+        )
         
         let statusCode = (response as? HTTPURLResponse)?.statusCode
         let requestValidation = configuration?.validation ?? defaultConfiguration.validation
@@ -373,5 +383,4 @@ protocol NetworkCancellable {
     func cancel()
 }
 
-extension URLSessionDataTask: NetworkCancellable {}
-extension URLSessionDownloadTask: NetworkCancellable {}
+extension URLSessionTask: NetworkCancellable {}
