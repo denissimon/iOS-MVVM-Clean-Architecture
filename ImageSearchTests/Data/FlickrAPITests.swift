@@ -24,22 +24,22 @@ class FlickrAPITests: XCTestCase {
             self.responseData = responseData
         }
         
-        func request(_ request: URLRequest, configuration: RequestConfiguration? = nil) async throws -> (data: Data, response: URLResponse) {
+        func request(_ request: URLRequest, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data, response: URLResponse) {
             (responseData, URLResponse())
         }
 
-        func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil) async throws -> (decoded: T, response: URLResponse) {
+        func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (decoded: T, response: URLResponse) {
             guard let decoded = try? JSONDecoder().decode(type, from: responseData) else {
                 throw NetworkError()
             }
             return (decoded, URLResponse())
         }
         
-        func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil) async throws -> (data: Data?, response: URLResponse) {
+        func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data?, response: URLResponse) {
             ("image".data(using: .utf8), URLResponse())
         }
         
-        func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil) async throws -> (result: Bool, response: URLResponse) {
+        func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (result: Bool, response: URLResponse) {
             (true, URLResponse())
         }
     }
@@ -77,6 +77,22 @@ class FlickrAPITests: XCTestCase {
         func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil, completion: @escaping (Result<(result: Bool, response: URLResponse?), NetworkError>) -> Void) -> NetworkCancellable? {
             completion(.success((true, URLResponse())))
             return nil
+        }
+    }
+    
+    final class ProgressObserver: NSObject, URLSessionDataDelegate, @unchecked Sendable {
+            
+        var observation: NSKeyValueObservation? = nil
+        let onChangeHandler: (Progress) -> Void
+
+        init(onChangeHandler: @escaping (Progress) -> Void) {
+            self.onChangeHandler = onChangeHandler
+        }
+        
+        func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
+            observation = task.progress.observe(\.fractionCompleted) { progress, change in
+                self.onChangeHandler(progress)
+            }
         }
     }
     
@@ -184,14 +200,17 @@ class FlickrAPITests: XCTestCase {
         await fulfillment(of: [promise], timeout: 5)
     }
     
-    func testFetchFile_asyncAwaitAPI() async throws {
+    func testFetchFile_withDelegate_asyncAwaitAPI() async throws {
         let promise = expectation(description: #function)
         
         let networkService = NetworkService()
         
         do {
             let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
-            let (data, response) = try await networkService.fetchFile(url)
+            let progressObserver = ProgressObserver {
+                print($0.fractionCompleted) // Outputs: 0.05 0.0595 1.0
+            }
+            let (data, response) = try await networkService.fetchFile(url, delegate: progressObserver)
             XCTAssertNotNil(data)
             guard let httpResponse = response as? HTTPURLResponse else { return }
             XCTAssertEqual(httpResponse.statusCode, 200)
@@ -352,10 +371,18 @@ class FlickrAPITests: XCTestCase {
         wait(for: [promise], timeout: 5)
     }
     
-    func testFetchFile_callbacksAPI() {
+    func testFetchFile_withDelegate_callbacksAPI() {
         let promise = expectation(description: #function)
         
-        let networkService = NetworkService()
+        let progressObserver = ProgressObserver {
+            print($0.fractionCompleted) // Outputs: 0.05 0.0595 1.0
+        }
+        
+        let networkService = NetworkService(urlSession: URLSession(
+            configuration: .default,
+            delegate: progressObserver,
+            delegateQueue: nil)
+        )
         
         let url = URL(string: "https://farm66.staticflickr.com/65535/53629782624_8da817eff2_b.jpg")!
         
