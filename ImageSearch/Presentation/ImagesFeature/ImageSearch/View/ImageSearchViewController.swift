@@ -125,7 +125,9 @@ class ImageSearchViewController: UIViewController, Storyboarded, Alertable {
     
     @IBAction func onHotTagsBarButtonItem(_ sender: UIBarButtonItem) {
         let didSelect = Event<String>()
-        didSelect.subscribe(self) { [weak self] query in self?.viewModel.searchImages(for: query) }
+            .subscribe(self) { [weak self] query in
+                self?.viewModel.searchImages(for: query)
+            }
         coordinatorActions?.showHotTags(didSelect)
     }
     
@@ -196,7 +198,9 @@ extension ImageSearchViewController: UICollectionViewDelegate {
         let query = viewModel.data.value[indexPath.section].searchQuery
         
         let didFinish = Event<Image>()
-        didFinish.subscribe(self) { [weak self] image in self?.viewModel.updateImage(image, indexPath: indexPath) }
+            .subscribe(self) { [weak self] image in
+                self?.viewModel.updateImage(image, indexPath: indexPath)
+            }
         
         coordinatorActions?.showImageDetails(selectedImage, query, didFinish)
     }
