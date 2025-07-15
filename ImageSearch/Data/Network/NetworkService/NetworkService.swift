@@ -1,6 +1,6 @@
 import Foundation
 
-struct NetworkError: Error {
+struct NetworkError: Error, Sendable {
     let error: Error?
     let statusCode: Int?
     let data: Data?
@@ -12,7 +12,7 @@ struct NetworkError: Error {
     }
 }
 
-struct RequestConfiguration {
+struct RequestConfiguration: Sendable {
     var uploadTask: Bool
     var validation: Bool
     var decoder: JSONDecoder?
