@@ -500,7 +500,7 @@ class NetworkServiceTests: XCTestCase {
             guard let httpResponse = response as? HTTPURLResponse else { return }
             XCTAssertEqual(httpResponse.statusCode, 200)
             
-            if FileManager().fileExists(atPath: destinationUrl.path) {
+            if FileManager.default.fileExists(atPath: destinationUrl.path) {
                 promise.fulfill()
             }
         } catch {
@@ -990,7 +990,7 @@ class NetworkServiceTests: XCTestCase {
                 guard let httpResponse = response as? HTTPURLResponse else { return }
                 XCTAssertEqual(httpResponse.statusCode, 200)
                 
-                if FileManager().fileExists(atPath: destinationUrl.path) {
+                if FileManager.default.fileExists(atPath: destinationUrl.path) {
                     promise.fulfill()
                 } else {
                     XCTFail() // shouldn't happen
