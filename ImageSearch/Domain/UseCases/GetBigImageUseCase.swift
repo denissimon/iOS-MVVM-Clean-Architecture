@@ -14,6 +14,9 @@ final class DefaultGetBigImageUseCase: GetBigImageUseCase {
         self.imageRepository = imageRepository
     }
     
+    #if swift(>=6.2.0)
+    @concurrent
+    #endif
     func execute(for image: Image) async -> Data? {
         if let bigImageURL = ImageBehavior.getFlickrImageURL(image, size: .big) {
             if let imageData = await imageRepository.getImage(url: bigImageURL) {

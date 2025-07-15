@@ -14,6 +14,9 @@ final class DefaultGetHotTagsUseCase: GetHotTagsUseCase {
         self.tagRepository = tagRepository
     }
     
+    #if swift(>=6.2.0)
+    @concurrent
+    #endif
     func execute() async -> Result<Tags, CustomError> {
         let result = await tagRepository.getHotTags()
         switch result {
