@@ -17,9 +17,9 @@ struct RequestConfiguration: Sendable {
     var validation: Bool
     var decoder: JSONDecoder?
     
-    /// - Parameter uploadTask: To support uploading files, including background uploads. If uploadTask is false, data task will be used.
-    /// - Parameter validation: Whether to perform a validation based on the received status code
-    /// - Parameter decoder: Customizable decoder for request<T: Decodable> method
+    /// - Parameter uploadTask: Set to `true` to use upload task instead of data task. Supports background uploads. Defaults to `false`.
+    /// - Parameter validation: Whether to perform a validation based on the received status code. Defaults to `true`.
+    /// - Parameter decoder: The customizable decoder used in `request<T: Decodable>` methods.
     init(uploadTask: Bool = false, validation: Bool = true, decoder: JSONDecoder? = nil) {
         self.uploadTask = uploadTask
         self.validation = validation
@@ -52,7 +52,8 @@ final class NetworkService: NetworkServiceType {
     let urlSession: URLSession
     
     private let lock = NSLock()
-    nonisolated(unsafe) var autoValidation: Bool {
+    
+    var autoValidation: Bool {
         get { lock.withLock { _autoValidation } }
         set { lock.withLock { _autoValidation = newValue } }
     }
@@ -71,14 +72,16 @@ final class NetworkService: NetworkServiceType {
         #endif
     }
     
-    @discardableResult
-    private func validate(_ statusCode: Int?, requestValidation: Bool, data: Data? = nil) throws -> Bool {
-        if !requestValidation { return true } // If validation is disabled for a given request (enabled by default), then this automatic validation will not be performed even if global validation is enabled
-        if !_autoValidation { return true } // Next, we check the global validation rule: when validation is enabled for a given request, but global validation is disabled, then this automatic validation will not be performed
+    private func validate(_ statusCode: Int?, requestValidation: Bool, data: Data? = nil) throws {
+        /// If validation is disabled for a given request, then this validation will not be performed even if global validation (`autoValidation` property) is enabled
+        if requestValidation == false { return }
+        
+        /// When validation is enabled for a given request, but global validation is disabled, then this validation will not be performed
+        if autoValidation == false { return }
+        
         guard statusCode != nil, !(statusCode! >= 300 && statusCode! <= 599) else {
             throw NetworkError(statusCode: statusCode, data: data)
         }
-        return true
     }
     
     // MARK: - async/await API
@@ -163,7 +166,7 @@ final class NetworkService: NetworkServiceType {
         return (decoded, response)
     }
     
-    /// Fetches a file into memory
+    /// Fetches a file into memory.
     func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data?, response: URLResponse) {
         log("\nNetworkService fetchFile, url: \(url)")
         
@@ -318,7 +321,7 @@ final class NetworkService: NetworkServiceType {
         }
     }
     
-    /// Fetches a file into memory
+    /// Fetches a file into memory.
     func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, completion: @escaping @Sendable (Result<(data: Data?, response: URLResponse?), NetworkError>) -> Void) -> NetworkCancellable? {
         log("\nNetworkService fetchFile, url: \(url)")
         
