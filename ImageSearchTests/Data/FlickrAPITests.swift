@@ -24,22 +24,22 @@ class FlickrAPITests: XCTestCase {
             self.responseData = responseData
         }
         
-        func request(_ request: URLRequest, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data, response: URLResponse) {
+        func request(_ request: URLRequest, configuration: RequestConfiguration? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> (data: Data, response: URLResponse) {
             (responseData, URLResponse())
         }
 
-        func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (decoded: T, response: URLResponse) {
+        func request<T: Decodable>(_ request: URLRequest, type: T.Type, configuration: RequestConfiguration? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> (decoded: T, response: URLResponse) {
             guard let decoded = try? JSONDecoder().decode(type, from: responseData) else {
                 throw NetworkError()
             }
             return (decoded, URLResponse())
         }
         
-        func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (data: Data?, response: URLResponse) {
+        func fetchFile(_ url: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> (data: Data?, response: URLResponse) {
             ("image".data(using: .utf8), URLResponse())
         }
         
-        func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionDataDelegate? = nil) async throws -> (result: Bool, response: URLResponse) {
+        func downloadFile(_ url: URL, to localUrl: URL, configuration: RequestConfiguration? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> (result: Bool, response: URLResponse) {
             (true, URLResponse())
         }
     }
@@ -80,7 +80,7 @@ class FlickrAPITests: XCTestCase {
         }
     }
     
-    class ProgressObserver: NSObject, URLSessionDataDelegate {
+    class ProgressObserver: NSObject, URLSessionTaskDelegate {
         
         var observation: NSKeyValueObservation? = nil
         let onChangeHandler: (Progress) -> Void
