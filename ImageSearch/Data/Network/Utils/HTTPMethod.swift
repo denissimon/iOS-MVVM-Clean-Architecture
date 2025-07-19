@@ -1,5 +1,5 @@
 /// https://datatracker.ietf.org/doc/html/rfc7231#section-4.3
-enum HTTPMethod: String {
+enum HTTPMethod: String, Sendable {
     case GET
     case POST
     case PUT

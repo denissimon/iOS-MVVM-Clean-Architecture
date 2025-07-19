@@ -1,6 +1,6 @@
 import Foundation
 
-struct HTTPParams {
+struct HTTPParams: Sendable {
     var httpBody: Data?
     var cachePolicy: URLRequest.CachePolicy?
     var timeoutInterval: TimeInterval?
