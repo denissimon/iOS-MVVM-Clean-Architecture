@@ -39,3 +39,15 @@ extension UIWindow {
 }
 
 extension UIHostingController: Alertable {}
+
+extension NetworkError {
+    static var connectionErrors: [Int] {
+        [
+            NSURLErrorNotConnectedToInternet,
+            NSURLErrorTimedOut,
+            NSURLErrorNetworkConnectionLost,
+            NSURLErrorCannotConnectToHost,
+            NSURLErrorCannotFindHost
+        ]
+    }
+}
