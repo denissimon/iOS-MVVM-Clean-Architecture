@@ -12,19 +12,18 @@ class URLSessionAPIInteractor: APIInteractor {
         switch error {
         case nil:
             return CustomError.app(.apiClient)
-        default:
-            if error is NetworkError {
-                let networkError = error as! NetworkError
-                if let statusCode = networkError.statusCode {
-                    if statusCode >= 300 && statusCode <= 599 {
-                        return CustomError.server(networkError.error, statusCode: statusCode, data: networkError.data)
-                    } else {
-                        return CustomError.internetConnection(networkError.error, statusCode: statusCode, data: networkError.data)
-                    }
-                }
+        case let error as NetworkError:
+            guard let statusCode = error.statusCode else { break }
+            if statusCode >= 300 && statusCode <= 599 {
+                return CustomError.server(error.error, statusCode: statusCode, data: error.data)
             }
-            return CustomError.internetConnection(error)
+        default:
+            guard let nsError = error as NSError?, nsError.domain == NSURLErrorDomain else { break }
+            if NetworkError.connectionErrors.contains(nsError.code) {
+                return CustomError.internetConnection(error)
+            }
         }
+        return CustomError.unexpected(error)
     }
     
     func request(_ endpoint: EndpointType) async throws -> Data {
