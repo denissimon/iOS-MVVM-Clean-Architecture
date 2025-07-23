@@ -3,7 +3,7 @@ import Foundation
 enum CustomError: LocalizedError {
     case app(_ type: AppError? = nil, description: String? = nil)
     case server(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
-    case internetConnection(_ error: Error? = nil, statusCode: Int? = nil, data: Data? = nil)
+    case internetConnection(_ error: Error? = nil)
     case unexpected(_ error: Error? = nil)
     
     enum AppError {
