@@ -12,7 +12,7 @@ enum SQLiteError: Error {
 }
 
 // http://www.sqlite.org/datatype3.html
-enum SQLType {
+enum SQLType: Sendable {
     case INT // Includes INT, INTEGER, INT2, INT8, BIGINT, MEDIUMINT, SMALLINT, TINYINT
     case BOOL // Includes BOOL, BOOLEAN, BIT
     case TEXT // Includes TEXT, CHAR, CHARACTER, VARCHAR, CLOB, VARIANT, VARYING_CHARACTER, NATIONAL_VARYING_CHARACTER, NATIVE_CHARACTER, NCHAR, NVARCHAR
@@ -21,7 +21,7 @@ enum SQLType {
     case DATE // Includes DATE, DATETIME, TIME, TIMESTAMP
 }
 
-enum SQLOrder {
+enum SQLOrder: Sendable {
     case ASC
     case DESC
     case none
@@ -67,55 +67,55 @@ protocol SQLiteType: Sendable {
 
 final class SQLite: SQLiteType {
     
-    nonisolated(unsafe) private(set) var dbPointer: OpaquePointer?
-    nonisolated(unsafe) private(set) var dbPath: String!
+    nonisolated(unsafe) private(set) var pointer: OpaquePointer?
+    let path: String
     
     private let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
     private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
-    private let queue = DispatchQueue(label: "SQLite Queue")
+    private let queue = DispatchQueue(label: "com.sqlite.dispatch.queue")
     
     let dateFormatter = DateFormatter()
     
     var lastInsertID: Int {
         var id = 0
         queue.sync {
-            id = Int(sqlite3_last_insert_rowid(dbPointer))
+            id = Int(sqlite3_last_insert_rowid(pointer))
         }
         log("last inserted id: \(id)")
         return id
     }
     
-    /// - Returns: the number of rows changed by the most recently completed INSERT, DELETE or UPDATE statement
+    /// - Returns: The number of rows changed by the most recently completed `INSERT`, `DELETE` or `UPDATE` statement.
     var changes: Int {
         var changes = 0
         queue.sync {
-            changes = Int(sqlite3_changes(dbPointer))
+            changes = Int(sqlite3_changes(pointer))
         }
         log("changes: \(changes)")
         return changes
     }
     
-    /// - Returns: the number of rows changed by INSERT, DELETE or UPDATE statements since the current DB was opened
+    /// - Returns: The number of rows changed by `INSERT`, `DELETE` or `UPDATE` statements since the current DB was opened.
     var totalChanges: Int {
         var totalChanges = 0
         queue.sync {
-            totalChanges = Int(sqlite3_total_changes(dbPointer))
+            totalChanges = Int(sqlite3_total_changes(pointer))
         }
         log("total changes: \(totalChanges)")
         return totalChanges
     }
     
-    init(path: String, recreateDB: Bool = false) throws {
-        if recreateDB {
-            try deleteDB(path: path)
-        }
+    /// - Parameter recreate: Set to `true` to have the sqlite file deleted and recreated. Defaults to `false`.
+    init(path: String, recreate: Bool = false) throws {
+        self.path = path
+        
+        if recreate { try deleteDB(path: path) }
         
         var db: OpaquePointer?
         
         if sqlite3_open(path, &db) == SQLITE_OK {
-            dbPointer = db
-            dbPath = path
+            pointer = db
             setUp()
             log("database opened successfully, path: \(path)")
         } else {
@@ -124,15 +124,15 @@ final class SQLite: SQLiteType {
                     sqlite3_close(db)
                 }
             }
-            dbPointer = nil
-            throw SQLiteError.OpenDB(getErrorMessage(dbPointer: db))
+            pointer = nil
+            throw SQLiteError.OpenDB("SQLite can't be opened")
         }
     }
     
     deinit {
-        if dbPointer != nil {
-            sqlite3_close(dbPointer)
-            dbPointer = nil
+        if pointer != nil {
+            sqlite3_close(pointer)
+            pointer = nil
         }
     }
     
@@ -157,8 +157,8 @@ final class SQLite: SQLiteType {
         #endif
     }
     
-    private func getErrorMessage(dbPointer: OpaquePointer?) -> String {
-        if let errorPointer = sqlite3_errmsg(dbPointer) {
+    private func getErrorMessage(pointer: OpaquePointer?) -> String {
+        if let errorPointer = sqlite3_errmsg(pointer) {
             let errorMessage = String(cString: errorPointer)
             return errorMessage
         }
@@ -167,8 +167,8 @@ final class SQLite: SQLiteType {
     
     private func prepareStatement(sql: String) throws -> OpaquePointer? {
         var queryStatement: OpaquePointer?
-        guard sqlite3_prepare_v2(dbPointer, sql, -1, &queryStatement, nil) == SQLITE_OK else {
-            throw SQLiteError.Prepare(getErrorMessage(dbPointer: dbPointer))
+        guard sqlite3_prepare_v2(pointer, sql, -1, &queryStatement, nil) == SQLITE_OK else {
+            throw SQLiteError.Prepare(getErrorMessage(pointer: pointer))
         }
         return queryStatement
     }
@@ -179,7 +179,7 @@ final class SQLite: SQLiteType {
         let paramsCount = sqlite3_bind_parameter_count(sqlStatement)
         let count = params.count
         if paramsCount != Int32(count) {
-            throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
+            throw SQLiteError.Bind(getErrorMessage(pointer: pointer))
         }
         
         for index in 0...(count-1) {
@@ -209,7 +209,7 @@ final class SQLite: SQLiteType {
             }
             
             guard statusCode == SQLITE_OK else {
-                throw SQLiteError.Bind(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Bind(getErrorMessage(pointer: pointer))
             }
         }
     }
@@ -226,10 +226,10 @@ final class SQLite: SQLiteType {
             try bindPlaceholders(sqlStatement: sqlStatement, params: params)
             
             guard sqlite3_step(sqlStatement) == SQLITE_DONE else {
-                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Step(getErrorMessage(pointer: pointer))
             }
             
-            return Int(sqlite3_changes(dbPointer))
+            return Int(sqlite3_changes(pointer))
         }
     }
     
@@ -312,7 +312,7 @@ final class SQLite: SQLiteType {
         log("COMMIT")
     }
     
-    /// Can be used to insert one or several rows depending on the SQL statement
+    /// Can be used to insert one or several rows depending on the SQL statement.
     /// - Returns: (the number of inserted rows, id for the last inserted row)
     @discardableResult
     func insertRow(sql: String, params: [Any]? = nil) throws -> (changes: Int, lastInsertID: Int) {
@@ -328,8 +328,8 @@ final class SQLite: SQLiteType {
         return (changes, lastInsertID)
     }
     
-    /// Can be used to update one or several rows depending on the SQL statement
-    /// - Returns: the number of updated rows
+    /// Can be used to update one or several rows depending on the SQL statement.
+    /// - Returns: The number of updated rows.
     @discardableResult
     func updateRow(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("UPDATE ") else {
@@ -344,8 +344,8 @@ final class SQLite: SQLiteType {
         return changes
     }
     
-    /// Can be used to delete one or several rows depending on the SQL statement
-    /// - Returns: the number of deleted rows
+    /// Can be used to delete one or several rows depending on the SQL statement.
+    /// - Returns: The number of deleted rows.
     @discardableResult
     func deleteRow(sql: String, params: [Any]? = nil) throws -> Int {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("DELETE ") else {
@@ -360,7 +360,7 @@ final class SQLite: SQLiteType {
         return changes
     }
     
-    /// - Returns: 1 if the row with the specified id was deleted, otherwise returns 0
+    /// - Returns: 1 if the row with the specified id was deleted, otherwise returns 0.
     @discardableResult
     func deleteByID(in table: SQLTable, id: Int) throws -> Int {
         let sql = "DELETE FROM \(table.name) WHERE \(table.primaryKey) = ?;"
@@ -373,7 +373,7 @@ final class SQLite: SQLiteType {
         return changes
     }
     
-    /// - Returns: the number of deleted rows
+    /// - Returns: The number of deleted rows.
     @discardableResult
     func deleteAllRows(in table: SQLTable, vacuum: Bool = true, resetAutoincrement: Bool = true) throws -> Int {
         let sql = "DELETE FROM \(table.name);"
@@ -401,7 +401,7 @@ final class SQLite: SQLiteType {
                 sqlite3_finalize(sqlStatement)
             }
             guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
-                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Step(getErrorMessage(pointer: pointer))
             }
             count = sqlite3_column_int(sqlStatement, 0)
             log("successfully got a row count in \(table.name): \(count)")
@@ -423,7 +423,7 @@ final class SQLite: SQLiteType {
             try bindPlaceholders(sqlStatement: sqlStatement, params: params)
             
             guard sqlite3_step(sqlStatement) == SQLITE_ROW else {
-                throw SQLiteError.Step(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Step(getErrorMessage(pointer: pointer))
             }
             count = sqlite3_column_int(sqlStatement, 0)
             log("successfully got a row count with condition: \(count), sql: \(sql)")
@@ -431,8 +431,8 @@ final class SQLite: SQLiteType {
         return Int(count)
     }
     
-    /// Can be used to read one or several rows depending on the SQL statement
-    /// - Returns: [SQLValues] if one or more rows were selected, otherwise returns nil
+    /// Can be used to read one or several rows depending on the SQL statement.
+    /// - Returns: `[SQLValues]` if one or more rows were selected, otherwise returns `nil`.
     func getRow(from table: SQLTable, sql: String, params: [Any]? = nil) throws -> [SQLValues]? {
         guard sql.uppercased().trimmingCharacters(in: .whitespaces).hasPrefix("SELECT ") else {
             throw SQLiteError.Statement("Invalid SQL statement")
@@ -451,7 +451,7 @@ final class SQLite: SQLiteType {
             var rowValues: SQLValues = SQLValues([])
             
             guard let resultColumns = try? getResultColumns(table, sqlStatement: sqlStatement) else {
-                throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Column(getErrorMessage(pointer: pointer))
             }
             
             while sqlite3_step(sqlStatement) == SQLITE_ROW {
@@ -521,7 +521,7 @@ final class SQLite: SQLiteType {
         }
     }
     
-    /// Checks the structure of the result table and synchronizes it in SQLTableColums
+    /// Checks the structure of the result table and synchronizes it in `SQLTableColums`.
     private func getResultColumns(_ table: SQLTable, sqlStatement: OpaquePointer?) throws -> SQLTableColums {
         var columnNamesToReturn: [String] = []
         let columnCount = sqlite3_column_count(sqlStatement)
@@ -530,10 +530,10 @@ final class SQLite: SQLiteType {
                 if let validatedColumnName = String(validatingCString: columnName) {
                     columnNamesToReturn.append(validatedColumnName)
                 } else {
-                    throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+                    throw SQLiteError.Column(getErrorMessage(pointer: pointer))
                 }
             } else {
-                throw SQLiteError.Column(getErrorMessage(dbPointer: dbPointer))
+                throw SQLiteError.Column(getErrorMessage(pointer: pointer))
             }
         }
         var resultColumns: SQLTableColums = []
@@ -545,7 +545,7 @@ final class SQLite: SQLiteType {
         return resultColumns
     }
     
-    /// - Returns: [SQLValues] if one or more rows were selected, otherwise returns nil
+    /// - Returns: `[SQLValues]` if one or more rows were selected, otherwise returns `nil`.
     func getAllRows(from table: SQLTable) throws -> [SQLValues]? {
         let sql = "SELECT * FROM \(table.name);"
         if let result = try getRow(from: table, sql: sql) {
@@ -555,7 +555,7 @@ final class SQLite: SQLiteType {
         return nil
     }
     
-    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    /// - Returns: `SQLValues` if a row was selected, otherwise returns `nil`.
     func getByID(from table: SQLTable, id: Int) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = ? LIMIT 1;"
         if let result = try getRow(from: table, sql: sql, params: [id]) {
@@ -565,7 +565,7 @@ final class SQLite: SQLiteType {
         return nil
     }
     
-    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    /// - Returns: `SQLValues` if a row was selected, otherwise returns `nil`.
     func getFirstRow(from table: SQLTable) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MIN(\(table.primaryKey)) FROM \(table.name));"
         if let result = try getRow(from: table, sql: sql) {
@@ -575,7 +575,7 @@ final class SQLite: SQLiteType {
         return nil
     }
     
-    /// - Returns: SQLValues if a row was selected, otherwise returns nil
+    /// - Returns: `SQLValues` if a row was selected, otherwise returns `nil`.
     func getLastRow(from table: SQLTable) throws -> SQLValues? {
         let sql = "SELECT * FROM \(table.name) WHERE \(table.primaryKey) = (SELECT MAX(\(table.primaryKey)) FROM \(table.name));"
         if let result = try getRow(from: table, sql: sql) {
@@ -585,15 +585,15 @@ final class SQLite: SQLiteType {
         return nil
     }
     
-    /// Repacks the DB to take advantage of deleted data
+    /// Repacks the DB to take advantage of deleted data.
     func vacuum() throws {
         let sql = "VACUUM;"
         try operation(sql: sql)
         log("VACUUM")
     }
     
-    /// Any other query except reading
-    /// - Returns: the number of  rows changed
+    /// Any other query except reading.
+    /// - Returns: The number of  rows changed.
     @discardableResult
     func query(sql: String, params: [Any]? = nil) throws -> Int {
         let changes = try operation(sql: sql, params: params)
