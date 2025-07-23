@@ -1,6 +1,6 @@
 import Foundation
 
-struct NetworkError: Error, Sendable {
+struct NetworkError: Error {
     let error: Error?
     let statusCode: Int?
     let data: Data?
