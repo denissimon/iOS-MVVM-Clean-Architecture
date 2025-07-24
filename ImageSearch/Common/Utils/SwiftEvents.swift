@@ -26,17 +26,17 @@ final public class Event<T> {
     
     private var subscribers = [Subscriber]()
     
-    /// The number of subscribers to the Event
+    /// The number of subscribers to the `Event`.
     public var subscribersCount: Int { subscribers.count }
     
-    /// The number of times the Event was triggered
+    /// The number of times the `Event` was triggered.
     public private(set) var triggersCount = Int()
     
     public init() {}
     
-    /// - Parameter target: The target object that subscribes to the Event
-    /// - Parameter queue: The queue in which the handler should be executed when the Event triggers
-    /// - Parameter handler: The closure you want executed when the Event triggers
+    /// - Parameter target: The target object that subscribes to the `Event`.
+    /// - Parameter queue: The queue in which the handler should be executed when the `Event` triggers.
+    /// - Parameter handler: The closure you want executed when the `Event` triggers.
     @discardableResult
     public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) -> Self {
         let subscriber = Subscriber(target: target, queue: queue, handler: handler)
@@ -44,9 +44,9 @@ final public class Event<T> {
         return self
     }
     
-    /// Triggers the Event, calls all handlers, notifies all subscribers
+    /// Triggers the `Event`, calls all handlers, notifies all subscribers.
     ///
-    /// - Parameter data: The data to trigger the Event with
+    /// - Parameter data: The data to trigger the `Event` with.
     public func notify(_ data: T) {
         triggersCount += 1
         for subscriber in subscribers {
@@ -59,7 +59,7 @@ final public class Event<T> {
         }
     }
     
-    /// Executes the handler with provided data
+    /// Executes the handler with provided data.
     private func callHandler(on queue: DispatchQueue?, data: T, handler: @escaping (T) -> ()) {
         guard let queue = queue else {
             handler(data)
@@ -70,12 +70,12 @@ final public class Event<T> {
         }
     }
     
-    /// - Parameter id: The id of the subscriber
+    /// - Parameter id: The id of the subscriber.
     private func unsubscribe(id: ObjectIdentifier) {
         subscribers = subscribers.filter { $0.id != id }
     }
     
-    /// - Parameter target: The target object that subscribes to the Event
+    /// - Parameter target: The target object that subscribes to the `Event`.
     public func unsubscribe(_ target: AnyObject) {
         unsubscribe(id: ObjectIdentifier(target))
     }
@@ -102,22 +102,22 @@ final public class Observable<T> {
 
 extension Observable {
     
-    /// The number of observers of the Observable
+    /// The number of observers of the `Observable`.
     public var observersCount: Int { didChanged.subscribersCount }
     
-    /// The number of times the Observable's value was changed and the Observable was triggered
+    /// The number of times the `Observable`'s value was changed and the `Observable` was triggered.
     public var triggersCount: Int { didChanged.triggersCount }
     
-    /// - Parameter target: The target object that binds to the Observable
-    /// - Parameter queue: The queue in which the handler should be executed when the Observable's value changes
-    /// - Parameter handler: The closure you want executed when the Observable's value changes
+    /// - Parameter target: The target object that binds to the `Observable`.
+    /// - Parameter queue: The queue in which the handler should be executed when the `Observable`'s value changes.
+    /// - Parameter handler: The closure you want executed when the `Observable`'s value changes.
     @discardableResult
     public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) -> Self {
         didChanged.subscribe(target, queue: queue, handler: handler)
         return self
     }
     
-    /// - Parameter target: The target object that binds to the Observable
+    /// - Parameter target: The target object that binds to the `Observable`.
     public func unbind(_ target: AnyObject) {
         didChanged.unsubscribe(target)
     }
@@ -158,12 +158,12 @@ final public class EventTS<T> {
     
     fileprivate let serialQueue = DispatchQueue(label: "com.swift.events.dispatch.queue")
     
-    /// The number of subscribers to the Event
+    /// The number of subscribers to the `Event`.
     public var subscribersCount: Int {
         getSubscribers().count
     }
     
-    /// The number of times the Event was triggered
+    /// The number of times the `Event` was triggered.
     public var triggersCount: Int {
         getTriggersCount()
     }
@@ -172,9 +172,9 @@ final public class EventTS<T> {
     
     public init() {}
     
-    /// - Parameter target: The target object that subscribes to the Event
-    /// - Parameter queue: The queue in which the handler should be executed when the Event triggers
-    /// - Parameter handler: The closure you want executed when the Event triggers
+    /// - Parameter target: The target object that subscribes to the `Event`.
+    /// - Parameter queue: The queue in which the handler should be executed when the `Event` triggers.
+    /// - Parameter handler: The closure you want executed when the `Event` triggers.
     @discardableResult
     public func subscribe<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) -> Self {
         let subscriber = Subscriber(target: target, queue: queue, handler: handler)
@@ -184,9 +184,9 @@ final public class EventTS<T> {
         return self
     }
     
-    /// Triggers the Event, calls all handlers, notifies all subscribers
+    /// Triggers the `Event`, calls all handlers, notifies all subscribers.
     ///
-    /// - Parameter data: The data to trigger the Event with
+    /// - Parameter data: The data to trigger the `Event` with.
     public func notify(_ data: T) {
         serialQueue.sync {
             self._triggersCount += 1
@@ -204,7 +204,7 @@ final public class EventTS<T> {
         }
     }
     
-    /// Executes the handler with provided data
+    /// Executes the handler with provided data.
     private func callHandler(on queue: DispatchQueue?, data: T, handler: @escaping (T) -> ()) {
         guard let queue = queue else {
             handler(data)
@@ -215,14 +215,14 @@ final public class EventTS<T> {
         }
     }
     
-    /// - Parameter id: The id of the subscriber
+    /// - Parameter id: The id of the subscriber.
     private func unsubscribe(id: ObjectIdentifier) {
         serialQueue.sync {
             self.subscribers = self.subscribers.filter { $0.id != id }
         }
     }
     
-    /// - Parameter target: The target object that subscribes to the Event
+    /// - Parameter target: The target object that subscribes to the `Event`.
     public func unsubscribe(_ target: AnyObject) {
         unsubscribe(id: ObjectIdentifier(target))
     }
@@ -273,22 +273,22 @@ final public class ObservableTS<T> {
 
 extension ObservableTS {
     
-    /// The number of observers of the Observable
+    /// The number of observers of the `Observable`.
     public var observersCount: Int { didChanged.subscribersCount }
     
-    /// The number of times the Observable's value was changed and the Observable was triggered
+    /// The number of times the `Observable`'s value was changed and the `Observable` was triggered.
     public var triggersCount: Int { didChanged.triggersCount }
     
-    /// - Parameter target: The target object that binds to the Observable
-    /// - Parameter queue: The queue in which the handler should be executed when the Observable's value changes
-    /// - Parameter handler: The closure you want executed when the Observable's value changes
+    /// - Parameter target: The target object that binds to the `Observable`.
+    /// - Parameter queue: The queue in which the handler should be executed when the `Observable`'s value changes.
+    /// - Parameter handler: The closure you want executed when the `Observable`'s value changes.
     @discardableResult
     public func bind<O: AnyObject>(_ target: O, queue: DispatchQueue? = nil, handler: @escaping (T) -> ()) -> Self {
         didChanged.subscribe(target, queue: queue, handler: handler)
         return self
     }
     
-    /// - Parameter target: The target object that binds to the Observable
+    /// - Parameter target: The target object that binds to the `Observable`.
     public func unbind(_ target: AnyObject) {
         didChanged.unsubscribe(target)
     }
