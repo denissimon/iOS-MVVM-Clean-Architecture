@@ -66,6 +66,8 @@ extension Image: Equatable {
     }
 }
 
+extension ImageWrapper: Codable {}
+
 enum ImageSize: String {
     case thumbnail = "m"
     case big = "b"
