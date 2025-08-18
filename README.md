@@ -3,15 +3,15 @@
 [![Platforms](https://img.shields.io/badge/platform-iOS-lightgrey.svg)](https://developer.apple.com/swift/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/LICENSE)
 
-Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurrency.
+Example iOS app designed using MVVM-C and Clean Architecture. Uses Swift Concurrency, UIKit & SwiftUI.
 
 The app retrieves images for any search query or tag via the Flickr API. It has three modules: ImageSearch, ImageDetails, HotTags.
 
 <table> 
   <tr>
-    <td> <img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
-    <td> <img src="Screenshots/2_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
-    <td> <img src="Screenshots/3_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
+    <td><img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width="280"></td>
+    <td><img src="Screenshots/2_iOS-MVVM-Clean-Architecture.png" width="280"></td>
+    <td><img src="Screenshots/3_iOS-MVVM-Clean-Architecture.png" width="280"></td>
   </tr>
 </table>
 
@@ -62,9 +62,17 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Presentation (MVVM)**: _coordinators_, _UI elements_, _SwiftUI views_, _UIKit storyboards_, _ViewControllers_, _ViewModels_
 
-**Domain**: _entities_, _use cases_, _services_, _interfaces_ (for use cases, services and repositories)
+**Domain**: _entities_, _use cases_, _services_, _interfaces_
 
-**Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and storages), _adapters_
+**Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and persistence storages), _adapters_
+
+### High-Level diagram
+
+<img src="Docs/Architecture-diagram.png" alt="Architecture diagram" />
+
+[Detailed architecture overview][ArchitectureOverviewLink]
+
+[ArchitectureOverviewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/Docs/Architecture-overview.md
 
 ### Use case scenarios
 
