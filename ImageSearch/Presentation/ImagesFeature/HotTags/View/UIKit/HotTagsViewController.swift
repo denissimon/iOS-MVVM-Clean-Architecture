@@ -1,9 +1,5 @@
 import UIKit
 
-struct HotTagsCoordinatorActions {
-    let closeHotTags: (UIViewController) -> ()
-}
-
 class HotTagsViewController: UIViewController, Storyboarded, Alertable {
     
     @IBOutlet private weak var tableView: UITableView!
