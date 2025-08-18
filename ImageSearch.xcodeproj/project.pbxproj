@@ -35,6 +35,7 @@
 		4145C7EA2B39D0D0001DD403 /* APIInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7E92B39D0D0001DD403 /* APIInteractor.swift */; };
 		4145C7EC2B39D11A001DD403 /* URLSessionAPIInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7EB2B39D11A001DD403 /* URLSessionAPIInteractor.swift */; };
 		4145C7EE2B39D36C001DD403 /* DefaultTagRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */; };
+		414D80442E453DF800990C92 /* HotTagsCoordinatorActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D80432E453DF700990C92 /* HotTagsCoordinatorActions.swift */; };
 		414D90DE2B65ACD8009F37CA /* RequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90D92B65ACD8009F37CA /* RequestFactory.swift */; };
 		414D90DF2B65ACD8009F37CA /* EncodeDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DA2B65ACD8009F37CA /* EncodeDecode.swift */; };
 		414D90E22B65ACD8009F37CA /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414D90DD2B65ACD8009F37CA /* NetworkService.swift */; };
@@ -64,7 +65,6 @@
 		41AD9B9723FFBD57001383AD /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9523FFBD57001383AD /* AppCoordinator.swift */; };
 		41AD9B9823FFBD57001383AD /* FlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9623FFBD57001383AD /* FlowCoordinator.swift */; };
 		41AD9B9A23FFCFEC001383AD /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */; };
-		41B115C62B3CC6E80062CD5F /* ImageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */; };
 		41B115CD2B435C700062CD5F /* ImageDBInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115CC2B435C700062CD5F /* ImageDBInteractor.swift */; };
 		41B115CF2B435FAD0062CD5F /* ImageCachingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115CE2B435FAD0062CD5F /* ImageCachingService.swift */; };
 		41B115D52B43624B0062CD5F /* SQLiteImageDBInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B115D42B43624B0062CD5F /* SQLiteImageDBInteractor.swift */; };
@@ -120,6 +120,7 @@
 		4145C7E92B39D0D0001DD403 /* APIInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIInteractor.swift; sourceTree = "<group>"; };
 		4145C7EB2B39D11A001DD403 /* URLSessionAPIInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionAPIInteractor.swift; sourceTree = "<group>"; };
 		4145C7ED2B39D36C001DD403 /* DefaultTagRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTagRepository.swift; sourceTree = "<group>"; };
+		414D80432E453DF700990C92 /* HotTagsCoordinatorActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotTagsCoordinatorActions.swift; sourceTree = "<group>"; };
 		414D90D92B65ACD8009F37CA /* RequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestFactory.swift; sourceTree = "<group>"; };
 		414D90DA2B65ACD8009F37CA /* EncodeDecode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncodeDecode.swift; sourceTree = "<group>"; };
 		414D90DD2B65ACD8009F37CA /* NetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -150,7 +151,6 @@
 		41AD9B9523FFBD57001383AD /* AppCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		41AD9B9623FFBD57001383AD /* FlowCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlowCoordinator.swift; sourceTree = "<group>"; };
 		41AD9B9923FFCFEC001383AD /* AppConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
-		41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWrapper.swift; sourceTree = "<group>"; };
 		41B115CC2B435C700062CD5F /* ImageDBInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDBInteractor.swift; sourceTree = "<group>"; };
 		41B115CE2B435FAD0062CD5F /* ImageCachingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCachingService.swift; sourceTree = "<group>"; };
 		41B115D42B43624B0062CD5F /* SQLiteImageDBInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteImageDBInteractor.swift; sourceTree = "<group>"; };
@@ -184,6 +184,7 @@
 		410E7F8A2DBDB56E0082CCE4 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				414D80432E453DF700990C92 /* HotTagsCoordinatorActions.swift */,
 				413931412DBBC7550094BDF5 /* UIKit */,
 				413931402DBBC74F0094BDF5 /* SwiftUI */,
 			);
@@ -353,7 +354,6 @@
 			children = (
 				412AE79E2C545C2A00C56A1C /* Behaviors */,
 				4111D58F23FDD81E00B74B83 /* Image.swift */,
-				41B115C52B3CC6E80062CD5F /* ImageWrapper.swift */,
 				4145C7C32B2CFEA3001DD403 /* ImageQuery.swift */,
 				4111D58C23FDD81D00B74B83 /* ImageSearchResults.swift */,
 				41FBC2FF24439D3000DD1480 /* Tags.swift */,
@@ -772,7 +772,6 @@
 				41B115CD2B435C700062CD5F /* ImageDBInteractor.swift in Sources */,
 				418F33BC244132E900193C74 /* HotTagsViewController.swift in Sources */,
 				419603402C4DE37F00AE598F /* Endpoint.swift in Sources */,
-				41B115C62B3CC6E80062CD5F /* ImageWrapper.swift in Sources */,
 				41CC2480241490570053F23E /* FlickrAPI.swift in Sources */,
 				4145C7C42B2CFEA3001DD403 /* ImageQuery.swift in Sources */,
 				413931432DBBC76F0094BDF5 /* HotTagsView.swift in Sources */,
@@ -782,6 +781,7 @@
 				4145C7E62B39CDC4001DD403 /* TagRepository.swift in Sources */,
 				41B1163C2B4E04B00062CD5F /* SwiftEvents.swift in Sources */,
 				4145C7CC2B2F2F51001DD403 /* Toast.swift in Sources */,
+				414D80442E453DF800990C92 /* HotTagsCoordinatorActions.swift in Sources */,
 				41AD9B8723FF512C001383AD /* ImageDetailsViewController.swift in Sources */,
 				41B115CF2B435FAD0062CD5F /* ImageCachingService.swift in Sources */,
 				419603442C4ED97900AE598F /* HTTPMethod.swift in Sources */,
