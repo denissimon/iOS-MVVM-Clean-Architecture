@@ -66,8 +66,6 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and persistence storages), _adapters_
 
-### High-level diagram
-
 <img src="Docs/Architecture-diagram.png" alt="Architecture diagram" />
 
 [Detailed architecture overview][ArchitectureOverviewLink]
