@@ -9,9 +9,9 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 <table> 
   <tr>
-    <td> <img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
-    <td> <img src="Screenshots/2_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
-    <td> <img src="Screenshots/3_iOS-MVVM-Clean-Architecture.png" width = 252px></td>
+    <td><img src="Screenshots/1_iOS-MVVM-Clean-Architecture.png" width="252"></td>
+    <td><img src="Screenshots/2_iOS-MVVM-Clean-Architecture.png" width="252"></td>
+    <td><img src="Screenshots/3_iOS-MVVM-Clean-Architecture.png" width="252"></td>
   </tr>
 </table>
 
@@ -62,9 +62,9 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Presentation (MVVM)**: _coordinators_, _UI elements_, _SwiftUI views_, _UIKit storyboards_, _ViewControllers_, _ViewModels_
 
-**Domain**: _entities_, _use cases_, _services_, _interfaces_ (for use cases, services and repositories)
+**Domain**: _entities_, _use cases_, _services_, _interfaces_
 
-**Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and storages), _adapters_
+**Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and persistent storages), _adapters_
 
 ### Use case scenarios
 
