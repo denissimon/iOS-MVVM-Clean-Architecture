@@ -75,16 +75,16 @@ extension DIContainer: MainCoordinatorDIContainer {
         // Configurable use of UIKit or SwiftUI
         
         // UIKit
+        /*
         let viewModel = DefaultHotTagsViewModel(getHotTagsUseCase: makeGetHotTagsUseCase(), didSelect: didSelect)
         return HotTagsViewController.instantiate(viewModel: viewModel, actions: actions)
+        */
         
         // SwiftUI
-        /*
         let viewModel = HotTagsViewModelBridgeWrapper(viewModel: DefaultHotTagsViewModel(getHotTagsUseCase: makeGetHotTagsUseCase(), didSelect: didSelect))
         let view = HotTagsView(viewModelBridgeWrapper: viewModel, coordinatorActions: actions)
         let hostingController = UIHostingController(rootView: view)
         viewModel.hostingController = hostingController
         return hostingController
-         */
     }
 }
