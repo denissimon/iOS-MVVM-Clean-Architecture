@@ -66,6 +66,10 @@ The app retrieves images for any search query or tag via the Flickr API. It has 
 
 **Data**: _entity repositories_, _APIs_, _API/DB interactors_ (or network services and persistent storages), _adapters_
 
+[Detailed architecture overview][ArchitectureOverviewLink]
+
+[ArchitectureOverviewLink]: https://github.com/denissimon/iOS-MVVM-Clean-Architecture/blob/master/Docs/Architecture-overview.md
+
 ### Use case scenarios
 
 ImageSearch module:
